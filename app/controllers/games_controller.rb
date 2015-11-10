@@ -4,7 +4,7 @@ class GamesController < ApplicationController
   end
 
   def create
-    @game = current_user.simple_wods.create(simple_wod_params)
+    @game = Game.create(game_params)
     if @game.valid?
       redirect_to game_path(@game)
     else
@@ -14,6 +14,7 @@ class GamesController < ApplicationController
   end
 
   def show
+    @game = Game.find(params[:id])
   rescue ActiveRecord::RecordNotFound 
       render :text => "404 Error - Game Not Found", :status => :not_found
   end

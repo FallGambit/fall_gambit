@@ -6,14 +6,14 @@ class GamesControllerTest < ActionController::TestCase
     assert_response :success
   end
 
-  test "should get create" do
-    get :create
+  test "should get show" do
+    get :show, :id => 1
     assert_response :success
   end
 
-  test "should get show" do
-    get :show
-    assert_response :success
+  test "raises RecordNotFound when not found" do
+    get :show, :id => 'OMG'
+    assert_response :not_found
   end
 
 end
