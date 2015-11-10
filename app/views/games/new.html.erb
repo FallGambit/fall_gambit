@@ -1,2 +1,10 @@
-<h1>Games#new</h1>
-<p>Find me in app/views/games/new.html.erb</p>
+<h1>Create A New Game</h1>
+<div>
+  <%= simple_form_for @game, :url => games_path do |f| %>
+    <%= f.input :game_name %>
+    <br />
+    <%= f.submit "Create", :class => 'btn btn-primary' %>
+    <br />
+  <% end %>
+  <br />
+</div>
