@@ -27,6 +27,9 @@ gem 'jquery-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
 
+# Bootstrap
+gem 'bootstrap-sass', '~> 3.3.5'
+
 # Add SimpleForm
 gem 'simple_form'
 
