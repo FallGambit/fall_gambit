@@ -15,17 +15,18 @@ class GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
-  rescue ActiveRecord::RecordNotFound 
-      render :text => "404 Error - Game Not Found", :status => :not_found
+  rescue ActiveRecord::RecordNotFound
+    render :text => "404 Error - Game Not Found", :status => :not_found
   end
 
-private
+  private
+
   helper_method :current_game
   def current_game
     @current_game ||= Game.find(params[:id])
   end
 
   def game_params
-    params.require(:game).permit(:game_name)  
+    params.require(:game).permit(:game_name)
   end
 end
