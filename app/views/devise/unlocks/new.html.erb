@@ -1,8 +1,8 @@
 <br />
 <br />
 <div class="row">
-  <div class="col-md-6 col-md-offset-3 text-center">
-    <h3>Resend unlock instructions</h3>
+  <div class="col-md-6 col-md-offset-3">
+    <h3 class ="text-center">Resend unlock instructions</h3>
     <br />
     <%= simple_form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
     <%= f.error_notification %>
