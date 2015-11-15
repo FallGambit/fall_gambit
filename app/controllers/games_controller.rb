@@ -8,7 +8,7 @@ class GamesController < ApplicationController
     if @game.valid?
       redirect_to game_path(@game)
     else
-      flash[:alert] = "Error creating game!"
+      flash.now[:alert] = "Error creating game!"
       render :new, :status => :unprocessable_entity
     end
   end
