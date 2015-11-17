@@ -24,7 +24,6 @@ ActiveRecord::Schema.define(version: 20151117154327) do
     t.integer  "check_status"
     t.integer  "black_user"
     t.integer  "white_user"
-    t.integer  "game_id"
   end
 
   create_table "pieces", force: true do |t|
