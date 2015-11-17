@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :game do
-    # code
+    game_name { Faker::Lorem.sentence }
   end
 end
