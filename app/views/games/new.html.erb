@@ -1,10 +1,14 @@
-<h1>Create A New Game</h1>
-<div>
-  <%= simple_form_for @game, :url => games_path do |f| %>
-    <%= f.input :game_name %>
+<br />
+<br />
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <h3 class ="text-center">Create A New Game</h3>
+    <%= simple_form_for @game, :url => games_path do |f| %>
+      <%= f.input :game_name, :label => 'Game Name', :class => 'form-control' %>
+      <br />
+      <%= f.submit "Create", :class => 'btn btn-primary' %>
+      <br />
+    <% end %>
     <br />
-    <%= f.submit "Create", :class => 'btn btn-primary' %>
-    <br />
-  <% end %>
-  <br />
+  </div>
 </div>
