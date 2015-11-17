@@ -13,3 +13,12 @@ The team is composed of the following members:
 Fall Gambit is led by [Carleton DiLeo](https://github.com/cbdileo)
 
 Visit Fall Gambit on Heroku at [fall-gambit.herokuapp.com](http://fall-gambit.herokuapp.com)
+
+***
+
+Fall Gambit uses RuboCop to keep the code nice and tidy.
+To see it in action just run `rubocop` from the command line and see if you
+committed some offense.
+You can configure the `.rubocop.yml` file as you prefer.
+To know more go to the [RuboCop GitHub page](https://github.com/bbatsov/rubocop)
+and take a look at [The Ruby Style Guide](https://github.com/bbatsov/ruby-style-guide)

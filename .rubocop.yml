@@ -1,0 +1,19 @@
+AllCops:
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'bin/**/*'
+    - '**/config.ru'
+    - '**/Rakefile'
+    - '**/rails_helper.rb'
+    - 'test/**/*'
+    - '**/spec_helper.rb'
+
+Style/Documentation:
+  Enabled: false
+
+Style/HashSyntax:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: false

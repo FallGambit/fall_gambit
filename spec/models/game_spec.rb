@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Game, type: :model do
-
   describe 'instantiation' do
     let!(:game) { build(:game) }
 
@@ -16,7 +15,7 @@ RSpec.describe Game, type: :model do
 
   context "with valid params" do
     it "has one after adding one" do
-      testgame = create(:game)
+      create(:game)
       expect(Game.count).to eq 1
     end
   end
