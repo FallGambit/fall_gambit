@@ -5,6 +5,14 @@
     <h3><%= current_game.game_name %></h3>
     <br />
     <br />
-    <p> Display the board down here... </p>
   </div>
 </div>
+<table class="chessboard">
+  <% (0..7).each do |row| %>
+    <tr class="x-position-<%= row %>" >
+      <% (0..7).each do |column| %>
+        <td class="y-position-<%= column %>" x-position-data="<%= row %>" y-position-data="<%= column %>" ></td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
