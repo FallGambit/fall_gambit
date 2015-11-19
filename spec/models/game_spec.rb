@@ -67,7 +67,7 @@ RSpec.describe Game, type: :model do
           find_color_piece_type(:white, "Knight").each do |knight|
             x_y_coord_list << knight.x_y_coords
           end
-          expect(x_y_coord_list).to include([1, 0], [6, 0])
+          expect(x_y_coord_list).to contain_exactly([1, 0], [6, 0])
         end
 
         it "places the bishop in the correct square" do
@@ -75,7 +75,7 @@ RSpec.describe Game, type: :model do
           find_color_piece_type(:white, "Bishop").each do |bishop|
             x_y_coord_list << bishop.x_y_coords
           end
-          expect(x_y_coord_list).to include([2, 0], [5, 0])
+          expect(x_y_coord_list).to contain_exactly([2, 0], [5, 0])
         end
 
         it "places the rook in the correct square" do
@@ -83,7 +83,7 @@ RSpec.describe Game, type: :model do
           find_color_piece_type(:white, "Rook").each do |rook|
             x_y_coord_list << rook.x_y_coords
           end
-          expect(x_y_coord_list).to include([0, 0], [7, 0])
+          expect(x_y_coord_list).to contain_exactly([0, 0], [7, 0])
         end
       end
 
@@ -118,7 +118,7 @@ RSpec.describe Game, type: :model do
           find_color_piece_type(:black, "Knight").each do |knight|
             x_y_coord_list << knight.x_y_coords
           end
-          expect(x_y_coord_list).to include([1, 7], [6, 7])
+          expect(x_y_coord_list).to contain_exactly([1, 7], [6, 7])
         end
 
         it "places the bishop in the correct square" do
@@ -126,7 +126,7 @@ RSpec.describe Game, type: :model do
           find_color_piece_type(:black, "Bishop").each do |bishop|
             x_y_coord_list << bishop.x_y_coords
           end
-          expect(x_y_coord_list).to include([2, 7], [5, 7])
+          expect(x_y_coord_list).to contain_exactly([2, 7], [5, 7])
         end
 
         it "places the rook in the correct square" do
@@ -134,7 +134,7 @@ RSpec.describe Game, type: :model do
           find_color_piece_type(:black, "Rook").each do |rook|
             x_y_coord_list << rook.x_y_coords
           end
-          expect(x_y_coord_list).to include([0, 7], [7, 7])
+          expect(x_y_coord_list).to contain_exactly([0, 7], [7, 7])
         end
       end
     end
