@@ -1,4 +1,5 @@
 class Piece < ActiveRecord::Base
+<<<<<<< HEAD
 	belongs_to :user
 	belongs_to :game
 
@@ -13,6 +14,13 @@ class Piece < ActiveRecord::Base
 
 	def self.piece_types
 		%w(Pawn Queen King Rook Knight Bishop)
+	end
+
+	def x_y_coords
+		x_y_coordinates = []
+		x_y_coordinates << x_position
+		x_y_coordinates << y_position
+		x_y_coordinates
 	end
 
 	def is_captured? 
@@ -31,5 +39,6 @@ class Piece < ActiveRecord::Base
 	def check_defend
 		# get between king and threat
 	end
+
 end
 
