@@ -8,5 +8,5 @@ class User < ActiveRecord::Base
 	     :recoverable, :rememberable, :trackable, :validatable
 
 	# This is part of STI ~AMP:
-	delegate :pawns, :queens, :kings, :knights, :rooks, :bishops, to :pieces
+	delegate :pawns, :queens, :kings, :knights, :rooks, :bishops, to: :pieces
 end

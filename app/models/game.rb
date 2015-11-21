@@ -5,5 +5,5 @@ class Game < ActiveRecord::Base
 	validates :game_name, :presence => { :message => "Game name is required!" }
 
 	# This is part of STI ~AMP:
-	delegate :pawns, :queens, :kings, :knights, :rooks, :bishops, to :pieces
+	delegate :pawns, :queens, :kings, :knights, :rooks, :bishops, to: :pieces
 end
