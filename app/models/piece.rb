@@ -3,7 +3,7 @@ class Piece < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :game
 
-	# Lines 6-16 all part of STI: to break it disable line 6 or give it fake field name ~AMP
+	# Lines 7-17 all part of STI: to break it disable line 6 or give it fake field name ~AMP
 	self.inheritance_column = :piece_type
 	scope :pawns, -> { where(piece_type: "pawn")}
 	scope :queens, -> { where(piece_type: "queen")}
