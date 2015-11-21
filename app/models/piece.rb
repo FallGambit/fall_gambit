@@ -15,7 +15,6 @@ class Piece < ActiveRecord::Base
 		%w(Pawn Queen King Rook Knight Bishop)
 	end
 
-
 	def is_captured? 
 		# do we need this or can we just query piece.captured and if it evals to true it's done
 		where(captured: "true")
@@ -30,4 +29,3 @@ class Piece < ActiveRecord::Base
 	end
 end
 
-class Rook < Piece; end

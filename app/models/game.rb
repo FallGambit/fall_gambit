@@ -1,6 +1,6 @@
 class Game < ActiveRecord::Base
 	has_many :pieces
-	has_many :users, :through => pieces
+	has_many :users, :through => :pieces
 
 	validates :game_name, :presence => { :message => "Game name is required!" }
 
