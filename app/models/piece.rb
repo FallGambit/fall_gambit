@@ -22,6 +22,10 @@ class Piece < ActiveRecord::Base
 
 	def is_obstructed?
 		# test for pieces adjacent to current position
+		# Horizontal obstructions
+		# Vertical obstructions
+		# Diagonal Obstructions
+		# Invalid input (none of the above) -> doesn’t make sense: raise an error message
 	end
 
 	def check_defend

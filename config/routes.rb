@@ -2,14 +2,6 @@ FallGambit::Application.routes.draw do
   
   devise_for :users
   resources :games, :only => [:new, :create, :show]
-  # resources :pieces
-  # # Lines 7-12 added for STI ~AMP
-  # resources :pawns, controller: 'pieces', piece_type: 'Pawn'
-  # resources :queens, controller: 'pieces', piece_type: 'Queen'
-  # resources :kings, controller: 'pieces', piece_type: 'King'
-  # resources :rooks, controller: 'pieces', piece_type: 'Rook'
-  # resources :knights, controller: 'pieces', piece_type: 'Knight'
-  # resources :bishopss, controller: 'pieces', piece_type: 'Bishop'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
