@@ -7,16 +7,22 @@
     <p>
       The time is now: <%= Time.now %>
     </p>
-    <% @games.each do |game| %>
-      <% if game.white_user.nil? || game.black_user.nil? %>
-        <p>
-          <%= game.game_name %>
-        </p>
-      <% else %>
-        <p>
-          Looks like there's no game available... Create a new one!
-        </p>
-      <% end  %>
+    <% if @games.present? %>
+      <% @games.each do |game| %>
+        <% if game.white_user.nil? || game.black_user.nil? %>
+          <h2>
+            <%= game.game_name %>
+          </h2>
+        <% else %>
+          <h2>
+            Looks like there's no game available... Create a new one!
+          </h2>
+        <% end  %>
+      <% end %>
+    <% else %>
+      <h2>
+        No games available...
+      </h2>
     <% end %>
   </div>
 </div>
