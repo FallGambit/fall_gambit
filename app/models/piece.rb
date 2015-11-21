@@ -1,5 +1,5 @@
 class Piece < ActiveRecord::Base
-<<<<<<< HEAD
+
 	belongs_to :user
 	belongs_to :game
 
