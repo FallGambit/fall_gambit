@@ -1,7 +1,7 @@
 class Game < ActiveRecord::Base
 
 	has_many :pieces, dependent: :destroy
-	has_many :users, :through => :pieces
+	has_many :users
 	validates :game_name, :presence => { :message => "Game name is required!" }
 	after_create :populate_board!
 

@@ -1,4 +1,4 @@
-class Queen < Piece
+class Rook < Piece
 	def move
 		# straight up/dn side/side
 	end

@@ -5,12 +5,12 @@ class Piece < ActiveRecord::Base
 
 	# Lines 7-17 all part of STI: to break it disable line 6 or give it fake field name ~AMP
 	self.inheritance_column = :piece_type
-	scope :pawns, -> { where(piece_type: "pawn")}
-	scope :queens, -> { where(piece_type: "queen")}
-	scope :kings, -> { where(piece_type: "king")}
-	scope :rooks, -> { where(piece_type: "rook")}
-	scope :knights, -> { where(piece_type: "knight")}
-	scope :bishops, -> { where(piece_type: "bishop")}
+	scope :pawns, -> { where(piece_type: "Pawn")}
+	scope :queens, -> { where(piece_type: "Queen")}
+	scope :kings, -> { where(piece_type: "King")}
+	scope :rooks, -> { where(piece_type: "Rook")}
+	scope :knights, -> { where(piece_type: "Knight")}
+	scope :bishops, -> { where(piece_type: "Bishop")}
 
 	def self.piece_types
 		%w(Pawn Queen King Rook Knight Bishop)
