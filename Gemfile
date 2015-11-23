@@ -46,6 +46,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'rubocop', require: false
   gem 'faker'
+  gem 'pry-byebug'
 end
 
 # Use ActiveModel has_secure_password
