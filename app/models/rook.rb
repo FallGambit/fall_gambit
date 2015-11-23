@@ -3,7 +3,4 @@ class Rook < Piece
 		# straight up/dn side/side
 	end
 
-	def castle
-		# move out to defend king
-	end
 end

@@ -23,21 +23,12 @@ class Piece < ActiveRecord::Base
 		x_y_coordinates
 	end
 
-	def is_captured? 
-		# do we need this or can we just query piece.captured and if it evals to true it's done
-		where(captured: "true")
-	end
-
 	def is_obstructed?
 		# test for pieces adjacent to current position
 		# Horizontal obstructions
 		# Vertical obstructions
 		# Diagonal Obstructions
 		# Invalid input (none of the above) -> doesn’t make sense: raise an error message
-	end
-
-	def check_defend
-		# get between king and threat
 	end
 
 end
