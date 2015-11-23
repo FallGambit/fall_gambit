@@ -1,5 +1,5 @@
 class Bishop < Piece
-	def is_obstructed?
+  def is_obstructed?
     # diag only
-	end
+  end
 end
