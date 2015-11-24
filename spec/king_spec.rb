@@ -24,4 +24,16 @@ RSpec.describe King, type: :model do
     actual = king.valid_move?(4, 3)
     expect(actual).to be(false)
   end
+
+  it "should be false when moving 3 spaces back diagonally" do
+    king = King.new(x_position: 4, y_position: 3)
+    actual = king.valid_move?(1, 0)
+    expect(actual).to be(false)
+  end
+
+  it "should be false when moving 3 spaces down" do
+    king = King.new(x_position: 4, y_position: 3)
+    actual = king.valid_move?(4, 0)
+    expect(actual).to be(false)
+  end
 end
