@@ -1,11 +1,47 @@
 class Game < ActiveRecord::Base
+  attr_accessor :creator_plays_as_black  # for checkbox access
   has_many :pieces, dependent: :destroy
-  has_many :users
-  validates :game_name, :presence => { :message => "Game name is required!" }
+  belongs_to :white_user, class_name: 'User', foreign_key: :white_user_id
+  belongs_to :black_user, class_name: 'User', foreign_key: :black_user_id
+  validates :game_name, presence: { :message => "Game name is required!" }
+  validates :white_user_id, presence: true, unless: :black_user_id?, on: :create
+  validates :black_user_id, presence: true, unless: :white_user_id?, on: :create
+  validate :user_id_exists, on: :create
+  validate :white_user_id_exists, if: :white_user_id?, on: :update
+  validate :black_user_id_exists, if: :black_user_id?, on: :update
+  validate :users_must_be_different, on: :update
   after_create :populate_board!
 
   # This is part of STI ~AMP:
   delegate :pawns, :queens, :kings, :knights, :rooks, :bishops, to: :pieces
+
+  def user_id_exists
+    if white_user_id? && User.find_by_id(white_user_id).nil?
+      errors.add(:white_user_id, 'must be an existing user!')
+    elsif black_user_id? && User.find_by_id(black_user_id).nil?
+      errors.add(:black_user_id, 'must be an existing user!')
+    end
+  end
+
+  def white_user_id_exists
+    if User.find_by_id(white_user_id).nil?
+      errors.add(:white_user_id, 'must be an existing user!')
+    end
+  end
+
+  def black_user_id_exists
+    if User.find_by_id(black_user_id).nil?
+      errors.add(:black_user_id, 'must be an existing user!')
+    end
+  end
+
+  def users_must_be_different
+    if white_user_id.nil?
+      errors.add( :white_user_id, 'cannot be the same user as Black!' ) if white_user_id == black_user_id
+    else
+      errors.add( :black_user_id, 'cannot be the same user as White!' ) if black_user_id == white_user_id
+    end
+  end
 
   def populate_board!
     # Creates all 32 chess pieces with their initial X/Y coordinates.
