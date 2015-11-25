@@ -24,27 +24,15 @@ class GamesController < ApplicationController
 
   def update
     @game = Game.find(params[:id])
-    if @game.white_user_id.nil?
-      if current_user.id != @game.black_user_id
-        @game.update_attributes(white_user_id: current_user.id)
-        redirect_to game_path(@game)
-      else
-        flash[:alert] = "Cannot join your own game!"
-        redirect_to root_path
-      end
-    elsif @game.black_user_id.nil?
-      if current_user.id != @game.white_user_id
-        @game.update_attributes(black_user_id: current_user.id)
-        redirect_to game_path(@game)
-      else
-        flash[:alert] = "Cannot join your own game!"
-        redirect_to root_path
-      end
+    if game.white_user?
+      update_white_player
+    elsif @game.black_user?
+      update_black_player
     else
-      flash[:alert] = "Game already filled!"
+      flash[:alert] = "Game is full!"
       redirect_to root_path
     end
-
+    redirect_to game_path(@game)
   end
 
   private
@@ -54,12 +42,25 @@ class GamesController < ApplicationController
     @current_game ||= Game.find(params[:id])
   end
 
-  def game_create_params
+  def merge_player_color_choice_param
     if params[:game][:creator_plays_as_black] == '1'
-      params.require(:game).permit(:game_name, :creator_plays_as_black).merge(black_user_id: current_user.id)
+      { black_user_id: current_user.id }
     else
-      params.require(:game).permit(:game_name, :creator_plays_as_black).merge(white_user_id: current_user.id)
+      { white_user_id: current_user.id }
     end
-    
+  end
+
+  def game_create_params
+    params.require(:game).permit(:game_name, :creator_plays_as_black,
+                                 :white_user_id, :black_user_id)
+      .merge(merge_player_color_choice_param)
+  end
+
+  def update_black_player
+    @game.update_attributes(black_user_id: current_user.id)
+  end
+
+  def update_white_player
+    @game.update_attributes(white_user_id: current_user.id)
   end
 end
