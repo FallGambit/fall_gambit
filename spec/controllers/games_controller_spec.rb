@@ -38,6 +38,7 @@ RSpec.describe GamesController, type: :controller do
   end
 
   describe 'POST #create' do
+    login_user
     context 'with valid params' do
       it 'redirects to show page' do
         post :create, game: attributes_for(:game)
