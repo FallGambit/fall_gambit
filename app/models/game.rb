@@ -27,6 +27,23 @@ class Game < ActiveRecord::Base
     # coordinates as you normally might for a matrix)
     populate_white_pieces
     populate_black_pieces
+    if self.white_user_id.nil?
+      set_black_pieces_player_id
+    else
+      set_white_pieces_player_id
+    end
+  end
+
+  def set_black_pieces_player_id
+    pieces.where(color: false).each do |curr_piece|
+      curr_piece.update_attributes(user_id: black_user_id)
+    end
+  end
+
+  def set_white_pieces_player_id
+    pieces.where(color: true).each do |curr_piece|
+      curr_piece.update_attributes(user_id: white_user_id)
+    end
   end
 
   private
@@ -43,10 +60,10 @@ class Game < ActiveRecord::Base
     populate_rooks(true)
     # White Queen
     Queen.create(game_id: id, x_position: 3, y_position: 0,
-                 color: true, user_id: white_user)
+                 color: true)
     # White King
     King.create(game_id: id, x_position: 4, y_position: 0,
-                color: true, user_id: white_user)
+                color: true)
   end
 
   def populate_black_pieces
@@ -61,46 +78,42 @@ class Game < ActiveRecord::Base
     populate_rooks(false)
     # Black Queen
     Queen.create(game_id: id, x_position: 3, y_position: 7,
-                 color: false, user_id: nil)
+                 color: false)
     # Black King
     King.create(game_id: id, x_position: 4, y_position: 7,
-                color: false, user_id: nil)
+                color: false)
   end
 
   def populate_pawns(is_white)
     is_white ? pawn_y_position = 1 : pawn_y_position = 6
-    is_white ? curr_user = white_user : curr_user = nil
     (0..7).each do |a|
       Pawn.create(game_id: id, x_position: a, y_position: pawn_y_position,
-                  color: is_white, user_id: curr_user)
+                  color: is_white)
     end
   end
 
   def populate_knights(is_white)
     is_white ? knight_y_position = 0 : knight_y_position = 7
-    is_white ? curr_user = white_user : curr_user = nil
     Knight.create(game_id: id, x_position: 1, y_position: knight_y_position,
-                  color: is_white, user_id: curr_user)
+                  color: is_white)
     Knight.create(game_id: id, x_position: 6, y_position: knight_y_position,
-                  color: is_white, user_id: curr_user)
+                  color: is_white)
   end
 
   def populate_bishops(is_white)
     is_white ? bishop_y_position = 0 : bishop_y_position = 7
-    is_white ? curr_user = white_user : curr_user = nil
     Bishop.create(game_id: id, x_position: 2, y_position: bishop_y_position,
-                  color: is_white, user_id: curr_user)
+                  color: is_white)
     Bishop.create(game_id: id, x_position: 5, y_position: bishop_y_position,
-                  color: is_white, user_id: curr_user)
+                  color: is_white)
   end
 
   def populate_rooks(is_white)
     is_white ? rook_y_position = 0 : rook_y_position = 7
-    is_white ? curr_user = white_user : curr_user = nil
     Rook.create(game_id: id, x_position: 0, y_position: rook_y_position,
-                color: is_white, user_id: curr_user)
+                color: is_white)
     Rook.create(game_id: id, x_position: 7, y_position: rook_y_position,
-                color: is_white, user_id: curr_user)
+                color: is_white)
   end
 
   def user_id_exists

@@ -6,8 +6,7 @@ class GamesController < ApplicationController
   end
 
   def create
-    # don't necessarily have to do it this way, but will record game creator
-    @game = current_user.games.create(game_create_params)
+    @game = Game.create(game_create_params)
     if @game.valid?
       redirect_to game_path(@game)
     else
@@ -57,8 +56,10 @@ class GamesController < ApplicationController
   def update_player
     if @game.white_user_id.nil?
       @game.update_attributes(white_user_id: current_user.id)
+      @game.set_white_pieces_player_id
     else
       @game.update_attributes(black_user_id: current_user.id)
+      @game.set_black_pieces_player_id
     end
   end
 

@@ -43,18 +43,32 @@ RSpec.describe GamesController, type: :controller do
       context 'with valid params' do
         context 'with white player creating the game' do
           it 'redirects to show page' do
-            white_player = create(:user)
             post :create, game: { game_name: "Test White",
-                                  white_user_id: white_player.id }
+                                  creator_plays_as_black: "0" }
             expect(response).to redirect_to(Game.last)
+          end
+          it 'sets all white pieces to be owned by white player' do
+            post :create, game: { game_name: "Test White",
+                                  white_user_id: subject.current_user.id }
+            expect(Game.last.pieces.where(user_id: subject.current_user.id)
+              .count).to eq 16
+            expect(Game.last.pieces.where(user_id: nil)
+              .count).to eq 16
           end
         end
         context 'with black player creating the game' do
           it 'redirects to show page' do
-            black_player = create(:user)
             post :create, game: { game_name: "Test Black",
-                                  black_user_id: black_player.id }
+                                  creator_plays_as_black: "1" }
             expect(response).to redirect_to(Game.last)
+          end
+          it 'sets all black pieces to be owned by black player' do
+            post :create, game: { game_name: "Test Black",
+                                  creator_plays_as_black: "1" }
+            expect(Game.last.pieces.where(user_id: subject.current_user.id)
+              .count).to eq 16
+            expect(Game.last.pieces.where(user_id: nil)
+              .count).to eq 16
           end
         end
       end
@@ -77,34 +91,45 @@ RSpec.describe GamesController, type: :controller do
     context 'with logged in user' do
       login_user
       context 'with white player joining game' do
+        let(:black_player) { create(:user) }
+        let(:game_to_update) do
+          Game.create(game_name: "Test",
+                      black_user_id: black_player.id)
+        end
         it 'redirects to show page' do
-          black_player = create(:user)
-          game_to_update = Game.create(game_name: "Test",
-                                       black_user_id: black_player.id)
-          white_player = create(:user)
           put :update, id: game_to_update.id, game: {
-            white_user_id: white_player.id }
+            white_user_id: subject.current_user.id }
           expect(response).to redirect_to(game_to_update)
+        end
+        it 'sets all white pieces to be owned by white player' do
+          put :update, id: game_to_update.id, game: {
+            white_user_id: subject.current_user.id }
+          expect(game_to_update.pieces.where(user_id: subject.current_user.id)
+            .count).to eq 16
         end
       end
       context 'with black player joining game' do
+        let(:white_player) { create(:user) }
+        let(:game_to_update) do
+          Game.create(game_name: "Test",
+                      white_user_id: white_player.id)
+        end
         it 'redirects to show page' do
-          white_player = create(:user)
-          game_to_update = Game.create(game_name: "Test",
-                                       white_user_id: white_player.id)
-          black_player = create(:user)
           put :update, id: game_to_update.id, game: {
-            black_user_id: black_player.id }
+            black_user_id: subject.current_user.id }
           expect(response).to redirect_to(game_to_update)
+        end
+        it 'sets all black pieces to be owned by black player' do
+          put :update, id: game_to_update.id, game: {
+            white_user_id: subject.current_user.id }
+          expect(game_to_update.pieces.where(user_id: subject.current_user.id)
+            .count).to eq 16
         end
       end
       it 'won\'t let player join full game' do
         game = create(:game)
-        new_player = create(:user)
-        # game_to_update = Game.create(game_name: "Test",
-        #                             black_user_id: new_player.id)
         put :update, id: game.id, game: {
-          white_user_id: new_player.id }
+          white_user_id: subject.current_user.id }
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to be_present
         expect(flash[:alert]).to eq('Game is full!')
