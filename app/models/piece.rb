@@ -31,4 +31,24 @@ class Piece < ActiveRecord::Base
     # Invalid input (none of the above) - doesn't makes
     # sense: raise an error message
   end
+
+  def move_to!(new_x, new_y)
+    @target = Piece.where(:x_position => new_x).where(:y_position => new_y).take
+    if @target.nil?
+      update_attributes(:x_position => new_x, :y_position => new_y)
+    else
+      if color != @target.color
+        move_and_capture(new_x, new_y)
+      else
+        fail "Invalid move!"
+      end
+    end
+  end
+
+  def move_and_capture(new_x, new_y)
+    update_attributes(:x_position => new_x, :y_position => new_y)
+    @target.update_attributes(:captured => true,
+                              :x_position => nil,
+                              :y_position => nil)
+  end
 end

@@ -90,4 +90,8 @@ class Game < ActiveRecord::Base
     Rook.create(game_id: id, x_position: 7, y_position: rook_y_position,
                 color: is_white, user_id: curr_user)
   end
+
+  def player_missing?
+    white_user.nil? || black_user.nil?
+  end
 end

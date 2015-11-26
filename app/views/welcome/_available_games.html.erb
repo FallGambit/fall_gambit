@@ -1,15 +1,5 @@
 <% if @games.present? %>
-  <% @games.each do |game| %>
-    <% if game.white_user.nil? || game.black_user.nil? %>
-      <h2>
-        <%= game.game_name %>
-      </h2>
-    <% else %>
-      <h2>
-        Looks like there's no game available... Create a new one!
-      </h2>
-    <% end  %>
-  <% end %>
+  <%= render partial: 'game', collection: @games  %>
 <% else %>
   <h2>
     No games available...

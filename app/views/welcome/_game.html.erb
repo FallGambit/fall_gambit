@@ -1,0 +1,9 @@
+<% if game.player_missing? %>
+  <h2>
+    <%= game.game_name %>
+  </h2>
+<% else %>
+  <h2>
+    Looks like there's no game available... Create a new one!
+  </h2>
+<% end  %>
