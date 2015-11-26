@@ -1,33 +1,83 @@
 require 'rails_helper'
 
 RSpec.describe Piece, type: :model do
-  describe 'is_obstructed' do
-    before :each do
+  describe 'is_obstructed?' do
+    before :all do
+      # @user = FactoryGirl.create(:user)
+      # sign_in @user
       @game = FactoryGirl.create(:game)
-      @wq #instance white queen at [0,2]
-      @wkn #instance white knight at [0,1]
-      @wp #instance white pawn at [1,1]
-      @wb #instance white bishop at [4,2]
-      @bp #instance black bishop at [2,4]
-    it 'evaluates as false when diagonal path point x1y1 to point x2y2 is clear'
-      #how the fuck do I test this let alone build it?
-      #do I have to populate a whole game board?
-      #diag case for every delta of x corresponding delta of y
-      expect(delta_x).to eql(delta_y)
-      expect(examine_path)
+      @white_queen = Queen.create(
+        x_position: 0,
+        y_position: 2,
+        color: true,
+        game_id: @game.id,
+        captured: false
+        ) 
+      @white_knight = Knight.create(
+        x_position: 0,
+        y_position: 1,
+        color: true,
+        game_id: @game.id,
+        captured: false
+        ) 
+      @white_pawn = Pawn.create(
+        x_position: 1,
+        y_position: 1,
+        color: true,
+        game_id: @game.id,
+        captured: false
+        ) 
+      @white_bishop = Bishop.create(
+        x_position: 4,
+        y_position: 2,
+        color: true, 
+        game_id: @game.id,
+        captured: false
+        )  
+      @black_pawn = Pawn.create(
+        x_position: 4,
+        y_position: 6,
+        color: false,
+        game_id: @game.id,
+        captured: false
+        ) 
+    end
 
-    it 'evaluates as false when horizontal axis path xy1 to point xy2 is clear'
+    it 'evaluates as false when diagonal path is clear' do
+      expect(@white_queen.is_obstructed?(2,4)).to be_falsey
+    end
 
+    it 'evaluates as false when horizontal axis path is clear' do
+      expect(@white_queen.is_obstructed?(3,2)).to be_falsey
+    end
 
-      expect(delta_x).to eq(0) # or expect x1 eql x2, establishes horizontal movement
-      expect(is_obstructed())
+    it 'evaluates as false when vertical axis path is clear' do
+      expect(@white_queen.is_obstructed?(0,5)).to be_falsey
+    end
 
-    it 'evaluates as false when vertical axis path x1y to point x2y is clear'  
-    it 'evaluates as true when there is a block in horizontal axis'
-    it 'evaluates as true when there is a block in vertical axis'
-    it 'evaluates as true when there is a block in the diagonal'
-    it 'will raise an Error Message with invalid input' 
-      #cases of invalid input should include endpoint off the board or non-diag, non-linear endpoint
-    it 'evaluates as false when path is clear and destination contains a piece'
+    it 'evaluates as true when there is a block in horizontal axis' do
+      expect(@white_queen.is_obstructed?(5,2)).to be_truthy
+    end
+
+    it 'evaluates as true when there is a block in vertical axis' do
+      expect(@white_queen.is_obstructed?(0,0)).to be_truthy
+    end
+
+    it 'evaluates as true when there is a block in the diagonal' do
+      expect(@white_queen.is_obstructed?(2,0)).to be_truthy
+    end
+
+    it 'will raise an Error Message with invalid input' do 
+      expect(@white_queen.is_obstructed?(3,4)).to raise_error # add "invalid input"
+    end
+
+    it 'evaluates as false when PATH is clear but DESTINATION contains a piece'
+      expect(@white_queen.is_obstructed?(1,1)).to be_falsey
+    end
+
+    # it 'evaluates as true when path is clear but destination contains same-color' do
+    #   expect(@white_queen.is_obstructed?(4,2)).to be_truthy
+    # end # this will probably be covered by is_valid
+
   end
 end
