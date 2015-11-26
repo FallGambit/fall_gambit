@@ -40,8 +40,8 @@ class GamesController < ApplicationController
   end
 
   def place_piece_td(find_piece, column, row)
-    board_square = "<td class='y-position-#{column}'' x-position-data='#{row}'"
-    board_square += " y-position-data='#{column}' piece-id-data='#{piece_id(find_piece)}' piece-type-data='#{piece_type(find_piece)}'>"
+    board_square = "<td class='y-position-'#{column}' x-position-data='#{row}'"
+    board_square += " y-position-data='#{column}' piece-id-data='#{piece_id(find_piece)}' piece-type-data='#{piece_type(find_piece)}''>"
     unless find_piece.nil?
       board_square += ActionController::Base.helpers.image_tag find_piece.image_name, :class => "img-responsive"
     end
