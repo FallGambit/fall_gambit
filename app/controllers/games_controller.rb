@@ -56,10 +56,10 @@ class GamesController < ApplicationController
   def update_player
     if @game.white_user_id.nil?
       @game.update_attributes(white_user_id: current_user.id)
-      @game.set_white_pieces_player_id
+      @game.set_white_player_id
     else
       @game.update_attributes(black_user_id: current_user.id)
-      @game.set_black_pieces_player_id
+      @game.set_black_player_id
     end
   end
 
