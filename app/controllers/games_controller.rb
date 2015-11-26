@@ -39,7 +39,9 @@ class GamesController < ApplicationController
     @current_game ||= Game.find(params[:id])
   end
 
-  def place_piece_td(find_piece, column)
+  def place_piece_td(row, column)
+    find_piece = current_game.pieces
+    .find { |f| f["x_position"] == column && f["y_position"] == row }
     board_square = "<td class='y-position-'#{column}' "
     board_square += "piece-id-data='#{piece_id(find_piece)}' "
     board_square += "piece-type-data='#{piece_type(find_piece)}''>"
