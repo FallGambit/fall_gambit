@@ -1,10 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Game, type: :model do
+  let(:build_game) { build(:game) }
+  let(:game) { create(:game) }
   describe 'instantiation' do
-    let(:build_game) { build(:game) }
-    let(:game) { create(:game) }
-
     it 'instantiates a game' do
       expect(build_game.class.name).to eq("Game")
     end
@@ -37,6 +36,7 @@ RSpec.describe Game, type: :model do
             expect(pawn.y_position).to eq 1
           end
           expect(x_list.empty?).to eq true
+        end
         end
 
         it "places the king in the correct square" do
@@ -72,7 +72,6 @@ RSpec.describe Game, type: :model do
           end
           expect(x_y_coord_list).to contain_exactly([0, 0], [7, 0])
         end
-      end
 
       # these tests assume no flipping of board perspective, black is on top
       context "while placing black pieces" do
@@ -133,17 +132,19 @@ RSpec.describe Game, type: :model do
         expect(game.errors[:game_name].size).to eq 1
       end
 
-      it 'won\'t let a user play against themself' do
-        game.update_attributes(white_user_id: game.black_user_id)
-        expect(game).to be_invalid
-        expect(game.errors[:base].size).to eq 1
-      end
-
       it "does not accept no users on creation" do
         game.update_attributes(white_user_id: nil, black_user_id: nil)
         expect(game).to be_invalid
         expect(game.errors[:base].size).to eq 1
       end
+    end
+  end
+
+  describe 'game update' do
+    it 'won\'t let a user play against themself' do
+      game.update_attributes(white_user_id: game.black_user_id)
+      expect(game).to be_invalid
+      expect(game.errors[:base].size).to eq 1
     end
   end
 end
