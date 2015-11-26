@@ -1,6 +1,7 @@
 class Piece < ActiveRecord::Base
   belongs_to :user
   belongs_to :game
+  after_initialize :set_image
 
   # Lines 7-17 all part of STI: to break it disable line 6 or give it
   # fake field name ~AMP
@@ -31,4 +32,11 @@ class Piece < ActiveRecord::Base
     # Invalid input (none of the above) - doesn't makes
     # sense: raise an error message
   end
+
+  def set_image
+    #color ? color_string = "white" : color_string = "black"
+      #self.symbol ||= "#{color_name}-#{type.downcase}.svg"
+    self.image_name ||= "star.png"
+  end
+
 end

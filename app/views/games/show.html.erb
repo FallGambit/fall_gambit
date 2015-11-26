@@ -1,3 +1,4 @@
+<% if current_game %>
 <br />
 <br />
 <div class="row">
@@ -11,8 +12,10 @@
   <% (0..7).each do |row| %>
     <tr class="x-position-<%= row %>" >
       <% (0..7).each do |column| %>
-        <td class="y-position-<%= column %>" x-position-data="<%= row %>" y-position-data="<%= column %>" ></td>
+        <% find_piece = current_game.pieces.find { |f| f["x_position"] == column && f["y_position"] == row } %>
+        <%= place_piece_td(find_piece, column, row).html_safe %>
       <% end %>
     </tr>
   <% end %>
 </table>
+<% end %>
