@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 20151124075322) do
     t.boolean  "color"
     t.integer  "game_id"
     t.integer  "user_id"
-    t.boolean  "captured",   default: true
+    t.boolean  "captured",   default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

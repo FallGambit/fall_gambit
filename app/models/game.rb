@@ -122,14 +122,7 @@ class Game < ActiveRecord::Base
   end
 
   def users_must_be_different
-    if white_user_id.nil?
-      if white_user_id == black_user_id
-        errors.add(:white_user_id, 'cannot be the same user as Black!')
-      end
-    else
-      if black_user_id == white_user_id
-        errors.add(:black_user_id, 'cannot be the same user as White!')
-      end
-    end
+    return unless black_user_id == white_user_id
+    errors.add(:base, 'White and Black users cannot be the same!')
   end
 end

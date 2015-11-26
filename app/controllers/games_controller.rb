@@ -24,15 +24,13 @@ class GamesController < ApplicationController
 
   def update
     @game = Game.find(params[:id])
-    if game.white_user?
-      update_white_player
-    elsif @game.black_user?
-      update_black_player
+    if @game.white_user_id.nil? || @game.black_user_id.nil?
+      update_player
+      redirect_to game_path(@game)
     else
-      flash[:alert] = "Game is full!"
-      redirect_to root_path
+      @game.errors.add(:base, "Game is full!")
+      handle_update_errors
     end
-    redirect_to game_path(@game)
   end
 
   private
@@ -56,11 +54,17 @@ class GamesController < ApplicationController
       .merge(merge_player_color_choice_param)
   end
 
-  def update_black_player
-    @game.update_attributes(black_user_id: current_user.id)
+  def update_player
+    if @game.white_user_id.nil?
+      @game.update_attributes(white_user_id: current_user.id)
+    else
+      @game.update_attributes(black_user_id: current_user.id)
+    end
   end
 
-  def update_white_player
-    @game.update_attributes(white_user_id: current_user.id)
+  def handle_update_errors
+    return unless @game.errors.present?
+    flash[:alert] = @game.errors.full_messages.first
+    redirect_to root_path
   end
 end
