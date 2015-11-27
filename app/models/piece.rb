@@ -23,11 +23,24 @@ class Piece < ActiveRecord::Base
     x_y_coordinates
   end
 
-  # def is_obstructed?
-  #   # test for pieces adjacent to current position
-  #   # Horizontal obstructions
-  #   # Vertical obstructions
-  #   # Diagonal Obstructions
-  #   # Invalid input - new endpoint doesn't makes sense: raise an error message
-  # end
+  def is_obstructed?(x, y)
+    dest_x = x
+    dest_y = y
+    # do I even need start_x/y or can I use x/y_position directly?
+    start_x = x_position # do I need the 'self' here? - I don't think so
+    start_y = y_position
+    delta_x = dest_x - start_x
+    delta_y = dest_y - start_y
+
+    # Should I use the "Case" syntax here to define the different directional options?
+      # horizontal only delta_y == 0
+      # vertical only delta_x == 0
+      # diagonal delta_x == delta_y
+      # invalid is when none of the above evaluates as true
+
+    # Should I use "Case" to determine if the direction of travel is pos or neg?
+    # Is there a way to write this so that it works in either direction with a single method?
+
+
+  end
 end

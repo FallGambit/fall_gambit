@@ -6,6 +6,7 @@ RSpec.describe Piece, type: :model do
       # @user = FactoryGirl.create(:user)
       # sign_in @user
       @game = FactoryGirl.create(:game)
+      @game.pieces.delete
       @white_queen = Queen.create(
         x_position: 0,
         y_position: 2,
@@ -71,7 +72,7 @@ RSpec.describe Piece, type: :model do
       expect(@white_queen.is_obstructed?(3,4)).to raise_error # add "invalid input"
     end
 
-    it 'evaluates as false when PATH is clear but DESTINATION contains a piece'
+    it 'evaluates as false when PATH is clear but DESTINATION contains a piece' do
       expect(@white_queen.is_obstructed?(1,1)).to be_falsey
     end
 
