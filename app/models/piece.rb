@@ -23,12 +23,7 @@ class Piece < ActiveRecord::Base
     x_y_coordinates
   end
 
-  def is_obstructed?
-    # test for pieces adjacent to current position
-    # Horizontal obstructions
-    # Vertical obstructions
-    # Diagonal Obstructions
-    # Invalid input (none of the above) - doesn't makes
-    # sense: raise an error message
+  def is_obstructed?(x, y)
+    false
   end
 end
