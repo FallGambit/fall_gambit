@@ -23,7 +23,7 @@ class Piece < ActiveRecord::Base
     x_y_coordinates
   end
 
-  def is_obstructed?
+  def is_obstructed?(x, y)
     false
   end
 end
