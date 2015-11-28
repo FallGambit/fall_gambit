@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151123051407) do
+ActiveRecord::Schema.define(version: 20151124075322) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,9 +22,12 @@ ActiveRecord::Schema.define(version: 20151123051407) do
     t.datetime "updated_at"
     t.integer  "user_turn"
     t.integer  "check_status"
-    t.integer  "black_user"
-    t.integer  "white_user"
+    t.integer  "white_user_id"
+    t.integer  "black_user_id"
   end
+
+  add_index "games", ["black_user_id"], name: "index_games_on_black_user_id", using: :btree
+  add_index "games", ["white_user_id"], name: "index_games_on_white_user_id", using: :btree
 
   create_table "pieces", force: true do |t|
     t.integer  "x_position"
@@ -33,7 +36,7 @@ ActiveRecord::Schema.define(version: 20151123051407) do
     t.boolean  "color"
     t.integer  "game_id"
     t.integer  "user_id"
-    t.boolean  "captured",   default: true
+    t.boolean  "captured",   default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -6,7 +6,6 @@ AllCops:
     - '**/config.ru'
     - '**/Rakefile'
     - '**/rails_helper.rb'
-    - 'test/**/*'
     - '**/spec_helper.rb'
 
 Style/Documentation:
