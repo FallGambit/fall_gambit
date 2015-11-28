@@ -27,16 +27,16 @@ class Game < ActiveRecord::Base
     # coordinates as you normally might for a matrix)
     populate_white_pieces
     populate_black_pieces
-    white_user_id.nil? ? set_black_player_id : set_white_player_id
+    white_user_id.nil? ? set_pieces_black_user_id : set_pieces_white_user_id
   end
 
-  def set_black_player_id
+  def set_pieces_black_user_id
     pieces.where(color: false).each do |curr_piece|
       curr_piece.update_attributes(user_id: black_user_id)
     end
   end
 
-  def set_white_player_id
+  def set_pieces_white_user_id
     pieces.where(color: true).each do |curr_piece|
       curr_piece.update_attributes(user_id: white_user_id)
     end

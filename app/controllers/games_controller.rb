@@ -25,11 +25,12 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     if @game.white_user_id.nil? || @game.black_user_id.nil?
       update_player
-      redirect_to game_path(@game)
-    else
-      @game.errors.add(:base, "Game is full!")
-      handle_update_errors
+      if @game.errors.empty?
+        redirect_to game_path(@game)
+        return
+      end
     end
+    handle_update_errors
   end
 
   private
@@ -83,16 +84,18 @@ class GamesController < ApplicationController
   def update_player
     if @game.white_user_id.nil?
       @game.update_attributes(white_user_id: current_user.id)
-      @game.set_white_player_id
+      @game.set_pieces_white_user_id
     else
       @game.update_attributes(black_user_id: current_user.id)
-      @game.set_black_player_id
+      @game.set_pieces_black_user_id
     end
   end
 
   def handle_update_errors
-    return unless @game.errors.present?
-    flash[:alert] = @game.errors.full_messages.first
+    if @game.white_user_id? && @game.black_user_id?
+      @game.errors.add(:base, "Game is full!")
+    end
+    flash[:alert] = @game.errors.full_messages.last
     redirect_to root_path
   end
 end
