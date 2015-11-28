@@ -12,20 +12,18 @@ RSpec.describe GamesController, type: :controller do
   end
 
   describe "GET show" do
+    let(:game) { create(:game) }
     context 'with valid params' do
       it "assigns the requested game to @game" do
-        game = create(:game)
         get :show, id: game
         expect(assigns(:game)).to eq(game)
       end
       it "has a 200 status code for an existing game" do
-        desired_game = create(:game)
-        get :show, id: desired_game.id
+        get :show, id: game.id
         (expect(response.status).to eq(200))
       end
       it "renders the show view" do
-        desired_game = create(:game)
-        get :show, id: desired_game.id
+        get :show, id: game.id
         expect(response).to render_template("show")
       end
     end
