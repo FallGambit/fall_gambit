@@ -1,6 +1,12 @@
 class Piece < ActiveRecord::Base
   belongs_to :user
   belongs_to :game
+  validates :x_position, :presence => true,
+                         :numericality => { greater_than_or_equal_to: 0,
+                                            less_than_or_equal_to: 7 }
+  validates :y_position, :presence => true,
+                         :numericality => { greater_than_or_equal_to: 0,
+                                            less_than_or_equal_to: 7 }
 
   # Lines 7-17 all part of STI: to break it disable line 6 or give it
   # fake field name ~AMP
