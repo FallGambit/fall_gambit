@@ -7,6 +7,12 @@
     <p>
       The time is now: <%= Time.now %>
     </p>
-    <%= render "available_games" %>
+    <% if @games.present? %>
+      <%= render partial: 'available_games' %>
+    <% else %>
+      <h2>
+        No games available...
+      </h2>
+    <% end %>
   </div>
 </div>

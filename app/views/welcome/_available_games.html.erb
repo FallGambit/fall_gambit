@@ -1,7 +1,24 @@
-<% if @games.present? %>
-  <%= render partial: 'game', collection: @games  %>
-<% else %>
-  <h2>
-    No games available...
-  </h2>
+<h1>Available games:</h1>
+<% @games.each do |game|  %>
+  <div class="list-group text-left">
+    <a href="#" class="list-group-item">
+      <% if game.player_missing? %>
+        <h4 class="list-group-item-heading">
+          <%= game.game_name %>
+        </h4>
+        <p class="list-group-item-text">Click here to join the game!</p>
+      <% else %>
+        <h2>
+          Looks like there's no game available... Create a new one!
+        </h2>
+      <% end  %>
+    </a>
+  </div>
 <% end %>
+
+<!-- <div class="list-group">
+  <a href="#" class="list-group-item active">
+    <h4 class="list-group-item-heading">List group item heading</h4>
+    <p class="list-group-item-text">...</p>
+  </a>
+</div> -->
