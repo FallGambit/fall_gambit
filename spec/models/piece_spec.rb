@@ -3,6 +3,11 @@ require 'rails_helper'
 RSpec.describe Piece, type: :model do
   let(:game) { create(:game) }
   describe "instantiation" do
+    it "sets the white queen image correctly" do
+      expect(game.queens.where(color: true).first.image_name)
+        .to eq('white-queen.png')
+    end
+
     it "won't allow pieces to be created outside of board" do
       king = King.create(user_id: game.white_user_id, x_position: -1,
                          y_position: 4)
@@ -18,6 +23,7 @@ RSpec.describe Piece, type: :model do
       expect(knight).not_to be_valid
     end
   end
+
   describe "moving pieces" do
     it "won't allow pieces to be moved outside of board" do
       king = game.kings.first

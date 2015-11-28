@@ -37,40 +37,40 @@ RSpec.describe Game, type: :model do
           end
           expect(x_list.empty?).to eq true
         end
-      end
 
-      it "places the king in the correct square" do
-        x_y_coords = game.kings.where(color: true).first.x_y_coords
-        expect(x_y_coords).to eq([4, 0])
-      end
-
-      it "places the queen in the correct square" do
-        x_y_coords = game.queens.where(color: true).first.x_y_coords
-        expect(x_y_coords).to eq([3, 0])
-      end
-
-      it "places the knight in the correct square" do
-        x_y_coord_list = []
-        game.knights.where(color: true).each do |knight|
-          x_y_coord_list << knight.x_y_coords
+        it "places the king in the correct square" do
+          x_y_coords = game.kings.where(color: true).first.x_y_coords
+          expect(x_y_coords).to eq([4, 0])
         end
-        expect(x_y_coord_list).to contain_exactly([1, 0], [6, 0])
-      end
 
-      it "places the bishop in the correct square" do
-        x_y_coord_list = []
-        game.bishops.where(color: true).each do |bishop|
-          x_y_coord_list << bishop.x_y_coords
+        it "places the queen in the correct square" do
+          x_y_coords = game.queens.where(color: true).first.x_y_coords
+          expect(x_y_coords).to eq([3, 0])
         end
-        expect(x_y_coord_list).to contain_exactly([2, 0], [5, 0])
-      end
 
-      it "places the rook in the correct square" do
-        x_y_coord_list = []
-        game.rooks.where(color: true).each do |rook|
-          x_y_coord_list << rook.x_y_coords
+        it "places the knight in the correct square" do
+          x_y_coord_list = []
+          game.knights.where(color: true).each do |knight|
+            x_y_coord_list << knight.x_y_coords
+          end
+          expect(x_y_coord_list).to contain_exactly([1, 0], [6, 0])
         end
-        expect(x_y_coord_list).to contain_exactly([0, 0], [7, 0])
+
+        it "places the bishop in the correct square" do
+          x_y_coord_list = []
+          game.bishops.where(color: true).each do |bishop|
+            x_y_coord_list << bishop.x_y_coords
+          end
+          expect(x_y_coord_list).to contain_exactly([2, 0], [5, 0])
+        end
+
+        it "places the rook in the correct square" do
+          x_y_coord_list = []
+          game.rooks.where(color: true).each do |rook|
+            x_y_coord_list << rook.x_y_coords
+          end
+          expect(x_y_coord_list).to contain_exactly([0, 0], [7, 0])
+        end
       end
       # these tests assume no flipping of board perspective, black is on top
       context "while placing black pieces" do
