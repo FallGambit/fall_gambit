@@ -12,7 +12,7 @@ RSpec.describe Bishop, type: :model do
         rpawn = bishop_game.pawns.where(x_position: 1, y_position: 1).first
         bishop = bishop_game.bishops.where(x_position: 2, y_position: 0).first
         # is obstructed should return false for these
-        # may need to change this based on how destination 
+        # may need to change this based on how destination
         # position is implemneted...
         expect(bishop.valid_move?(3, 1)).to be true
         expect(bishop.valid_move?(1, 1)).to be true
