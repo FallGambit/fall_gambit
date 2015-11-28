@@ -26,16 +26,38 @@ class Piece < ActiveRecord::Base
   def is_obstructed?(x, y)
     dest_x = x
     dest_y = y
-    # do I even need start_x/y or can I use x/y_position directly?
-    start_x = x_position 
-    start_y = y_position
-    delta_x = dest_x - start_x
-    delta_y = dest_y - start_y
-    game = game_id
+    state_x = x_position 
+    state_y = y_position
+    delta_x = dest_x - state_x
+    delta_y = dest_y - state_y
+    game = Game.find(game_id)
 
-    if delta_y == 0 && delta_x > 0
-   # db search of pieces with x_position between start_x and dest_x
-      game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", y_position, start_x, dest_x).any?
+    if delta_y == 0 && delta_x > 0 && delta_x.abs > 1
+      # horizontal move where start is < destination and distance > 1
+      game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (state_x+1), (dest_x-1)).any?
+    elsif delta_y == 0 && delta_x < 0 && delta_x.abs > 1
+      # horizontal move where start is > destination and distance > 1
+      game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (dest_x+1), (state_x-1)).any?
+    elsif delta_y == 0 && delta_x.abs <= 1
+      # horizontal move to next square
+      false
+    elsif delta_x == 0 && delta_y > 0 && delta_y.abs > 1
+      # vertical move where start is < destination and distance > 1
+      game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (state_y+1), (dest_y-1)).any?
+    elsif delta_x == 0 && delta_y < 0 && delta_y.abs > 1
+      # vertical move where start is > destination and distance > 1
+      game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_x, (dest_y+1), (state_y-1)).any?
+    elsif delta_x == 0 && delta_y.abs <= 1
+      # vertical move to next square
+      false
+    elsif delta_x == delta_y
+      delta_x.abs.times do 
+        
+      end
+      
+      
+      
+      
 
 
     # Should I use the "Case" syntax here to define the different directional options?
