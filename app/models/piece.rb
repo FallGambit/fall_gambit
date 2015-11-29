@@ -52,7 +52,7 @@ class Piece < ActiveRecord::Base
       return game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (state_y + 1), (dest_y - 1)).any?
     elsif delta_x == 0 && delta_y < 0 && delta_y.abs > 1
       # vertical move where start is > destination and distance > 1
-      return game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_x, (dest_y + 1), (state_y - 1)).any?
+      return game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (dest_y + 1), (state_y - 1)).any?
     elsif delta_x == 0 && delta_y.abs <= 1
       # vertical move to next square or delta 0
       return false
@@ -98,10 +98,12 @@ class Piece < ActiveRecord::Base
       return false
     elsif delta_x != 0 && delta_y != 0 && delta_x.abs != delta_y.abs
       # this handles invalid input or invalid moves.
-      return "Invalid input or invalid move."
-      # Should this raise an exception? rescue an exception?
-      # should it return true or false?
-      # if an error, is it a Standard Error? An Argument Error?
+      # raise RuntimeError, "Invalid input or invalid move."
+      # raise
+      # self.errors.invalid?
+      # self.errors.add(:is_obstructed, "is invalid")
+      # self.generate_message(attribute, type = :invalid, options = {})
+      self.errors.default_error_messages()
     end
   end
 end
