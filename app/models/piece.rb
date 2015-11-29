@@ -34,39 +34,68 @@ class Piece < ActiveRecord::Base
 
     if delta_y == 0 && delta_x > 0 && delta_x.abs > 1
       # horizontal move where start is < destination and distance > 1
-      game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (state_x+1), (dest_x-1)).any?
+      return game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (state_x+1), (dest_x-1)).any?
     elsif delta_y == 0 && delta_x < 0 && delta_x.abs > 1
       # horizontal move where start is > destination and distance > 1
-      game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (dest_x+1), (state_x-1)).any?
+      return game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (dest_x+1), (state_x-1)).any?
     elsif delta_y == 0 && delta_x.abs <= 1
-      # horizontal move to next square
-      false
+      # horizontal move to next square or delta 0
+      return false
     elsif delta_x == 0 && delta_y > 0 && delta_y.abs > 1
       # vertical move where start is < destination and distance > 1
-      game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (state_y+1), (dest_y-1)).any?
+      return game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (state_y+1), (dest_y-1)).any?
     elsif delta_x == 0 && delta_y < 0 && delta_y.abs > 1
       # vertical move where start is > destination and distance > 1
-      game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_x, (dest_y+1), (state_y-1)).any?
+      return game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_x, (dest_y+1), (state_y-1)).any?
     elsif delta_x == 0 && delta_y.abs <= 1
-      # vertical move to next square
-      false
-    elsif delta_x == delta_y
-      delta_x.abs.times do 
-        
+      # vertical move to next square or delta 0
+      return false
+    elsif delta_x == delta_y && delta_x > 0
+      # SE move, positive X, positive Y diagonal
+      steps = delta_x - 1
+      while steps != 0 do
+        if game.pieces.where("x_position = ? AND y_position = ?", (state_x + steps), (state_y + steps)).any?
+          return true
+        end
+        steps -= 1 
       end
-      
-      
-      
-      
-
-
-    # Should I use the "Case" syntax here to define the different directional options?
-      # horizontal only delta_y == 0
-      # vertical only delta_x == 0
-      # diagonal delta_x == delta_y
-      # invalid is when none of the above evaluates as true
-
-    # Is there a way to write this so that it works in either direction with a single method?
+      return false
+    elsif delta_x == delta_y && delta_x < 0
+      # NW move, negative X negative Y diagonal
+      steps = delta_x.abs - 1
+      while steps != 0 do
+        if game.pieces.where("x_position = ? AND y_position = ?", (state_x - steps), (state_y - steps)).any?
+          return true
+        end
+        steps -= 1 
+      end
+      return false
+    elsif delta_x > 0 && delta_y < 0 && delta_x == delta_y.abs
+      # NE move, positive X, negative Y diagonal
+      steps = delta_x - 1
+      while steps != 0 do
+        if game.pieces.where("x_position = ? AND y_position = ?", (state_x + steps), (state_y - steps)).any?
+          return true
+        end
+        steps -= 1 
+      end
+      return false
+    elsif delta_x < 0 && delta_y > 0 && delta_x.abs == delta_y
+      # SW move, negative X, positive Y diagonal
+      steps = delta_y - 1
+      while steps != 0 do
+        if game.pieces.where("x_position = ? AND y_position = ?", (state_x - steps), (state_y + steps)).any?
+          return true
+        end
+        steps -= 1 
+      end
+      return false
+    elsif delta_x != 0 && delta_y != 0 && delta_x.abs != delta_y.abs
+      # this handles invalid input or invalid moves.
+      return "Invalid input or invalid move."
+      # Should this raise an exception? rescue an exception? 
+      # should it return true or false?
+      # if an error, is it a Standard Error? An Argument Error?
+    end
   end
-
 end
