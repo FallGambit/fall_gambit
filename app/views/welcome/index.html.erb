@@ -4,15 +4,13 @@
 <div class="col-md-6 col-md-offset-3 text-center">
     <h3>Future Home Of the Fall Gambit Chess App!</h3>
     <br />
-    <p>
-      The time is now: <%= Time.now %>
-    </p>
     <% if @games.present? %>
       <%= render partial: 'available_games' %>
     <% else %>
       <h2>
         No games available...
       </h2>
+      <%= link_to 'Create Game', new_game_path, class: 'btn btn-success btn-large' %>
     <% end %>
   </div>
 </div>

@@ -1,6 +1,7 @@
 class Piece < ActiveRecord::Base
   belongs_to :user
   belongs_to :game
+  before_validation :set_image
 
   # Lines 7-17 all part of STI: to break it disable line 6 or give it
   # fake field name ~AMP
@@ -23,13 +24,13 @@ class Piece < ActiveRecord::Base
     x_y_coordinates
   end
 
-  def is_obstructed?
-    # test for pieces adjacent to current position
-    # Horizontal obstructions
-    # Vertical obstructions
-    # Diagonal Obstructions
-    # Invalid input (none of the above) - doesn't makes
-    # sense: raise an error message
+  def is_obstructed?(x, y)
+    false
+  end
+
+  def set_image
+    color ? color_string = "white" : color_string = "black"
+    self.image_name ||= "#{color_string}-#{piece_type.downcase}.png"
   end
 
   def move_to!(new_x, new_y)

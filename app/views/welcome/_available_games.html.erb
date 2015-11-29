@@ -1,17 +1,18 @@
 <h1>Available games:</h1>
 <% @games.each do |game|  %>
-  <div class="list-group text-left">
-    <a href="#" class="list-group-item">
+  <div class="list-group">
+    <div class="list-group-item">
       <% if game.player_missing? %>
-        <h4 class="list-group-item-heading">
+        <h4>
           <%= game.game_name %>
         </h4>
-        <p class="list-group-item-text">Click here to join the game!</p>
+        <%= link_to 'Join Game', game_path(game, id: game.id), method: :patch, :class => 'btn btn-success btn-large join-game-link' %>
       <% else %>
         <h2>
-          Looks like there's no game available... Create a new one!
+          No game available...
         </h2>
+        <%= link_to 'Create Game', new_game_path, class: 'btn btn-success btn-large' %>
       <% end  %>
-    </a>
+    </div>
   </div>
 <% end %>

@@ -1,8 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Piece, type: :model do
-  it "has valid factory" do
-    expect(build(:piece)).to be_valid
+  let(:game) { create(:game) }
+  describe "instantiation" do
+    it "sets the white queen image correctly" do
+      expect(game.queens.where(color: true).first.image_name)
+        .to eq('white-queen.png')
+    end
   end
   describe "#move_to!" do
     let(:king) { create(:king, x_position: 1, y_position: 1) }

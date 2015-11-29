@@ -23,6 +23,11 @@ You can configure the `.rubocop.yml` file as you prefer.
 To know more go to the [RuboCop GitHub page](https://github.com/bbatsov/rubocop)
 and take a look at [The Ruby Style Guide](https://github.com/bbatsov/ruby-style-guide)
 
+Additional resources:
+* [Getting Started](http://joanswork.com/rubocop-rails-getting-started/)
+* [Fixing Rubocop errors](http://jasonnoble.org/2014/03/fixing-rubocop-errors.html)
+* [Integrate Rubocop in your Workflow](https://intercityup.com/blog/integrate-rubocop-in-your-workflow.html)
+
 ***
 
 In this section we should place conventions for USE of STI subclasses so that multiple coders will invoke method calls using the same syntax and avoid having to back out the STI.  
