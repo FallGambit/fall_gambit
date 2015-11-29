@@ -1,12 +1,13 @@
 <% if @games.present? %>
   <% @games.each do |game| %>
-    <% if game.white_user.nil? || game.black_user.nil? %>
+    <% if game.white_user_id.nil? || game.black_user_id.nil? %>
       <h2>
+        <%= link_to 'Join Game', game_path(game, id: game.id), method: :patch, :class => 'btn btn-success btn-large join-game-link' %>
         <%= game.game_name %>
       </h2>
     <% else %>
       <h2>
-        Looks like there's no game available... Create a new one!
+        Looks like there's no open game available... Create a new one!
       </h2>
     <% end  %>
   <% end %>
@@ -14,4 +15,5 @@
   <h2>
     No games available...
   </h2>
+  <%= link_to 'Create Game', new_game_path, class: 'btn btn-success btn-large' %>
 <% end %>

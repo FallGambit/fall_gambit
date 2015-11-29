@@ -1,6 +1,23 @@
 require 'rails_helper'
 
 RSpec.describe Piece, type: :model do
+
+# Jeff this is what you had I tweaked it a little so as not to muck with my tests ~AMP
+#   let(:game) { create(:game) }
+#   describe "instantiation" do
+#     it "sets the white queen image correctly" do
+#       expect(game.queens.where(color: true).first.image_name)
+#         .to eq('white-queen.png')
+#     end
+
+  describe "instantiation" do
+    let(:game) { create(:game) }
+    it "sets the white queen image correctly" do
+      expect(game.queens.where(color: true).first.image_name)
+        .to eq('white-queen.png')
+    end
+  end # You only ended your assertion, you didn't end your test so I added an end ~AMP
+
   describe 'is_obstructed?' do
     before :all do
       # @user = FactoryGirl.create(:user)

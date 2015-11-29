@@ -1,6 +1,7 @@
 class Piece < ActiveRecord::Base
   belongs_to :user
   belongs_to :game
+  after_initialize :set_image
 
   # Lines 7-17 all part of STI: to break it disable line 6 or give it
   # fake field name ~AMP
@@ -21,6 +22,11 @@ class Piece < ActiveRecord::Base
     x_y_coordinates << x_position
     x_y_coordinates << y_position
     x_y_coordinates
+  end
+
+  def set_image
+    color ? color_string = "white" : color_string = "black"
+    self.image_name ||= "#{color_string}-#{piece_type.downcase}.png"
   end
 
   def is_obstructed?(x, y)

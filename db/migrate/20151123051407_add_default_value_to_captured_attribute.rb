@@ -1,6 +1,6 @@
 class AddDefaultValueToCapturedAttribute < ActiveRecord::Migration
   def up
-    change_column  :pieces, :captured, :boolean, default: true
+    change_column  :pieces, :captured, :boolean, default: false
   end
 
   def down
