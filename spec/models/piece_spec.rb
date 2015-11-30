@@ -2,21 +2,58 @@ require 'rails_helper'
 
 RSpec.describe Piece, type: :model do
 
-# Jeff this is what you had I tweaked it a little so as not to muck with my tests ~AMP
-#   let(:game) { create(:game) }
-#   describe "instantiation" do
-#     it "sets the white queen image correctly" do
-#       expect(game.queens.where(color: true).first.image_name)
-#         .to eq('white-queen.png')
-#     end
-
   describe "instantiation" do
     let(:game) { create(:game) }
+
     it "sets the white queen image correctly" do
       expect(game.queens.where(color: true).first.image_name)
         .to eq('white-queen.png')
     end
-  end # You only ended your assertion, you didn't end your test so I added an end ~AMP
+
+    it "won't allow pieces to be created outside of board" do
+      king = King.create(user_id: game.white_user_id, x_position: -1,
+                         y_position: 4)
+      queen = Queen.create(user_id: game.black_user_id, x_position: 4,
+                           y_position: 9)
+      pawn = Pawn.create(user_id: game.white_user_id, x_position: 9,
+                         y_position: 9)
+      knight = Knight.create(user_id: game.black_user_id, x_position: -1,
+                             y_position: -1)
+      expect(king).not_to be_valid
+      expect(queen).not_to be_valid
+      expect(pawn).not_to be_valid
+      expect(knight).not_to be_valid
+    end
+  end
+
+  describe "moving pieces" do
+    let(:game) { create(:game) }
+
+    it "won't allow pieces to be moved outside of board" do
+      king = game.kings.first
+      expect(king).to be_valid
+      king.update_attributes(x_position: -1)
+      expect(king).not_to be_valid
+      king.update_attributes(x_position: 11)
+      expect(king).not_to be_valid
+      king.errors.clear
+      king.update_attributes(y_position: -1)
+      expect(king).not_to be_valid
+      king.errors.clear
+      king.update_attributes(y_position: 11)
+      expect(king).not_to be_valid
+      king.errors.clear
+      king.update_attributes(x_position: -1, y_position: -1)
+      expect(king).not_to be_valid
+      king.errors.clear
+      king.update_attributes(x_position: 11, y_position: 11)
+      expect(king).not_to be_valid
+      king.errors.clear
+      king.update_attributes(x_position: -1, y_position: 11)
+      expect(king).not_to be_valid
+      king.errors.clear
+    end
+  end
 
   describe 'is_obstructed?' do
     before :all do
@@ -128,7 +165,7 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will be false with clear path if destination contains piece' do
-      # this also tests single space movement evaluation by method
+      # this also tests single space movement graceful handling by method
       expect(@white_queen.is_obstructed?(1, 1)).to be_falsey
     end
 
@@ -136,4 +173,5 @@ RSpec.describe Piece, type: :model do
     #   expect(@white_queen.is_obstructed?(4,2)).to be_truthy
     # end # this will probably be covered by is_valid
   end
+
 end
