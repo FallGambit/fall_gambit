@@ -103,7 +103,9 @@ class Piece < ActiveRecord::Base
       # self.errors.invalid?
       # self.errors.add(:is_obstructed, "is invalid")
       # self.generate_message(attribute, type = :invalid, options = {})
-      self.errors.default_error_messages()
+      # self.errors.default_error_messages()
+      # self.valid? = false
+      return "Invalid input or invalid move."
     end
   end
 end

@@ -124,7 +124,7 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will raise an Error Message with invalid input' do
-      expect(@white_queen.is_obstructed?(3, 4)).to raise_exception
+      expect(@white_queen.is_obstructed?(3, 4)).to eq("Invalid input or invalid move.")
     end
 
     it 'will be false with clear path if destination contains piece' do
