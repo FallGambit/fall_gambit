@@ -1,7 +1,15 @@
 class Piece < ActiveRecord::Base
   belongs_to :user
   belongs_to :game
-  before_validation :set_image
+  validates :x_position, :presence => true,
+                         :numericality => { greater_than_or_equal_to: 0,
+                                            less_than_or_equal_to: 7 },
+                         allow_nil: true
+  validates :y_position, :presence => true,
+                         :numericality => { greater_than_or_equal_to: 0,
+                                            less_than_or_equal_to: 7 },
+                         allow_nil: true
+  after_initialize :set_image
 
   # Lines 7-17 all part of STI: to break it disable line 6 or give it
   # fake field name ~AMP
