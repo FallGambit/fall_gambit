@@ -36,13 +36,17 @@ RSpec.describe Bishop, type: :model do
     end
     context "invalid moves" do
       it "invalidates moves" do
-        # try just to test valid_move? and not is_obstructed
         bishop_game = create(:game)
         bishop = bishop_game.bishops.where(x_position: 2, y_position: 0).first
+        # can't move left, right, or up from starting position
         expect(bishop.valid_move?(1, 0)).to be false
         expect(bishop.valid_move?(3, 0)).to be false
         expect(bishop.valid_move?(2, 1)).to be false
+        # one check for is_obstructed
+        # (uncomment when is_obstructed works as intended)
+        # expect(bishop.valid_move?(4, 2).to be false
         bishop.update_attributes(y_position: 4)
+        # can't move down, right, up in middle of board
         expect(bishop.valid_move?(2, 2)).to be false
         expect(bishop.valid_move?(4, 4)).to be false
         expect(bishop.valid_move?(2, 6)).to be false
