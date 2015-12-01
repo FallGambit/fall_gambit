@@ -14,6 +14,8 @@ RSpec.describe Bishop, type: :model do
         # is obstructed should return false for these
         # may need to change this based on how destination
         # position is implemneted...
+        # this will be invalidated by the move_to method later on
+        # move diagonally one space (left and right)
         expect(bishop.valid_move?(3, 1)).to be true
         expect(bishop.valid_move?(1, 1)).to be true
         # move pawns out of the way
