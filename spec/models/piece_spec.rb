@@ -53,6 +53,8 @@ RSpec.describe Piece, type: :model do
   describe "#move_to!" do
     context "when the tile is empty" do
       it "moves to the coordinates" do
+        board = create(:game)
+        board.pieces.delete
         king = game.kings.first
         king.update_attributes(x_position: 1, y_position: 1)
         king.move_to!(2, 2)
@@ -62,6 +64,8 @@ RSpec.describe Piece, type: :model do
     end
     context "when the tile is not empty" do
       it "captures the opponent piece and moves to the new coordinates" do
+        board = create(:game)
+        board.pieces.delete
         white_king = game.kings.first
         white_king.update_attributes(x_position: 1,
                                      y_position: 1,
@@ -84,6 +88,8 @@ RSpec.describe Piece, type: :model do
     end
     context "when the pieces are of the same color" do
       it "doesn't capture a same color piece" do
+        board = create(:game)
+        board.pieces.delete
         white_king = game.kings.first
         white_king.update_attributes(x_position: 1,
                                      y_position: 1,
