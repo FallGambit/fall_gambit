@@ -51,18 +51,26 @@ RSpec.describe Piece, type: :model do
     end
   end
   describe "#move_to!" do
-    let(:king) { create(:king, x_position: 1, y_position: 1) }
     context "when the tile is empty" do
       it "moves to the coordinates" do
+        king = game.kings.first
+        king.update_attributes(x_position: 1, y_position: 1)
         king.move_to!(2, 2)
         expect(king.x_position).to eq(2)
         expect(king.y_position).to eq(2)
       end
     end
     context "when the tile is not empty" do
-      let(:white_king) { create(:king, color: true) }
-      let!(:black_knight) { create(:knight, color: false) }
       it "captures the opponent piece and moves to the new coordinates" do
+        white_king = game.kings.first
+        white_king.update_attributes(x_position: 1,
+                                     y_position: 1,
+                                     color: true)
+        black_knight = game.knights.first
+        black_knight.update_attributes(x_position: 2,
+                                       y_position: 2,
+                                       color: false)
+
         white_king.move_to!(2, 2)
 
         expect(white_king.x_position).to eq(2)
@@ -75,10 +83,17 @@ RSpec.describe Piece, type: :model do
       end
     end
     context "when the pieces are of the same color" do
-      let(:white_king) { create(:king, color: true) }
-      let!(:white_knight) { create(:knight, color: true) }
       it "doesn't capture a same color piece" do
-        expect { white_king.move_to!(2, 2) }.to raise_error("Invalid move!")
+        white_king = game.kings.first
+        white_king.update_attributes(x_position: 1,
+                                     y_position: 1,
+                                     color: false)
+        black_knight = game.knights.first
+        black_knight.update_attributes(x_position: 2,
+                                       y_position: 2,
+                                       color: false)
+        expect { white_king.move_to!(2, 2) }
+          .to raise_error(/Invalid/)
       end
     end
   end

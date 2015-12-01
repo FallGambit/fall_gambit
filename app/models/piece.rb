@@ -42,14 +42,14 @@ class Piece < ActiveRecord::Base
   end
 
   def move_to!(new_x, new_y)
-    @target = Piece.where(:x_position => new_x).where(:y_position => new_y).take
+    @target = game.pieces.where(:x_position => new_x, :y_position => new_y).take
     if @target.nil?
       update_attributes(:x_position => new_x, :y_position => new_y)
     else
       if color != @target.color
         capture(new_x, new_y)
       else
-        fail "Invalid move!"
+        fail "Invalid move: you can't capture one of your pieces"
       end
     end
   end
