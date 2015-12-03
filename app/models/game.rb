@@ -42,6 +42,10 @@ class Game < ActiveRecord::Base
     end
   end
 
+  def player_missing?
+    white_user.nil? || black_user.nil?
+  end
+
   private
 
   def populate_white_pieces
