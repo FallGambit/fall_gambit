@@ -112,6 +112,46 @@ RSpec.describe Piece, type: :model do
       )
     end
 
+    it 'will raise an Error Message with invalid input' do
+      expect(@white_queen.is_obstructed?(3, 4)).to eq("Invalid input or invalid move.")
+    end
+
+    it 'will be false when horizontal axis path is clear' do
+      expect(@white_queen.is_obstructed?(3, 2)).to eq false
+    end
+
+    it 'will be false when horiz axis path clear neg direction' do
+      expect(@black_queen.is_obstructed?(1, 4)).to eq false
+    end
+
+    it 'will be false when moves to next square in horiz axis' do
+      expect(@black_queen.is_obstructed?(7, 4)).to eq false
+    end
+
+    it 'will be true when there is a block in horizontal axis' do
+      expect(@white_queen.is_obstructed?(5, 2)).to be_truthy
+    end
+
+    it 'will be true when there is a block in vertical axis' do
+      expect(@white_queen.is_obstructed?(0, 0)).to be_truthy
+    end
+
+    it 'will be true with block in vertical axis, neg direction' do
+      expect(@white_rook.is_obstructed?(3, 2)).to be_truthy
+    end
+
+    it 'will be false when vertical axis path is clear' do
+      expect(@white_queen.is_obstructed?(0, 5)).to be_falsey
+    end
+
+    it 'will be false when vertical axis path clear neg direction' do
+      expect(@black_queen.is_obstructed?(6, 1)).to eq false
+    end
+
+    it 'will be false when moves to next square in vert axis' do
+      expect(@white_queen.is_obstructed?(0, 3)).to eq false
+    end
+
     it 'will be false when SE diag path is clear' do
       expect(@white_queen.is_obstructed?(2, 4)).to be_falsey
     end
@@ -128,44 +168,12 @@ RSpec.describe Piece, type: :model do
       expect(@black_queen.is_obstructed?(3, 1)).to be_truthy
     end
 
-    it 'will be false when horizontal axis path is clear' do
-      expect(@white_queen.is_obstructed?(3, 2)).to be_falsey
-    end
-
-    it 'will be false when horiz axis path clear neg direction' do
-      expect(@black_queen.is_obstructed?(1, 4)).to eq false
-    end
-
-    it 'will be false when vertical axis path is clear' do
-      expect(@white_queen.is_obstructed?(0, 5)).to be_falsey
-    end
-
-    it 'will be false when vertical axis path clear neg direction' do
-      expect(@black_queen.is_obstructed?(6, 1)).to eq false
-    end
-
-    it 'will be true when there is a block in horizontal axis' do
-      expect(@white_queen.is_obstructed?(5, 2)).to be_truthy
-    end
-
-    it 'will be true when there is a block in vertical axis' do
-      expect(@white_queen.is_obstructed?(0, 0)).to be_truthy
-    end
-
-    it 'will be true with block in vertical axis, neg direction' do
-      expect(@white_rook.is_obstructed?(3, 2)).to be_truthy
-    end
-
     it 'ewill be true when there is a block in the diagonal' do
       expect(@white_queen.is_obstructed?(2, 0)).to be_truthy
     end
 
-    it 'will raise an Error Message with invalid input' do
-      expect(@white_queen.is_obstructed?(3, 4)).to eq("Invalid input or invalid move.")
-    end
-
     it 'will be false with clear path if destination contains piece' do
-      # this also tests single space movement graceful handling by method
+      # this also tests single space movement graceful handling by diag method
       expect(@white_queen.is_obstructed?(1, 1)).to be_falsey
     end
 
