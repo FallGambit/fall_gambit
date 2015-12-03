@@ -59,21 +59,11 @@ class Piece < ActiveRecord::Base
     game.pieces.where("x_position = ? AND y_position = ?", x, y).any?
   end
 
-  # def row_occupied?(y, x1, x2)
-  #   game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", y, x1, x2).any?
-  # end
-
-  # def col_occupied?(x, y1, y2)
-  #   game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", x, y1, y2).any?
-  # end
-
   def range_occupied?(x1, x2, y1, y2)
     game.pieces.where("x_position BETWEEN ? AND ? AND y_position BETWEEN ? AND ?", x1, x2, y1, y2).any?
   end
 
   def is_obstructed?(dest_x, dest_y)
-    # dest_x = x
-    # dest_y = y
     state_x = x_position
     state_y = y_position
     delta_x = dest_x - state_x
@@ -85,22 +75,18 @@ class Piece < ActiveRecord::Base
       fail "Invalid input or invalid move."
     elsif delta_y == 0 && delta_x > 0 && delta_x.abs > 1
       # horizontal move where start is < destination and distance > 1
-      # return self.row_occupied?(state_y, (state_x + 1), (dest_x - 1))
       return self.range_occupied?((state_x + 1), (dest_x - 1), state_y, state_y)
     elsif delta_y == 0 && delta_x < 0 && delta_x.abs > 1
       # horizontal move where start is > destination and distance > 1
-      # return self.row_occupied?(state_y, (dest_x + 1), (state_x - 1))
       return self.range_occupied?((dest_x + 1), (state_x - 1), state_y, state_y)
     elsif delta_y == 0 && delta_x.abs <= 1
       # horizontal move to next square or delta 0
       return false
     elsif delta_x == 0 && delta_y > 0 && delta_y.abs > 1
       # vertical move where start is < destination and distance > 1
-      # return self.col_occupied?(state_x, (state_y + 1), (dest_y - 1))
       return self.range_occupied?(state_x, state_x, (state_y + 1), (dest_y - 1))
     elsif delta_x == 0 && delta_y < 0 && delta_y.abs > 1
       # vertical move where start is > destination and distance > 1
-      # return self.col_occupied?(state_x, (dest_y + 1), (state_y - 1))
       return self.range_occupied?(state_x, state_x, (dest_y + 1), (state_y - 1))
     elsif delta_x == 0 && delta_y.abs <= 1
       # vertical move to next square or delta 0
