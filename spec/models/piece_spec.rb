@@ -86,8 +86,6 @@ RSpec.describe Piece, type: :model do
         board.pieces.delete_all
         white_king = King.create(x_position: 1, y_position: 1,
                                  game_id: board.id, color: true)
-        black_knight = Knight.create(x_position: 3, y_position: 3,
-                                     game_id: board.id, color: false)
 
         expect { white_king.move_to!(3, 3) }
           .to raise_error(/Invalid/)
