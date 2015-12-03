@@ -57,8 +57,6 @@ RSpec.describe Piece, type: :model do
 
   describe 'is_obstructed?' do
     before :all do
-      # @user = FactoryGirl.create(:user)
-      # sign_in @user
       @game = FactoryGirl.create(:game)
       @game.pieces.delete
       @white_queen = Queen.create(

@@ -82,44 +82,36 @@ class Piece < ActiveRecord::Base
       # SE move, positive X, positive Y diagonal
       steps = delta_x - 1
       steps.times do
-      # while steps != 0
         if self.square_occupied?((state_x + steps), (state_y + steps))
           return true
         end
-        # steps -= 1
       end
       return false
     elsif delta_x == delta_y && delta_x < 0
       # NW move, negative X negative Y diagonal
       steps = delta_x.abs - 1
-      # while steps != 0
       steps.times do
         if self.square_occupied?((state_x - steps), (state_y - steps))
           return true
         end
-        # steps -= 1
       end
       return false
     elsif delta_x > 0 && delta_y < 0 && delta_x == delta_y.abs
       # NE move, positive X, negative Y diagonal
       steps = delta_x - 1
-      # while steps != 0
       steps.times do
         if self.square_occupied?((state_x + steps), (state_y - steps))
           return true
         end
-        # steps -= 1
       end
       return false
     elsif delta_x < 0 && delta_y > 0 && delta_x.abs == delta_y
       # SW move, negative X, positive Y diagonal
       steps = delta_y - 1
-      steps.times do 
-      # while steps != 0
+      steps.times do
         if self.square_occupied?((state_x - steps), (state_y + steps))
           return true
         end
-        # steps -= 1
       end
       return false
     end
