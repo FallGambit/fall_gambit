@@ -37,6 +37,24 @@ class Piece < ActiveRecord::Base
     self.image_name ||= "#{color_string}-#{piece_type.downcase}.png"
   end
 
+  def move_to!(x, y)
+    @target = game.pieces.where(:x_position => x, :y_position => y).take
+    fail "Invalid move: [error to be defined]" unless valid_move?(x, y)
+    if @target.nil?
+      update_attributes(:x_position => x, :y_position => y)
+    else
+      fail "Invalid move: same color piece" if color == @target.color
+      capture(x, y)
+    end
+  end
+
+  def capture(x, y)
+    update_attributes(:x_position => x, :y_position => y)
+    @target.update_attributes(:captured => true,
+                              :x_position => nil,
+                              :y_position => nil)
+  end
+
   def square_occupied?(x, y)
     game.pieces.where("x_position = ? AND y_position = ?", x, y).any?
   end
@@ -59,7 +77,7 @@ class Piece < ActiveRecord::Base
 
     if delta_x != 0 && delta_y != 0 && delta_x.abs != delta_y.abs
       # this handles invalid input or invalid moves.
-      return "Invalid input or invalid move."
+      fail "Invalid input or invalid move."
     elsif delta_y == 0 && delta_x > 0 && delta_x.abs > 1
       # horizontal move where start is < destination and distance > 1
       return self.row_occupied?(state_y, (state_x + 1), (dest_x - 1))

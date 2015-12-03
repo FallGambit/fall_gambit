@@ -55,6 +55,61 @@ RSpec.describe Piece, type: :model do
     end
   end
 
+  describe "#move_to!" do
+    context "when the tile is empty" do
+      it "moves to the coordinates" do
+        board = create(:game)
+        board.pieces.delete_all
+        king = King.create(x_position: 1, y_position: 1, game_id: board.id)
+        king.move_to!(2, 2)
+        expect(king.x_position).to eq(2)
+        expect(king.y_position).to eq(2)
+      end
+    end
+    context "when the tile is not empty" do
+      it "captures the opponent piece and moves to the new coordinates" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_king = King.create(x_position: 1, y_position: 1,
+                                 game_id: board.id, color: true)
+        black_knight = Knight.create(x_position: 2, y_position: 2,
+                                     game_id: board.id, color: false)
+
+        white_king.move_to!(2, 2)
+        expect(white_king.x_position).to eq(2)
+        expect(white_king.y_position).to eq(2)
+        black_knight.reload
+        expect(black_knight.captured).to be(true)
+        expect(black_knight.x_position).to be_nil
+        expect(black_knight.y_position).to be_nil
+      end
+    end
+    context "tries to capture a piece with an invalid move" do
+      it "king doesn't capture a piece two spaces away" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_king = King.create(x_position: 1, y_position: 1,
+                                 game_id: board.id, color: true)
+
+        expect { white_king.move_to!(3, 3) }
+          .to raise_error(/Invalid/)
+      end
+    end
+    context "when the pieces are of the same color" do
+      it "doesn't capture a same color piece" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_king = King.create(x_position: 1, y_position: 1,
+                                 game_id: board.id, color: true)
+        white_knight = Knight.create(x_position: 2, y_position: 2,
+                                     game_id: board.id, color: true)
+
+        expect { white_king.move_to!(2, 2) }
+          .to raise_error(/Invalid/)
+      end
+    end
+  end
+
   describe 'is_obstructed?' do
     before :all do
       @game = FactoryGirl.create(:game)
@@ -111,7 +166,7 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will raise an Error Message with invalid input' do
-      expect(@white_queen.is_obstructed?(3, 4)).to eq("Invalid input or invalid move.")
+      expect{@white_queen.is_obstructed?(3, 4)}.to raise_error("Invalid input or invalid move.")
     end
 
     it 'will be false when horizontal axis path is clear' do
