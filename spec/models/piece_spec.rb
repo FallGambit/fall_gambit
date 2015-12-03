@@ -129,19 +129,19 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will be true when there is a block in horizontal axis' do
-      expect(@white_queen.is_obstructed?(5, 2)).to be_truthy
+      expect(@white_queen.is_obstructed?(5, 2)).to eq true
     end
 
     it 'will be true when there is a block in vertical axis' do
-      expect(@white_queen.is_obstructed?(0, 0)).to be_truthy
+      expect(@white_queen.is_obstructed?(0, 0)).to eq true
     end
 
     it 'will be true with block in vertical axis, neg direction' do
-      expect(@white_rook.is_obstructed?(3, 2)).to be_truthy
+      expect(@white_rook.is_obstructed?(3, 2)).to eq true
     end
 
     it 'will be false when vertical axis path is clear' do
-      expect(@white_queen.is_obstructed?(0, 5)).to be_falsey
+      expect(@white_queen.is_obstructed?(0, 5)).to eq false
     end
 
     it 'will be false when vertical axis path clear neg direction' do
@@ -153,7 +153,7 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will be false when SE diag path is clear' do
-      expect(@white_queen.is_obstructed?(2, 4)).to be_falsey
+      expect(@white_queen.is_obstructed?(2, 4)).to eq false
     end
 
     it 'will be true when SW diag path has block, neg direction' do
@@ -165,21 +165,16 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will be true when NW diag path blocked' do
-      expect(@black_queen.is_obstructed?(3, 1)).to be_truthy
+      expect(@black_queen.is_obstructed?(3, 1)).to eq true
     end
 
     it 'ewill be true when there is a block in the diagonal' do
-      expect(@white_queen.is_obstructed?(2, 0)).to be_truthy
+      expect(@white_queen.is_obstructed?(2, 0)).to eq true
     end
 
     it 'will be false with clear path if destination contains piece' do
       # this also tests single space movement graceful handling by diag method
-      expect(@white_queen.is_obstructed?(1, 1)).to be_falsey
+      expect(@white_queen.is_obstructed?(1, 1)).to eq false
     end
-
-    # it 'evaluates true w/ clear path, destination piece same-color' do
-    #   expect(@white_queen.is_obstructed?(4,2)).to be_truthy
-    # end # this will probably be covered by is_valid
   end
-
 end
