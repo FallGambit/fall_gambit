@@ -1,5 +1,6 @@
 class Rook < Piece
-  def move
-    # straight up/dn side/side
+  def valid_move?(x, y)
+    is_obstructed?(x, y)
+    x == x_position || y == y_position
   end
 end
