@@ -66,8 +66,10 @@ RSpec.describe Piece, type: :model do
       it "captures the opponent piece and moves to the new coordinates" do
         board = create(:game)
         board.pieces.delete_all
-        white_king = King.create(x_position: 1, y_position: 1, game_id: board.id, color: true)
-        black_knight = Knight.create(x_position: 2, y_position: 2, game_id: board.id, color: false)
+        white_king = King.create(x_position: 1, y_position: 1,
+                                 game_id: board.id, color: true)
+        black_knight = Knight.create(x_position: 2, y_position: 2,
+                                     game_id: board.id, color: false)
 
         white_king.move_to!(2, 2)
         expect(white_king.x_position).to eq(2)
@@ -82,8 +84,10 @@ RSpec.describe Piece, type: :model do
       it "king doesn't capture a piece two spaces away" do
         board = create(:game)
         board.pieces.delete_all
-        white_king = King.create(x_position: 1, y_position: 1, game_id: board.id, color: true)
-        black_knight = Knight.create(x_position: 3, y_position: 3, game_id: board.id, color: false)
+        white_king = King.create(x_position: 1, y_position: 1,
+                                 game_id: board.id, color: true)
+        black_knight = Knight.create(x_position: 3, y_position: 3,
+                                     game_id: board.id, color: false)
 
         expect { white_king.move_to!(3, 3) }
           .to raise_error(/Invalid/)
@@ -93,8 +97,10 @@ RSpec.describe Piece, type: :model do
       it "doesn't capture a same color piece" do
         board = create(:game)
         board.pieces.delete_all
-        white_king = King.create(x_position: 1, y_position: 1, game_id: board.id, color: true)
-        white_knight = Knight.create(x_position: 2, y_position: 2, game_id: board.id, color: true)
+        white_king = King.create(x_position: 1, y_position: 1,
+                                 game_id: board.id, color: true)
+        white_knight = Knight.create(x_position: 2, y_position: 2,
+                                     game_id: board.id, color: true)
 
         expect { white_king.move_to!(2, 2) }
           .to raise_error(/Invalid/)
