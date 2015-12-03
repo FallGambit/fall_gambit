@@ -57,24 +57,23 @@ class Piece < ActiveRecord::Base
     delta_x = dest_x - state_x
     delta_y = dest_y - state_y
 
-    if delta_y == 0 && delta_x > 0 && delta_x.abs > 1
+    if delta_x != 0 && delta_y != 0 && delta_x.abs != delta_y.abs
+      # this handles invalid input or invalid moves.
+      return "Invalid input or invalid move."
+    elsif delta_y == 0 && delta_x > 0 && delta_x.abs > 1
       # horizontal move where start is < destination and distance > 1
-      # return self.game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (state_x + 1), (dest_x - 1)).any?
       return self.row_occupied?(state_y, (state_x + 1), (dest_x - 1))
     elsif delta_y == 0 && delta_x < 0 && delta_x.abs > 1
       # horizontal move where start is > destination and distance > 1
-      # return self.game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (dest_x + 1), (state_x - 1)).any?
       return self.row_occupied?(state_y, (dest_x + 1), (state_x - 1))
     elsif delta_y == 0 && delta_x.abs <= 1
       # horizontal move to next square or delta 0
       return false
     elsif delta_x == 0 && delta_y > 0 && delta_y.abs > 1
       # vertical move where start is < destination and distance > 1
-      # return self.game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (state_y + 1), (dest_y - 1)).any?
       return self.col_occupied?(state_x, (state_y + 1), (dest_y - 1))
     elsif delta_x == 0 && delta_y < 0 && delta_y.abs > 1
       # vertical move where start is > destination and distance > 1
-      # return self.game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (dest_y + 1), (state_y - 1)).any?
       return self.col_occupied?(state_x, (dest_y + 1), (state_y - 1))
     elsif delta_x == 0 && delta_y.abs <= 1
       # vertical move to next square or delta 0
@@ -82,51 +81,47 @@ class Piece < ActiveRecord::Base
     elsif delta_x == delta_y && delta_x > 0
       # SE move, positive X, positive Y diagonal
       steps = delta_x - 1
-      while steps != 0
-        # if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x + steps), (state_y + steps)).any?
+      steps.times do
+      # while steps != 0
         if self.square_occupied?((state_x + steps), (state_y + steps))
           return true
         end
-        steps -= 1
+        # steps -= 1
       end
       return false
     elsif delta_x == delta_y && delta_x < 0
       # NW move, negative X negative Y diagonal
       steps = delta_x.abs - 1
-      while steps != 0
-        # if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x - steps), (state_y - steps)).any?
+      # while steps != 0
+      steps.times do
         if self.square_occupied?((state_x - steps), (state_y - steps))
           return true
         end
-        steps -= 1
+        # steps -= 1
       end
       return false
     elsif delta_x > 0 && delta_y < 0 && delta_x == delta_y.abs
       # NE move, positive X, negative Y diagonal
       steps = delta_x - 1
-      while steps != 0
-        # if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x + steps), (state_y - steps)).any?
+      # while steps != 0
+      steps.times do
         if self.square_occupied?((state_x + steps), (state_y - steps))
           return true
         end
-        steps -= 1
+        # steps -= 1
       end
       return false
     elsif delta_x < 0 && delta_y > 0 && delta_x.abs == delta_y
       # SW move, negative X, positive Y diagonal
       steps = delta_y - 1
-      while steps != 0
-        # if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x - steps), (state_y + steps)).any?
+      steps.times do 
+      # while steps != 0
         if self.square_occupied?((state_x - steps), (state_y + steps))
           return true
         end
-        steps -= 1
+        # steps -= 1
       end
       return false
-    elsif delta_x != 0 && delta_y != 0 && delta_x.abs != delta_y.abs
-      # this handles invalid input or invalid moves.
-      # raise "Invalid input or invalid move."
-      return "Invalid input or invalid move."
     end
   end
 end
