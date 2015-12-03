@@ -86,6 +86,22 @@ RSpec.describe Piece, type: :model do
         expect(black_knight.y_position).to be_nil
       end
     end
+    context "tries to capture a piece with an invalid move" do
+      it "king doesn't capture a piece two spaces away" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_king = game.kings.first
+        white_king.update_attributes(x_position: 1,
+                                     y_position: 1,
+                                     color: true)
+        black_knight = game.knights.first
+        black_knight.update_attributes(x_position: 3,
+                                       y_position: 3,
+                                       color: false)
+        expect { white_king.move_to!(3, 3) }
+          .to raise_error(/Invalid/)
+      end
+    end
     context "when the pieces are of the same color" do
       it "doesn't capture a same color piece" do
         board = create(:game)
@@ -94,8 +110,8 @@ RSpec.describe Piece, type: :model do
         white_king.update_attributes(x_position: 1,
                                      y_position: 1,
                                      color: false)
-        black_knight = game.knights.first
-        black_knight.update_attributes(x_position: 2,
+        white_knight = game.knights.first
+        white_knight.update_attributes(x_position: 2,
                                        y_position: 2,
                                        color: false)
         expect { white_king.move_to!(2, 2) }
