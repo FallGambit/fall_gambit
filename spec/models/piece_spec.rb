@@ -118,50 +118,43 @@ RSpec.describe Piece, type: :model do
         x_position: 0,
         y_position: 2,
         color: true,
-        game_id: @game.id,
-        captured: false
+        game_id: @game.id
       )
       @white_knight = Knight.create(
         x_position: 0,
         y_position: 1,
         color: true,
-        game_id: @game.id,
-        captured: false
+        game_id: @game.id
       )
       @white_pawn = Pawn.create(
         x_position: 1,
         y_position: 1,
         color: true,
-        game_id: @game.id,
-        captured: false
+        game_id: @game.id
       )
       @white_bishop = Bishop.create(
         x_position: 4,
         y_position: 2,
         color: true,
-        game_id: @game.id,
-        captured: false
+        game_id: @game.id
       )
       @white_rook = Rook.create(
         x_position: 7,
         y_position: 2,
         color: true,
-        game_id: @game.id,
-        captured: false
+        game_id: @game.id
       )
       @black_pawn = Pawn.create(
         x_position: 4,
         y_position: 6,
         color: false,
-        game_id: @game.id,
-        captured: false
+        game_id: @game.id
       )
       @black_queen = Queen.create(
         x_position: 6,
         y_position: 4,
         color: false,
-        game_id: @game.id,
-        captured: false
+        game_id: @game.id
       )
     end
 
