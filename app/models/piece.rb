@@ -37,6 +37,18 @@ class Piece < ActiveRecord::Base
     self.image_name ||= "#{color_string}-#{piece_type.downcase}.png"
   end
 
+  def square_occupied?(x, y)
+    game.pieces.where("x_position = ? AND y_position = ?", x, y).any?
+  end
+
+  def row_occupied?(y, x1, x2)
+    game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", y, x1, x2).any?
+  end
+
+  def col_occupied?(x, y1, y2)
+    game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", x, y1, y2).any?
+  end
+
   def is_obstructed?(x, y)
     dest_x = x
     dest_y = y
@@ -47,19 +59,23 @@ class Piece < ActiveRecord::Base
 
     if delta_y == 0 && delta_x > 0 && delta_x.abs > 1
       # horizontal move where start is < destination and distance > 1
-      return self.game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (state_x + 1), (dest_x - 1)).any?
+      # return self.game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (state_x + 1), (dest_x - 1)).any?
+      return self.row_occupied?(state_y, (state_x + 1), (dest_x - 1))
     elsif delta_y == 0 && delta_x < 0 && delta_x.abs > 1
       # horizontal move where start is > destination and distance > 1
-      return self.game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (dest_x + 1), (state_x - 1)).any?
+      # return self.game.pieces.where("y_position = ? AND x_position BETWEEN ? AND ?", state_y, (dest_x + 1), (state_x - 1)).any?
+      return self.row_occupied?(state_y, (dest_x + 1), (state_x - 1))
     elsif delta_y == 0 && delta_x.abs <= 1
       # horizontal move to next square or delta 0
       return false
     elsif delta_x == 0 && delta_y > 0 && delta_y.abs > 1
       # vertical move where start is < destination and distance > 1
-      return self.game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (state_y + 1), (dest_y - 1)).any?
+      # return self.game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (state_y + 1), (dest_y - 1)).any?
+      return self.col_occupied?(state_x, (state_y + 1), (dest_y - 1))
     elsif delta_x == 0 && delta_y < 0 && delta_y.abs > 1
       # vertical move where start is > destination and distance > 1
-      return self.game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (dest_y + 1), (state_y - 1)).any?
+      # return self.game.pieces.where("x_position = ? AND y_position BETWEEN ? AND ?", state_x, (dest_y + 1), (state_y - 1)).any?
+      return self.col_occupied?(state_x, (dest_y + 1), (state_y - 1))
     elsif delta_x == 0 && delta_y.abs <= 1
       # vertical move to next square or delta 0
       return false
@@ -67,7 +83,8 @@ class Piece < ActiveRecord::Base
       # SE move, positive X, positive Y diagonal
       steps = delta_x - 1
       while steps != 0
-        if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x + steps), (state_y + steps)).any?
+        # if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x + steps), (state_y + steps)).any?
+        if self.square_occupied?((state_x + steps), (state_y + steps))
           return true
         end
         steps -= 1
@@ -77,7 +94,8 @@ class Piece < ActiveRecord::Base
       # NW move, negative X negative Y diagonal
       steps = delta_x.abs - 1
       while steps != 0
-        if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x - steps), (state_y - steps)).any?
+        # if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x - steps), (state_y - steps)).any?
+        if self.square_occupied?((state_x - steps), (state_y - steps))
           return true
         end
         steps -= 1
@@ -87,7 +105,8 @@ class Piece < ActiveRecord::Base
       # NE move, positive X, negative Y diagonal
       steps = delta_x - 1
       while steps != 0
-        if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x + steps), (state_y - steps)).any?
+        # if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x + steps), (state_y - steps)).any?
+        if self.square_occupied?((state_x + steps), (state_y - steps))
           return true
         end
         steps -= 1
@@ -97,7 +116,8 @@ class Piece < ActiveRecord::Base
       # SW move, negative X, positive Y diagonal
       steps = delta_y - 1
       while steps != 0
-        if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x - steps), (state_y + steps)).any?
+        # if self.game.pieces.where("x_position = ? AND y_position = ?", (state_x - steps), (state_y + steps)).any?
+        if self.square_occupied?((state_x - steps), (state_y + steps))
           return true
         end
         steps -= 1
