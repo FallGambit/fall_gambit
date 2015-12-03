@@ -41,21 +41,21 @@ class Piece < ActiveRecord::Base
     self.image_name ||= "#{color_string}-#{piece_type.downcase}.png"
   end
 
-  def move_to!(new_x, new_y)
-    @target = game.pieces.where(:x_position => new_x, :y_position => new_y).take
+  def move_to!(x, y)
+    @target = game.pieces.where(:x_position => x, :y_position => y).take
     if @target.nil?
-      update_attributes(:x_position => new_x, :y_position => new_y)
+      update_attributes(:x_position => x, :y_position => y)
     else
       if color != @target.color
-        capture(new_x, new_y)
+        capture(x, y)
       else
         fail "Invalid move: you can't capture one of your pieces"
       end
     end
   end
 
-  def capture(new_x, new_y)
-    update_attributes(:x_position => new_x, :y_position => new_y)
+  def capture(x, y)
+    update_attributes(:x_position => x, :y_position => y)
     @target.update_attributes(:captured => true,
                               :x_position => nil,
                               :y_position => nil)
