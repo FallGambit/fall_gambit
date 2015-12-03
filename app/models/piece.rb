@@ -40,4 +40,22 @@ class Piece < ActiveRecord::Base
     color ? color_string = "white" : color_string = "black"
     self.image_name ||= "#{color_string}-#{piece_type.downcase}.png"
   end
+
+  def move_to!(x, y)
+    @target = game.pieces.where(:x_position => x, :y_position => y).take
+    fail "Invalid move: [error to be defined]" unless valid_move?(x, y)
+    if @target.nil?
+      update_attributes(:x_position => x, :y_position => y)
+    else
+      fail "Invalid move: same color piece" if color == @target.color
+      capture(x, y)
+    end
+  end
+
+  def capture(x, y)
+    update_attributes(:x_position => x, :y_position => y)
+    @target.update_attributes(:captured => true,
+                              :x_position => nil,
+                              :y_position => nil)
+  end
 end
