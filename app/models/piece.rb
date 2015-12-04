@@ -60,6 +60,7 @@ class Piece < ActiveRecord::Base
   end
 
   def range_occupied?(x1, x2, y1, y2)
+    # Use Restriction: x1 < x2, y1 < y2
     game.pieces.where("x_position BETWEEN ? AND ? AND y_position BETWEEN ? AND ?", x1, x2, y1, y2).any?
   end
 
@@ -92,7 +93,7 @@ class Piece < ActiveRecord::Base
       # vertical move to next square or delta 0
       return false
     elsif delta_x == delta_y && delta_x > 0
-      # SE move, positive X, positive Y diagonal
+      # SE move: positive X, positive Y diagonal
       steps = delta_x - 1
       steps.times do
         state_x += 1
@@ -103,7 +104,7 @@ class Piece < ActiveRecord::Base
       end
       return false
     elsif delta_x == delta_y && delta_x < 0
-      # NW move, negative X negative Y diagonal
+      # NW move: negative X, negative Y diagonal
       steps = delta_x.abs - 1
       steps.times do
         state_x -= 1
@@ -114,7 +115,7 @@ class Piece < ActiveRecord::Base
       end
       return false
     elsif delta_x > 0 && delta_y < 0 && delta_x == delta_y.abs
-      # NE move, positive X, negative Y diagonal
+      # NE move: positive X, negative Y diagonal
       steps = delta_x - 1
       steps.times do
         state_x += 1
@@ -125,7 +126,7 @@ class Piece < ActiveRecord::Base
       end
       return false
     elsif delta_x < 0 && delta_y > 0 && delta_x.abs == delta_y
-      # SW move, negative X, positive Y diagonal
+      # SW move: negative X, positive Y diagonal
       steps = delta_y - 1
       steps.times do
         state_x -= 1
