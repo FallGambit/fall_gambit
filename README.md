@@ -36,3 +36,6 @@ Invoking new instances of Pieces should call the subclass-of-Piece Model to inst
 (Please note that at the time of this writing the Game.rb populates the board by instantiating all the pieces with pre-STI calls and I have not yet decided if it is worth the time to rewrite it. ~AMP)
 
 Delegates allow Game and User classes to reference specific pieces by piece_type to call either subclass or directly call class methods on the pieces. 
+
+Proper calling of Piece.rb Model helper method "range_occupied?(x1, x2, y1, y2)":
+Please be sure that any calls to this method are for values of x and y where x1 < x2 and y1 < y2. Else the query will not function correctly. You can hold either coordinate constant by inserting the same value for 1st and 2nd variable.
