@@ -113,7 +113,7 @@ RSpec.describe Piece, type: :model do
   describe 'is_obstructed?' do
     before :all do
       @game = FactoryGirl.create(:game)
-      @game.pieces.delete
+      @game.pieces.delete_all
       @white_queen = Queen.create(
         x_position: 0,
         y_position: 2,
