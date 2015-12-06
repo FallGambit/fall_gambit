@@ -11,8 +11,8 @@ class Piece < ActiveRecord::Base
                          allow_nil: true
   after_initialize :set_image
 
-  # Lines 7-17 all part of STI: to break it disable line 6 or give it
-  # fake field name ~AMP
+  # Lines 16-22 all part of STI: to break it disable line 6 or give
+  # self.inheritance_column a fake field name ~AMP
   self.inheritance_column = :piece_type
   scope :pawns, -> { where(piece_type: "Pawn") }
   scope :queens, -> { where(piece_type: "Queen") }
@@ -93,11 +93,7 @@ class Piece < ActiveRecord::Base
       # vertical move to next square or delta 0
       return false
     elsif delta_x == delta_y && delta_x > 0
-<<<<<<< Updated upstream
-      # SE move: positive X, positive Y diagonal
-=======
       # NE move: positive X, positive Y diagonal
->>>>>>> Stashed changes
       steps = delta_x - 1
       steps.times do
         state_x += 1
@@ -108,11 +104,7 @@ class Piece < ActiveRecord::Base
       end
       return false
     elsif delta_x == delta_y && delta_x < 0
-<<<<<<< Updated upstream
-      # NW move: negative X, negative Y diagonal
-=======
       # SW move: negative X negative Y diagonal
->>>>>>> Stashed changes
       steps = delta_x.abs - 1
       steps.times do
         state_x -= 1
@@ -123,11 +115,7 @@ class Piece < ActiveRecord::Base
       end
       return false
     elsif delta_x > 0 && delta_y < 0 && delta_x == delta_y.abs
-<<<<<<< Updated upstream
-      # NE move: positive X, negative Y diagonal
-=======
       # SE move: positive X, negative Y diagonal
->>>>>>> Stashed changes
       steps = delta_x - 1
       steps.times do
         state_x += 1
@@ -138,11 +126,7 @@ class Piece < ActiveRecord::Base
       end
       return false
     elsif delta_x < 0 && delta_y > 0 && delta_x.abs == delta_y
-<<<<<<< Updated upstream
-      # SW move: negative X, positive Y diagonal
-=======
       # NW move: negative X, positive Y diagonal
->>>>>>> Stashed changes
       steps = delta_y - 1
       steps.times do
         state_x -= 1

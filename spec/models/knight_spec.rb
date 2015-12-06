@@ -1,15 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe Knight, type: :model do
-<<<<<<< Updated upstream
-  describe valid_move? do
-    before :all do
-      @game = FactoryGirl.create(:game)
-      @game.pieces.delete
+RSpec.configure do |config|
+  config.use_transactional_fixtures = true
+end
 
-    end
-    
-=======
+RSpec.describe Knight, type: :model do
 
   describe 'valid_move?' do
     before :all do
@@ -151,6 +146,10 @@ RSpec.describe Knight, type: :model do
         expect(@wknight2.valid_move?(2, 5)).to eq true
       end
     end
->>>>>>> Stashed changes
+
+    after :all do
+      @game.pieces.delete_all
+      @game.delete
+    end
   end
 end
