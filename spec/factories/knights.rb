@@ -1,6 +1,6 @@
-FactoryGirl.define do
-  factory :knight do
+# FactoryGirl.define do
+#   factory :knight do
     
-  end
+#   end
 
-end
+# end
