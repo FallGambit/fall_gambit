@@ -18,6 +18,7 @@ class PiecesController < ApplicationController
   helper_method :current_game, :show_piece_td
 
   def current_game
+    @piece = Piece.find(params[:id])
     @current_game ||= @piece.game
   end
 
@@ -34,7 +35,7 @@ class PiecesController < ApplicationController
     board_square += "piece-id-data='#{piece_id(find_piece)}' "
     board_square += "piece-type-data='#{piece_type(find_piece)}''>"
     if find_piece.nil?
-      url = game_piece_path(@current_game, Piece.find(params[:id]))
+      url = piece_path(Piece.find(params[:id]))
       url += "?x=#{column}&y=#{row}"
       board_square += ActionController::Base.helpers.link_to '', url, method: :put
     else

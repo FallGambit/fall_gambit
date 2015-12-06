@@ -55,7 +55,7 @@ class GamesController < ApplicationController
       image = ActionController::Base.helpers.image_tag find_piece
                       .image_name, size: '40x45',
                                    class: 'img-responsive center-block'
-      board_square += ActionController::Base.helpers.link_to image, game_piece_path(@game, find_piece)    
+      board_square += ActionController::Base.helpers.link_to image, piece_path(find_piece)    
     end
     board_square + "</td>"
   end
