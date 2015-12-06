@@ -114,14 +114,14 @@ RSpec.describe Piece, type: :model do
       @game = FactoryGirl.create(:game)
       @game.pieces.delete_all
       @white_queen = Queen.create(
-        x_position: 0,
-        y_position: 2,
+        x_position: 2,
+        y_position: 0,
         color: true,
         game_id: @game.id
       )
       @white_knight = Knight.create(
-        x_position: 0,
-        y_position: 1,
+        x_position: 1,
+        y_position: 0,
         color: true,
         game_id: @game.id
       )
@@ -175,7 +175,7 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will be false when horizontal axis path is clear' do
-      expect(@white_queen.is_obstructed?(0, 5)).to eq false
+      expect(@white_queen.is_obstructed?(5, 0)).to eq false
     end
 
     it 'will be false when horiz axis path clear neg direction' do
@@ -183,11 +183,11 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will be false when moves to next square in horiz axis' do
-      expect(@black_queen.is_obstructed?(6, 5)).to eq false
+      expect(@black_queen.is_obstructed?(5, 6)).to eq false
     end
 
     it 'will be false with move to next square horiz negative' do
-      expect(@black_queen.is_obstructed?(6, 3)).to eq false
+      expect(@black_queen.is_obstructed?(3, 6)).to eq false
     end
 
     it 'will be true when there is a block in horizontal axis' do
