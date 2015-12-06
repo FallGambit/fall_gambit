@@ -1,30 +1,63 @@
 require 'rails_helper'
 
-RSpec.configure do |config|
-  config.use_transactional_fixtures = true
-end
+# RSpec.configure do |config|
+#   config.use_transactional_fixtures = true
+# end
 
 RSpec.describe Knight, type: :model do
+  def find_piece(x, y)
+    @game.pieces.where("x_position = ? AND y_position = ?", x, y)
+  end
+
+  # def testupdate(piece, attrib, newval)
+  #   id = piece.ids
+  #   piece.update(id, attrib: newval)
+  # end
 
   describe 'valid_move?' do
     before :all do
       @game = FactoryGirl.create(:game)
-      @bknight1 = Piece.find(25)
-      @bknight2 = Piece.find(26)
-      @wknight1 = Piece.find(9)
-      @wknight2 = Piece.find(10)
-      @bpawn1 = Piece.find(17)
-      @bpawn1.update(y_position: 5)
-      @bpawn4 = Piece.find(20)
-      @bpawn5 = Piece.find(21)
-      @bpawn8 = Piece.find(24)
-      @bpawn8.update(y_position: 5)
-      @wpawn1 = Piece.find(1)
-      @wpawn1.update(y_position: 2)
-      @wpawn4 = Piece.find(4)
-      @wpawn5 = Piece.find(5)
-      @wpawn8 = Piece.find(8)
-      @wpawn8.update(y_position: 2)
+      @bknight1 = find_piece(1, 7)
+      @bknight2 = find_piece(6, 6)
+      @wknight1 = find_piece(1, 0)
+      @wknight2 = find_piece(6, 0)
+      @bpawn1 = find_piece(0, 6)
+      @bpawn1.delete_all
+      @bpawn1 = Pawn.create(
+        x_position: 0,
+        y_position: 5,
+        color: false,
+        game_id: @game.id
+      )
+      @bpawn4 = find_piece(3, 6)
+      @bpawn5 = find_piece(4, 6)
+      @bpawn8 = find_piece(7, 6)
+      @bpawn8.delete_all
+      @bpawn8 = Pawn.create(
+        x_position: 7,
+        y_position: 5,
+        color: false,
+        game_id: @game.id
+      )
+      @wpawn1 = find_piece(0, 1)
+      @wpawn1.delete_all
+      @wpawn1 = Pawn.create(
+        x_position: 0,
+        y_position: 2,
+        color: false,
+        game_id: @game.id
+      )
+      @wpawn4 = find_piece(3, 1)
+      @wpawn5 = find_piece(5, 1)
+      @wpawn8 = find_piece(7, 1)
+      @wpawn8.delete_all
+      @wpawn8 = Pawn.create(
+        x_position: 7,
+        y_position: 2,
+        color: false,
+        game_id: @game.id
+      )
+      byebug
     end
 
     context "same-color obstructions all false" do

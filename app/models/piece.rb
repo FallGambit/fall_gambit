@@ -55,8 +55,12 @@ class Piece < ActiveRecord::Base
                               :y_position => nil)
   end
 
+  def find_piece(x, y)
+    game.pieces.where("x_position = ? AND y_position = ?", x, y)
+  end
+
   def square_occupied?(x, y)
-    game.pieces.where("x_position = ? AND y_position = ?", x, y).any?
+    find_piece(x, y).any?
   end
 
   def range_occupied?(x1, x2, y1, y2)
