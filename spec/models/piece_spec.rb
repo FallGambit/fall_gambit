@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Piece, type: :model do
-
   describe "instantiation" do
     let(:game) { create(:game) }
 

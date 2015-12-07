@@ -39,3 +39,4 @@ Delegates allow Game and User classes to reference specific pieces by piece_type
 Proper calling of Piece.rb Model helper method "range_occupied?(x1, x2, y1, y2)": Please be sure that any calls to this method are for values of x and y where x1 < x2 and y1 < y2. Else the query will not function correctly. You can hold either coordinate constant by inserting the same value for 1st and 2nd variable.
 
 20151206: New Piece.rb helper method "find_piece(x, y)" should be usable by child models, but must be explicitly added to child model test specs. See knight_spec.rb as example.
+

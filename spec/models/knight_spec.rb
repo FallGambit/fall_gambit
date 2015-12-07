@@ -12,7 +12,6 @@ RSpec.describe Knight, type: :model do
   describe 'valid_move?' do
     before :all do
       @game = FactoryGirl.create(:game)
-      byebug
       @bknight1 = find_piece(1, 7)
       @bknight2 = find_piece(6, 7)
       @wknight1 = find_piece(1, 0)

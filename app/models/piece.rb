@@ -74,7 +74,7 @@ class Piece < ActiveRecord::Base
     delta_x = dest_x - state_x
     delta_y = dest_y - state_y
 
-    if delta_x != 0 && delta_y != 0 && delta_x.abs != delta_y.abs 
+    if delta_x != 0 && delta_y != 0 && delta_x.abs != delta_y.abs
       # this handles invalid input or invalid moves.
       # should this include tests for values over 7 and non-numeric input?
       fail "Invalid input or invalid move."
@@ -102,9 +102,7 @@ class Piece < ActiveRecord::Base
       steps.times do
         state_x += 1
         state_y += 1
-        if self.square_occupied?((state_x), (state_y))
-          return true
-        end
+        return true if self.square_occupied?((state_x), (state_y))
       end
       return false
     elsif delta_x == delta_y && delta_x < 0
@@ -113,9 +111,7 @@ class Piece < ActiveRecord::Base
       steps.times do
         state_x -= 1
         state_y -= 1
-        if self.square_occupied?((state_x), (state_y))
-          return true
-        end
+        return true if self.square_occupied?((state_x), (state_y))
       end
       return false
     elsif delta_x > 0 && delta_y < 0 && delta_x == delta_y.abs
@@ -124,9 +120,7 @@ class Piece < ActiveRecord::Base
       steps.times do
         state_x += 1
         state_y -= 1
-        if self.square_occupied?((state_x), (state_y))
-          return true
-        end
+        return true if self.square_occupied?((state_x), (state_y))
       end
       return false
     elsif delta_x < 0 && delta_y > 0 && delta_x.abs == delta_y
@@ -135,9 +129,7 @@ class Piece < ActiveRecord::Base
       steps.times do
         state_x -= 1
         state_y += 1
-        if self.square_occupied?((state_x), (state_y))
-          return true
-        end
+        return true if self.square_occupied?((state_x), (state_y))
       end
       return false
     end
