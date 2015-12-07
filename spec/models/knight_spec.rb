@@ -30,6 +30,27 @@ RSpec.describe Knight, type: :model do
       @wpawn8.update(y_position: 2)
     end
 
+    context "invalid move cases all false" do
+      it 'will be false S4W3 (delta too large)' do
+        expect(@bknight1.valid_move?(4, 3)).to eq false
+      end
+
+      it 'will be false S1W1 (delta too small)' do
+        expect(@bknight2.valid_move?(7, 6)).to eq false
+      end
+
+      it 'will be false N1W1 (delta too small)' do
+        expect(@wknight1.valid_move?(0, 1)).to eq false
+      end
+
+      it 'will be false N4 (delta X too big, no delta Y)' do
+        expect(@wknight2.valid_move?(6, 4)).to eq false
+      end
+
+      it 'will be false to move off board' do
+        expect(@bknight2.valid_move?(8, 6)).to eq false
+      end
+    end
 
     context "same-color obstructions all false" do
       it 'will be false S2W1 same-color obstruction' do

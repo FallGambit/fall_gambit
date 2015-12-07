@@ -12,5 +12,6 @@ class Knight < Piece
     return false if dest_piece && dest_piece.color == self.color
     return true if delta_x == 2 && delta_y == 1
     return true if delta_x == 1 && delta_y == 2
+    false
   end
 end
