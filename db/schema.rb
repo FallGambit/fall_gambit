@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 20151206214122) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "image_name"
-    t.boolean  "has_moved"
+    t.boolean  "has_moved",  default: false
   end
 
   create_table "users", force: true do |t|
