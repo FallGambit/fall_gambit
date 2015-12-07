@@ -108,6 +108,12 @@ RSpec.describe King, type: :model do
         @white_kingside_rook.update_attributes(color: false)
         expect(@white_king.can_castle?(@white_kingside_rook)).to be false
       end
+      it "does not allow castle from a piece in another game" do
+        game2 = create(:game)
+        white_queenside_rook2 = game2.pieces.where(x_position: 0,
+                                                   y_position: 0).take
+        expect(@white_king.can_castle?(white_queenside_rook2)).to be false
+      end
       context "start, moves through, or ends in check" do
         # check is not currently implemented - will need to fill these in
         it "does not allow castle if the king currently is in check" do

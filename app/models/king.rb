@@ -44,7 +44,7 @@ class King < Piece
   end
 
   def friendly_rook?(rook)
-    if rook.is_a?(Rook)
+    if rook.is_a?(Rook) && (rook.game == game)
       (rook.piece_type == 'Rook') && (rook.color == color)
     else
       return false
