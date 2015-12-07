@@ -59,10 +59,10 @@ class Game < ActiveRecord::Base
     # White Rooks
     populate_rooks(true)
     # White Queen
-    Queen.create(game_id: id, x_position: 3, y_position: 0,
+    Queen.create(game_id: id, x_position: 3, y_position: 7,
                  color: true)
     # White King
-    King.create(game_id: id, x_position: 4, y_position: 0,
+    King.create(game_id: id, x_position: 4, y_position: 7,
                 color: true)
   end
 
@@ -77,15 +77,15 @@ class Game < ActiveRecord::Base
     # Black Rooks
     populate_rooks(false)
     # Black Queen
-    Queen.create(game_id: id, x_position: 3, y_position: 7,
+    Queen.create(game_id: id, x_position: 3, y_position: 0,
                  color: false)
     # Black King
-    King.create(game_id: id, x_position: 4, y_position: 7,
+    King.create(game_id: id, x_position: 4, y_position: 0,
                 color: false)
   end
 
   def populate_pawns(is_white)
-    is_white ? pawn_y_position = 1 : pawn_y_position = 6
+    is_white ? pawn_y_position = 6 : pawn_y_position = 1
     (0..7).each do |a|
       Pawn.create(game_id: id, x_position: a, y_position: pawn_y_position,
                   color: is_white)
@@ -93,7 +93,7 @@ class Game < ActiveRecord::Base
   end
 
   def populate_knights(is_white)
-    is_white ? knight_y_position = 0 : knight_y_position = 7
+    is_white ? knight_y_position = 7 : knight_y_position = 0
     Knight.create(game_id: id, x_position: 1, y_position: knight_y_position,
                   color: is_white)
     Knight.create(game_id: id, x_position: 6, y_position: knight_y_position,
@@ -101,7 +101,7 @@ class Game < ActiveRecord::Base
   end
 
   def populate_bishops(is_white)
-    is_white ? bishop_y_position = 0 : bishop_y_position = 7
+    is_white ? bishop_y_position = 7 : bishop_y_position = 0
     Bishop.create(game_id: id, x_position: 2, y_position: bishop_y_position,
                   color: is_white)
     Bishop.create(game_id: id, x_position: 5, y_position: bishop_y_position,
@@ -109,7 +109,7 @@ class Game < ActiveRecord::Base
   end
 
   def populate_rooks(is_white)
-    is_white ? rook_y_position = 0 : rook_y_position = 7
+    is_white ? rook_y_position = 7 : rook_y_position = 0
     Rook.create(game_id: id, x_position: 0, y_position: rook_y_position,
                 color: is_white)
     Rook.create(game_id: id, x_position: 7, y_position: rook_y_position,
