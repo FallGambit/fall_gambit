@@ -112,16 +112,16 @@ RSpec.describe Piece, type: :model do
   describe 'is_obstructed?' do
     before :all do
       @game = FactoryGirl.create(:game)
-      @game.pieces.delete
+      @game.pieces.delete_all
       @white_queen = Queen.create(
-        x_position: 0,
-        y_position: 2,
+        x_position: 2,
+        y_position: 0,
         color: true,
         game_id: @game.id
       )
       @white_knight = Knight.create(
-        x_position: 0,
-        y_position: 1,
+        x_position: 1,
+        y_position: 0,
         color: true,
         game_id: @game.id
       )
@@ -132,25 +132,37 @@ RSpec.describe Piece, type: :model do
         game_id: @game.id
       )
       @white_bishop = Bishop.create(
-        x_position: 4,
-        y_position: 2,
+        x_position: 2,
+        y_position: 4,
         color: true,
         game_id: @game.id
       )
       @white_rook = Rook.create(
-        x_position: 7,
-        y_position: 2,
+        x_position: 2,
+        y_position: 7,
         color: true,
         game_id: @game.id
       )
       @black_pawn = Pawn.create(
+        x_position: 6,
+        y_position: 4,
+        color: false,
+        game_id: @game.id
+      )
+      @black_queen = Queen.create(
         x_position: 4,
         y_position: 6,
         color: false,
         game_id: @game.id
       )
-      @black_queen = Queen.create(
+      @black_rook = Rook.create(
         x_position: 6,
+        y_position: 6,
+        color: false,
+        game_id: @game.id
+      )
+      @black_bishop = Bishop.create(
+        x_position: 5,
         y_position: 4,
         color: false,
         game_id: @game.id
@@ -158,69 +170,114 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will raise an Error Message with invalid input' do
-      expect { @white_queen.is_obstructed?(3, 4) }
+      expect { @white_queen.is_obstructed?(4, 3) }
         .to raise_error("Invalid input or invalid move.")
     end
 
     it 'will be false when horizontal axis path is clear' do
-      expect(@white_queen.is_obstructed?(3, 2)).to eq false
+      expect(@white_queen.is_obstructed?(5, 0)).to eq false
     end
 
     it 'will be false when horiz axis path clear neg direction' do
-      expect(@black_queen.is_obstructed?(1, 4)).to eq false
+      expect(@black_queen.is_obstructed?(1, 6)).to eq false
     end
 
     it 'will be false when moves to next square in horiz axis' do
-      expect(@black_queen.is_obstructed?(7, 4)).to eq false
+      expect(@black_queen.is_obstructed?(5, 6)).to eq false
+    end
+
+    it 'will be false with move to next square horiz negative' do
+      expect(@black_queen.is_obstructed?(3, 6)).to eq false
     end
 
     it 'will be true when there is a block in horizontal axis' do
-      expect(@white_queen.is_obstructed?(5, 2)).to eq true
+      expect(@black_queen.is_obstructed?(7, 6)).to eq true
     end
 
-    it 'will be true when there is a block in vertical axis' do
+    it 'will be true with block in horiz axis neg direction' do
       expect(@white_queen.is_obstructed?(0, 0)).to eq true
     end
 
+    it 'will be true with block in vertical axis' do
+      expect(@white_queen.is_obstructed?(2, 5)).to eq true
+    end
+
     it 'will be true with block in vertical axis, neg direction' do
-      expect(@white_rook.is_obstructed?(3, 2)).to eq true
+      expect(@white_rook.is_obstructed?(2, 3)).to eq true
     end
 
     it 'will be false when vertical axis path is clear' do
-      expect(@white_queen.is_obstructed?(0, 5)).to eq false
+      expect(@white_queen.is_obstructed?(2, 3)).to eq false
     end
 
     it 'will be false when vertical axis path clear neg direction' do
-      expect(@black_queen.is_obstructed?(6, 1)).to eq false
+      expect(@black_queen.is_obstructed?(4, 1)).to eq false
     end
 
-    it 'will be false when moves to next square in vert axis' do
-      expect(@white_queen.is_obstructed?(0, 3)).to eq false
+    it 'will be false with move to next square vertical axis' do
+      expect(@white_queen.is_obstructed?(2, 1)).to eq false
+    end
+
+    it 'will be false with move to next square vert axis negative' do
+      expect(@black_queen.is_obstructed?(4, 5)).to eq false
+    end
+
+    it 'will be false when NE diag path is clear' do
+      expect(@white_queen.is_obstructed?(4, 2)).to eq false
+    end
+
+    it 'will be false when NE diag path clear, piece at endpoint' do
+      expect(@white_queen.is_obstructed?(6, 4)).to eq false
+    end
+
+    it 'will be true when NE diag path has block' do
+      expect(@white_queen.is_obstructed?(7, 5)).to eq true
     end
 
     it 'will be false when SE diag path is clear' do
-      expect(@white_queen.is_obstructed?(2, 4)).to eq false
+      expect(@white_bishop.is_obstructed?(5, 1)).to eq false
     end
 
-    it 'will be true when SW diag path has block, neg direction' do
-      expect(@black_queen.is_obstructed?(3, 7)).to eq true
+    it 'will be false when SE diag path clear, piece at endpoint' do
+      expect(@black_queen.is_obstructed?(6, 4)).to eq false
     end
 
-    it 'will be false when NW diag path is clear, piece at endpoint' do
-      expect(@black_queen.is_obstructed?(4, 2)).to eq false
+    it 'will be true when SE diag path has block, neg direction' do
+      expect(@black_queen.is_obstructed?(7, 3)).to eq true
+    end
+
+    it 'will be false when SW diag path is clear' do
+      expect(@white_bishop.is_obstructed?(0, 2)).to eq false
+    end
+
+    it 'will be false when SW diag path clear, piece at endpoint' do
+      expect(@black_queen.is_obstructed?(2, 4)).to eq false
+    end
+
+    it 'will be true when SW diag path blocked' do
+      expect(@black_queen.is_obstructed?(1, 3)).to eq true
+    end
+
+    it 'will be false when NW diag path is clear' do
+      expect(@white_bishop.is_obstructed?(0, 6)).to eq false
+    end
+
+    it 'will be false when NW diag path clear, piece at endpoint' do
+      expect(@black_bishop.is_obstructed?(2, 7)).to eq false
     end
 
     it 'will be true when NW diag path blocked' do
-      expect(@black_queen.is_obstructed?(3, 1)).to eq true
-    end
-
-    it 'ewill be true when there is a block in the diagonal' do
-      expect(@white_queen.is_obstructed?(2, 0)).to eq true
+      expect(@white_queen.is_obstructed?(0, 2)).to eq true
     end
 
     it 'will be false with clear path if destination contains piece' do
-      # this also tests single space movement graceful handling by diag method
+      # also tests single space movement graceful handling in diagonal
       expect(@white_queen.is_obstructed?(1, 1)).to eq false
+    end
+
+    after :all do
+      @game.pieces.delete_all
+      @game.delete
     end
   end
 end
