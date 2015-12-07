@@ -148,7 +148,7 @@ RSpec.describe King, type: :model do
       it "does not move the pieces" do
         @black_queenside_rook.move_to!(0, 5)
         @black_queenside_rook.move_to!(0, 7)
-        expect{@black_king.castle!(@black_queenside_rook)}
+        expect { @black_king.castle!(@black_queenside_rook) }
           .to raise_error "King cannot currently be castled!"
       end
     end
