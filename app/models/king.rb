@@ -5,6 +5,17 @@ class King < Piece
     rows <= 1 && columns <= 1 ? true : false
   end
 
+  def castle!(rook)
+    fail "King cannot currently be castled!" unless can_castle?(rook)
+    if queenside?(rook)
+      update_attributes(x_position: 2, has_moved: true)
+      rook.update_attributes(x_position: 3, has_moved: true)
+    else # has to be kingside
+      update_attributes(x_position: 6, has_moved: true)
+      rook.update_attributes(x_position: 5, has_moved: true)
+    end
+  end
+
   # make sure when castling to update has_moved to true for both pieces!
   def can_castle?(rook) # pass in rook object
     return false unless initial_state?(rook)
@@ -60,7 +71,7 @@ class King < Piece
   end
 
   def queenside?(rook)
-    rook.y_position < y_position
+    rook.x_position < x_position
   end
 
   def check?(_x, _y)

@@ -69,6 +69,22 @@ RSpec.describe King, type: :model do
         expect(@black_king.can_castle?(@black_kingside_rook)).to be true
         expect(@white_king.can_castle?(@white_kingside_rook)).to be true
       end
+      it "moves queenside castle" do
+        @black_king.castle!(@black_queenside_rook)
+        expect(@black_king.x_y_coords).to eq [2, 7]
+        expect(@black_queenside_rook.x_y_coords).to eq [3, 7]
+        @white_king.castle!(@white_queenside_rook)
+        expect(@white_king.x_y_coords).to eq [2, 0]
+        expect(@white_queenside_rook.x_y_coords).to eq [3, 0]
+      end
+      it "moves kingside castle" do
+        @black_king.castle!(@black_kingside_rook)
+        expect(@black_king.x_y_coords).to eq [6, 7]
+        expect(@black_kingside_rook.x_y_coords).to eq [5, 7]
+        @white_king.castle!(@white_kingside_rook)
+        expect(@white_king.x_y_coords).to eq [6, 0]
+        expect(@white_kingside_rook.x_y_coords).to eq [5, 0]
+      end
     end
     context "invalid castle moves" do
       it "does not allow castle if the rook is not on the first row" do
@@ -128,6 +144,12 @@ RSpec.describe King, type: :model do
           # set up situation where king ends in check after a castle
           expect(false).to be false
         end
+      end
+      it "does not move the pieces" do
+        @black_queenside_rook.move_to!(0, 5)
+        @black_queenside_rook.move_to!(0, 7)
+        expect{@black_king.castle!(@black_queenside_rook)}
+          .to raise_error "King cannot currently be castled!"
       end
     end
   end
