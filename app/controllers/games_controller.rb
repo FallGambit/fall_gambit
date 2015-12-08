@@ -53,9 +53,9 @@ class GamesController < ApplicationController
     board_square += "piece-type-data='#{piece_type(find_piece)}''>"
     unless find_piece.nil?
       image = ActionController::Base.helpers.image_tag find_piece
-                      .image_name, size: '40x45',
+                                    .image_name, size: '40x45',
                                    class: 'img-responsive center-block'
-      board_square += ActionController::Base.helpers.link_to image, piece_path(find_piece)    
+      board_square += ActionController::Base.helpers.link_to image, piece_path(find_piece)
     end
     board_square + "</td>"
   end

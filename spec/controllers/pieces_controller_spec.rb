@@ -12,7 +12,7 @@ RSpec.describe PiecesController, type: :controller do
   describe "movement" do
     it "will move 2 spaces up" do
       @piece = Piece.where(x_position: 6, y_position: 6).first
-      put :update, { id: @piece.id, x: 6, y: 4 }
+      put :update, id: @piece.id, x: 6, y: 4
       expected_y_position = 4
       @piece.reload
       expect(@piece.y_position).to be(expected_y_position)
@@ -20,7 +20,7 @@ RSpec.describe PiecesController, type: :controller do
 
     it "will move 2 spaces left" do
       @piece = Piece.where(x_position: 6, y_position: 6).first
-      put :update, { id: @piece.id, x: 4, y: 6 }
+      put :update, id: @piece.id, x: 4, y: 6
       expected_x_position = 4
       @piece.reload
       expect(@piece.x_position).to be(expected_x_position)
@@ -30,8 +30,9 @@ RSpec.describe PiecesController, type: :controller do
   describe "#update" do
     it "will redirect to games page" do
       @piece = Piece.where(x_position: 6, y_position: 6).first
-      put :update, { id: @piece.id, x: 4, y: 6 }
-      expect(response).to redirect_to :controller => :games, :action => :show, :id => @piece.game
+      put :update, id: @piece.id, x: 4, y: 6
+      expect(response).to redirect_to :controller => :games, :action => :show,
+                                      :id => @piece.game
     end
   end
 end
