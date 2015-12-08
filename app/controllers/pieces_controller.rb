@@ -12,7 +12,6 @@ class PiecesController < ApplicationController
     redirect_to game_path(@piece.game)
   end
 
-
   private
 
   helper_method :current_game, :show_piece_td
@@ -34,15 +33,15 @@ class PiecesController < ApplicationController
     board_square = "<td class='x-position-'#{column}' "
     board_square += "piece-id-data='#{piece_id(find_piece)}' "
     board_square += "piece-type-data='#{piece_type(find_piece)}''>"
-      url = piece_path(Piece.find(params[:id]))
-      url += "?x=#{column}&y=#{row}"
+    url = piece_path(Piece.find(params[:id]))
+    url += "?x=#{column}&y=#{row}"
     if find_piece.nil?
       board_square += ActionController::Base.helpers.link_to '', url, method: :put
     else
       image = ActionController::Base.helpers.image_tag find_piece
                       .image_name, size: '40x45',
                                    class: 'img-responsive center-block'
-      board_square += ActionController::Base.helpers.link_to image, url, method: :put    
+      board_square += ActionController::Base.helpers.link_to image, url, method: :put
     end
     board_square + "</td>"
   end
