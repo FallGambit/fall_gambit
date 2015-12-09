@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Pawn, type: :model do
   describe "#valid_move?" do
-    context "when white moving" do
+    context "white moving" do
       it "should be true when moving 1 space forward" do
         board = create(:game)
         board.pieces.delete_all
@@ -60,7 +60,7 @@ RSpec.describe Pawn, type: :model do
       end
       it "should be true when moving 1 space diagonal/left when capturing" do
         board = create(:game)
-        board.pieces.delete_all true
+        board.pieces.delete_all
         white_pawn = Pawn.create(x_position: 1,
                                  y_position: 2,
                                  game_id: board.id,
@@ -94,14 +94,14 @@ RSpec.describe Pawn, type: :model do
         pawn = Pawn.create(x_position: 1,
                            y_position: 2,
                            game_id: board.id,
-                          color: true)
+                           color: true)
         board.reload
         actual = pawn.valid_move?(4, 5)
         expect(actual).to be(false)
       end
     end
-      
-    context "when black moving" do
+
+    context "black moving" do
       it "should be true when moving 1 space forward" do
         board = create(:game)
         board.pieces.delete_all
@@ -159,7 +159,7 @@ RSpec.describe Pawn, type: :model do
       end
       it "should be true when moving 1 space diagonal/right when capturing" do
         board = create(:game)
-        board.pieces.delete_all true
+        board.pieces.delete_all
         black_pawn = Pawn.create(x_position: 6,
                                  y_position: 5,
                                  game_id: board.id,
