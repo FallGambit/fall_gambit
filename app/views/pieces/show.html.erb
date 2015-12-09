@@ -12,7 +12,7 @@
   <% (0..7).to_a.each do |row| %>
     <tr class="y-position-<%= row %>" >
       <% (0..7).each do |column| %>
-        <%= place_piece_td(row, column).html_safe %>
+        <%= show_piece_td(row, column).html_safe %>
       <% end %>
     </tr>
   <% end %>
