@@ -1,19 +1,3 @@
-Skip to content
-This repository  
-Search
-Pull requests
-Issues
-Gist
- @jeffgerlach
- Unwatch 2
-  Unstar 3
- Fork 0 FallGambit/fall_gambit
- Code  Issues 1  Pull requests 3  Wiki  Pulse  Graphs  Settings
-Tree: 096c8f979f Find file Copy pathfall_gambit/spec/models/game_spec.rb
-0201ee6  16 days ago
-@jeffgerlach jeffgerlach Add test in Piece to check new image field. Clean up game controller …
-2 contributors @jeffgerlach @acodeinprogress
-RawBlameHistory     150 lines (131 sloc)  5.1 KB
 require 'rails_helper'
 
 RSpec.describe Game, type: :model do
@@ -163,5 +147,3 @@ RSpec.describe Game, type: :model do
     end
   end
 end
-Status API Training Shop Blog About Pricing
-© 2015 GitHub, Inc. Terms Privacy Security Contact Help
