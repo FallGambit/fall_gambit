@@ -38,12 +38,14 @@ class PiecesController < ApplicationController
     url = piece_path(Piece.find(params[:id]))
     url += "?x=#{column}&y=#{row}"
     if find_piece.nil?
-      board_square += ActionController::Base.helpers.link_to '', url, method: :put
+      board_square += ActionController::Base.helpers.link_to '',
+                                                             url, method: :put
     else
       image = ActionController::Base.helpers.image_tag find_piece
-                      .image_name, size: '40x45',
-                                   class: 'img-responsive center-block'
-      board_square += ActionController::Base.helpers.link_to image, url, method: :put
+              .image_name, size: '40x45',
+                           class: 'img-responsive center-block'
+      board_square += ActionController::Base.helpers.link_to image,
+                                                             url, method: :put
     end
     board_square + "</td>"
   end
