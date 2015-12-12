@@ -1,3 +1,19 @@
+Skip to content
+This repository  
+Search
+Pull requests
+Issues
+Gist
+ @jeffgerlach
+ Unwatch 2
+  Unstar 3
+ Fork 0 FallGambit/fall_gambit
+ Code  Issues 1  Pull requests 3  Wiki  Pulse  Graphs  Settings
+Tree: 096c8f979f Find file Copy pathfall_gambit/spec/models/game_spec.rb
+0201ee6  16 days ago
+@jeffgerlach jeffgerlach Add test in Piece to check new image field. Clean up game controller …
+2 contributors @jeffgerlach @acodeinprogress
+RawBlameHistory     150 lines (131 sloc)  5.1 KB
 require 'rails_helper'
 
 RSpec.describe Game, type: :model do
@@ -33,19 +49,19 @@ RSpec.describe Game, type: :model do
           game.pawns.where(color: true).each do |pawn|
             expect(x_list.delete_at(x_list.find_index(pawn.x_position)))
               .not_to be_nil
-            expect(pawn.y_position).to eq 6
+            expect(pawn.y_position).to eq 1
           end
           expect(x_list.empty?).to eq true
         end
 
         it "places the king in the correct square" do
           x_y_coords = game.kings.where(color: true).first.x_y_coords
-          expect(x_y_coords).to eq([4, 7])
+          expect(x_y_coords).to eq([4, 0])
         end
 
         it "places the queen in the correct square" do
           x_y_coords = game.queens.where(color: true).first.x_y_coords
-          expect(x_y_coords).to eq([3, 7])
+          expect(x_y_coords).to eq([3, 0])
         end
 
         it "places the knight in the correct square" do
@@ -53,7 +69,7 @@ RSpec.describe Game, type: :model do
           game.knights.where(color: true).each do |knight|
             x_y_coord_list << knight.x_y_coords
           end
-          expect(x_y_coord_list).to contain_exactly([1, 7], [6, 7])
+          expect(x_y_coord_list).to contain_exactly([1, 0], [6, 0])
         end
 
         it "places the bishop in the correct square" do
@@ -61,7 +77,7 @@ RSpec.describe Game, type: :model do
           game.bishops.where(color: true).each do |bishop|
             x_y_coord_list << bishop.x_y_coords
           end
-          expect(x_y_coord_list).to contain_exactly([2, 7], [5, 7])
+          expect(x_y_coord_list).to contain_exactly([2, 0], [5, 0])
         end
 
         it "places the rook in the correct square" do
@@ -69,7 +85,7 @@ RSpec.describe Game, type: :model do
           game.rooks.where(color: true).each do |rook|
             x_y_coord_list << rook.x_y_coords
           end
-          expect(x_y_coord_list).to contain_exactly([0, 7], [7, 7])
+          expect(x_y_coord_list).to contain_exactly([0, 0], [7, 0])
         end
       end
       # these tests assume no flipping of board perspective, black is on top
@@ -83,19 +99,19 @@ RSpec.describe Game, type: :model do
           game.pawns.where(color: false).each do |pawn|
             expect(x_list.delete_at(x_list.find_index(pawn.x_position)))
               .not_to be_nil
-            expect(pawn.y_position).to eq 1
+            expect(pawn.y_position).to eq 6
           end
           expect(x_list.empty?).to eq true
         end
 
         it "places the king in the correct square" do
           x_y_coords = game.kings.where(color: false).first.x_y_coords
-          expect(x_y_coords).to eq([4, 0])
+          expect(x_y_coords).to eq([4, 7])
         end
 
         it "places the queen in the correct square" do
           x_y_coords = game.queens.where(color: false).first.x_y_coords
-          expect(x_y_coords).to eq([3, 0])
+          expect(x_y_coords).to eq([3, 7])
         end
 
         it "places the knight in the correct square" do
@@ -103,7 +119,7 @@ RSpec.describe Game, type: :model do
           game.knights.where(color: false).each do |knight|
             x_y_coord_list << knight.x_y_coords
           end
-          expect(x_y_coord_list).to contain_exactly([1, 0], [6, 0])
+          expect(x_y_coord_list).to contain_exactly([1, 7], [6, 7])
         end
 
         it "places the bishop in the correct square" do
@@ -111,7 +127,7 @@ RSpec.describe Game, type: :model do
           game.bishops.where(color: false).each do |bishop|
             x_y_coord_list << bishop.x_y_coords
           end
-          expect(x_y_coord_list).to contain_exactly([2, 0], [5, 0])
+          expect(x_y_coord_list).to contain_exactly([2, 7], [5, 7])
         end
 
         it "places the rook in the correct square" do
@@ -119,7 +135,7 @@ RSpec.describe Game, type: :model do
           game.rooks.where(color: false).each do |rook|
             x_y_coord_list << rook.x_y_coords
           end
-          expect(x_y_coord_list).to contain_exactly([0, 0], [7, 0])
+          expect(x_y_coord_list).to contain_exactly([0, 7], [7, 7])
         end
       end
     end
@@ -147,3 +163,5 @@ RSpec.describe Game, type: :model do
     end
   end
 end
+Status API Training Shop Blog About Pricing
+© 2015 GitHub, Inc. Terms Privacy Security Contact Help
