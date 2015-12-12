@@ -1,3 +1,56 @@
+<script type="text/javascript">
+$(document).ready(function () {
+  var piece_url;
+  $("[piece-id-data]").children("[href]").children('img').draggable({
+    containment: ".chessboard",
+    //snap : "td",
+    start: function( event, ui ) {
+      piece_url = $(this).parent().attr("href");//.parent();//.attr("piece-id-data");
+      //console.log(piece_url);
+      //$.post(piece_url)
+    }
+  });
+  
+  $("td").droppable({
+      //var x_pos = $(this);
+      //var classList = document.getElementById('divId').className.split(/\s+/);
+      //console.log(classList);
+      //var final_url = $(this);//.children("[href]").attr("href");
+     // x_val = ui.droppable.parent("[href]").parent("[piece-id-data]").attr("piece-id-data")
+      //y_val = ui.droppable.parent("[href]").parent("[piece-id-data]").attr("piece-id-data")
+      //var square_url = ($this).children("[href]").attr('href');
+      //console.log(final_url);
+      drop: function(event, ui) {
+        var x_pos = $(this).attr("class").match(/\d+/)[0];
+        var y_pos = $(this).parent().attr("class").match(/\d+/)[0];
+        var piece_id = piece_url.match(/\d+/)[0];
+        var update_url = piece_url + "?x=" + x_pos + "&y=" + y_pos;
+        var coords = { x: x_pos,
+                       y: y_pos,
+                       id: piece_id};
+        console.log(coords);
+        var blah = ui.draggable.parent().attr("href");
+        console.log(blah);
+          //var id = ui.draggable.find("img").attr("id");
+          //$("td").text(id);
+        $.ajax({
+            url: "<%= piece_path() %>"+"?x="+x_pos+"&y="+y_pos,
+            type: 'PUT'//,
+            //data: JSON.stringify(coords),
+            //contentType: 'application/json'
+            //success: callback || $.noop,
+            //error: errorCallback || $.noop
+        });
+      }
+      //console.log(square_url);
+     // Console.log(x_val);
+      //Console.log(y_val);
+      //drop: function(ev, ui) {
+       //   $.post('/pieces/'+piece_id+'?x=' + x_val + '&y=' + y_val);
+      //}
+  });
+});
+</script>
 <% if current_game %>
 <br />
 <br />
