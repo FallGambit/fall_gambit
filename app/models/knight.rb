@@ -1,5 +1,5 @@
 class Knight < Piece
-  def is_obstructed?(_dest_x, _dest_y)
+  def is_obstructed?(dest_x, dest_y)
     false
   end
 
