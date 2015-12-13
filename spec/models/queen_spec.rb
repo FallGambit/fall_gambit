@@ -6,8 +6,8 @@ RSpec.describe Queen, type: :model do
       @board = create(:game)
       @board.pieces.delete_all
       @board.reload
-      @white_user = User.find(@board.white_user_id)
-      @black_user = User.find(@black_user_id)
+      # @white_user = User.find(@board.white_user_id)
+      # @black_user = User.find(@board.black_user_id)
     end
     context "no obstruction, no end piece, all pass:" do
       before :all do
@@ -15,8 +15,8 @@ RSpec.describe Queen, type: :model do
           x_position: 3,
           y_position: 3,
           color: true,
-          game_id: @board.id
-          user_id: @white_user.id
+          game_id: @board.id,
+          user_id: @board.white_user_id
           )
       end
       it "diagonal +X +Y" do
@@ -95,7 +95,6 @@ RSpec.describe Queen, type: :model do
           color: true,
           game_id: @board.id
           )
-        @
       end
       it "diagonal +X +Y" do
         expect(@black_queen.valid_move?(5, 4)).to eq true
