@@ -35,11 +35,9 @@ class GamesController < ApplicationController
 
   def move
     respond_to do |format|
-      format.json { redirect_to piece_path(params[:piece_id])}
-      format.html { redirect_to game_path(current_game)}
+      format.json { redirect_to piece_path(params[:piece_id]) }
+      format.html { redirect_to game_path(current_game) }
     end
-    #redirect_to pieces_path(params[:piece_id])
-    #render "pieces/#{params[:piece_id]}/update"
   end
 
   private
