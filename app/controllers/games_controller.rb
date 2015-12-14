@@ -33,6 +33,15 @@ class GamesController < ApplicationController
     handle_update_errors
   end
 
+  def move
+    respond_to do |format|
+      format.json { redirect_to piece_path(params[:piece_id])}
+      format.html { redirect_to game_path(current_game)}
+    end
+    #redirect_to pieces_path(params[:piece_id])
+    #render "pieces/#{params[:piece_id]}/update"
+  end
+
   private
 
   helper_method :current_game, :place_piece_td
@@ -52,6 +61,7 @@ class GamesController < ApplicationController
     if find_piece.nil?
       board_square += ">"
     else
+      #board_square += " data-piece-url= #{piece_path(find_piece)}"
       board_square += " piece-id-data='#{piece_id(find_piece)}' "
       board_square += "piece-type-data='#{piece_type(find_piece)}'>"
       image = ActionController::Base.helpers.image_tag find_piece

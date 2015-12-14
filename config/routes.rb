@@ -1,7 +1,12 @@
 FallGambit::Application.routes.draw do
   
   devise_for :users
-  resources :games, :only => [:new, :create, :show, :update]
+  put "games/:id/move", to: "games#move"
+  resources :games, :only => [:new, :create, :show, :update] #do
+    #member do
+      #put :move
+    #end
+ # end
   resources :pieces, :only => [:show, :update]
 
   # The priority is based upon order of creation: first created -> highest priority.

@@ -8,8 +8,17 @@ class PiecesController < ApplicationController
 
   def update
     @piece = Piece.find(params[:id])
+    #if request.xhr?
+    #  @piece.update_attributes(x_position)
+    #else
     @piece.update_attributes(x_position: params[:x], y_position: params[:y])
-    redirect_to game_path(@piece.game)
+    #end
+    
+    respond_to do |format|
+      format.json { render :json => @piece.to_json }
+      format.html { redirect_to game_path(@piece.game) }
+    end
+    
   end
 
   private

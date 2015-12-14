@@ -3,54 +3,42 @@ $(document).ready(function () {
   var piece_url;
   $("[piece-id-data]").children("[href]").children('img').draggable({
     containment: ".chessboard",
-    //snap : "td",
+    create: function(){$(this).data('position',$(this).position())},
+    cursorAt:{left:15},
+    cursor:'move',
     start: function( event, ui ) {
-      piece_url = $(this).parent().attr("href");//.parent();//.attr("piece-id-data");
-      //console.log(piece_url);
-      //$.post(piece_url)
+      $(this).stop(true,true)
+      piece_url = $(this).parent().attr("href");
+
     }
   });
+
+  function snapToMiddle(dragger, target){
+      var topMove = target.position().top - dragger.data('position').top + (target.outerHeight(true) - dragger.outerHeight(true)) / 2;
+      var leftMove= target.position().left - dragger.data('position').left + (target.outerWidth(true) - dragger.outerWidth(true)) / 2;
+      dragger.animate({top:topMove,left:leftMove},{duration:600,easing:'easeOutBack'});
+  }
   
   $("td").droppable({
-      //var x_pos = $(this);
-      //var classList = document.getElementById('divId').className.split(/\s+/);
-      //console.log(classList);
-      //var final_url = $(this);//.children("[href]").attr("href");
-     // x_val = ui.droppable.parent("[href]").parent("[piece-id-data]").attr("piece-id-data")
-      //y_val = ui.droppable.parent("[href]").parent("[piece-id-data]").attr("piece-id-data")
-      //var square_url = ($this).children("[href]").attr('href');
-      //console.log(final_url);
       drop: function(event, ui) {
+        snapToMiddle(ui.draggable,$(this));
         var x_pos = $(this).attr("class").match(/\d+/)[0];
         var y_pos = $(this).parent().attr("class").match(/\d+/)[0];
-        var piece_id = piece_url.match(/\d+/)[0];
-        var update_url = piece_url + "?x=" + x_pos + "&y=" + y_pos;
-        var coords = { x: x_pos,
-                       y: y_pos,
-                       id: piece_id};
-        console.log(coords);
-        var blah = ui.draggable.parent().attr("href");
-        console.log(blah);
-          //var id = ui.draggable.find("img").attr("id");
-          //$("td").text(id);
+        var current_piece_id = piece_url.match(/\d+/)[0];
         $.ajax({
-            url: "<%= piece_path() %>"+"?x="+x_pos+"&y="+y_pos,
-            type: 'PUT'//,
-            //data: JSON.stringify(coords),
-            //contentType: 'application/json'
-            //success: callback || $.noop,
-            //error: errorCallback || $.noop
-        });
+            url: "<%=current_game.id%>/move",
+            type: 'PUT',
+            dataType: 'json',
+            data: { piece_id: current_piece_id, x: x_pos, y: y_pos}
+        })
+        .done (function() {
+          location.reload(true); //refreshes page from server after move
+      });
       }
-      //console.log(square_url);
-     // Console.log(x_val);
-      //Console.log(y_val);
-      //drop: function(ev, ui) {
-       //   $.post('/pieces/'+piece_id+'?x=' + x_val + '&y=' + y_val);
-      //}
   });
 });
 </script>
+
 <% if current_game %>
 <br />
 <br />
