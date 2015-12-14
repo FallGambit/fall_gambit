@@ -1,6 +1,5 @@
 <script type="text/javascript">
 $(document).ready(function () {
-  //var piece_number;
   $("[data-piece-id]").children("[href]").children('img').draggable({
     containment: ".chessboard",
     create: function(){$(this).data('position',$(this).position())},
@@ -8,10 +7,6 @@ $(document).ready(function () {
     cursor:'move',
     start: function( event, ui ) {
       $(this).stop(true,true);
-      //console.log($(this).parent().parent().data('piece-id'));
-      //piece_number = $(this).parent().data('piece-id');
-      //piece_url = $(this).parent().attr("href");
-
     }
   });
 
@@ -24,12 +19,9 @@ $(document).ready(function () {
   $("td").droppable({
       drop: function(event, ui) {
         snapToMiddle(ui.draggable,$(this));
-        console.log($(this).data('x-position'));
-        console.log($(this).parent().data('y-position'));
-        console.log(ui.draggable.parent().parent().data('piece-id'));
-        var x_pos = $(this).data('x-position');//$(this).attr("class").match(/\d+/)[0];
-        var y_pos = $(this).parent().data('y-position');//$(this).parent().attr("class").match(/\d+/)[0];
-        var current_piece_id = ui.draggable.parent().parent().data('piece-id');//piece_url.match(/\d+/)[0];
+        var x_pos = $(this).data('x-position');
+        var y_pos = $(this).parent().data('y-position');
+        var current_piece_id = ui.draggable.parent().parent().data('piece-id');
         $.ajax({
             url: "<%=current_game.id%>/move",
             type: 'PUT',
