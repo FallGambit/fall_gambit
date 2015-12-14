@@ -1,0 +1,203 @@
+require 'rails_helper'
+
+RSpec.describe Pawn, type: :model do
+  describe "#valid_move?" do
+    context "white moving" do
+      it "should be true when moving 1 space forward" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 1,
+                           y_position: 1,
+                           game_id: board.id,
+                           color: true)
+        board.reload
+        actual = pawn.valid_move?(1, 2)
+        expect(actual).to be(true)
+      end
+      it "should be true when moving 2 spaces forward on first move" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 1,
+                           y_position: 1,
+                           game_id: board.id,
+                           color: true)
+        board.reload
+        actual = pawn.valid_move?(1, 3)
+        expect(actual).to be(true)
+      end
+      it "should be false when moving 3 space forward" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 1,
+                           y_position: 1,
+                           game_id: board.id,
+                           color: true)
+        board.reload
+        actual = pawn.valid_move?(1, 4)
+        expect(actual).to be(false)
+      end
+      it "should be false when moving 2 spaces forward after first move" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 1,
+                           y_position: 2,
+                           game_id: board.id,
+                           color: true)
+        board.reload
+        actual = pawn.valid_move?(1, 4)
+        expect(actual).to be(false)
+      end
+      it "should be false when moving 1 space backward" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 1,
+                           y_position: 4,
+                           game_id: board.id,
+                           color: true)
+        board.reload
+        actual = pawn.valid_move?(1, 3)
+        expect(actual).to be(false)
+      end
+      it "should be true when moving 1 space diagonal/left when capturing" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_pawn = Pawn.create(x_position: 1,
+                                 y_position: 2,
+                                 game_id: board.id,
+                                 color: true)
+        black_pawn = Pawn.create(x_position: 2,
+                                 y_position: 3,
+                                 game_id: board.id,
+                                 color: false)
+        board.reload
+        actual = white_pawn.valid_move?(2, 3)
+        expect(actual).to be(true)
+      end
+      it "should be true when moving 1 space diagonal/right when capturing" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_pawn = Pawn.create(x_position: 1,
+                                 y_position: 2,
+                                 game_id: board.id,
+                                 color: true)
+        black_pawn = Pawn.create(x_position: 0,
+                                 y_position: 3,
+                                 game_id: board.id,
+                                 color: false)
+        board.reload
+        actual = white_pawn.valid_move?(0, 3)
+        expect(actual).to be(true)
+      end
+      it "should be false when moving 3 spaces diagonally" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 1,
+                           y_position: 2,
+                           game_id: board.id,
+                           color: true)
+        board.reload
+        actual = pawn.valid_move?(4, 5)
+        expect(actual).to be(false)
+      end
+    end
+
+    context "black moving" do
+      it "should be true when moving 1 space forward" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 6,
+                           y_position: 6,
+                           game_id: board.id,
+                           color: false)
+        board.reload
+        actual = pawn.valid_move?(6, 5)
+        expect(actual).to be(true)
+      end
+      it "should be true when moving 2 spaces forward on first move" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 6,
+                           y_position: 6,
+                           game_id: board.id,
+                           color: false)
+        board.reload
+        actual = pawn.valid_move?(6, 4)
+        expect(actual).to be(true)
+      end
+      it "should be false when moving 3 space forward" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 6,
+                           y_position: 6,
+                           game_id: board.id,
+                           color: false)
+        board.reload
+        actual = pawn.valid_move?(6, 3)
+        expect(actual).to be(false)
+      end
+      it "should be false when moving 2 spaces forward after first move" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 6,
+                           y_position: 5,
+                           game_id: board.id,
+                           color: false)
+        board.reload
+        actual = pawn.valid_move?(6, 3)
+        expect(actual).to be(false)
+      end
+      it "should be false when moving 1 space backward" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 6,
+                           y_position: 3,
+                           game_id: board.id,
+                           color: false)
+        board.reload
+        actual = pawn.valid_move?(6, 4)
+        expect(actual).to be(false)
+      end
+      it "should be true when moving 1 space diagonal/right when capturing" do
+        board = create(:game)
+        board.pieces.delete_all
+        black_pawn = Pawn.create(x_position: 6,
+                                 y_position: 5,
+                                 game_id: board.id,
+                                 color: false)
+        white_pawn = Pawn.create(x_position: 7,
+                                 y_position: 4,
+                                 game_id: board.id,
+                                 color: true)
+        board.reload
+        actual = black_pawn.valid_move?(7, 4)
+        expect(actual).to be(true)
+      end
+      it "should be true when moving 1 space diagonal/left when capturing" do
+        board = create(:game)
+        board.pieces.delete_all
+        black_pawn = Pawn.create(x_position: 6,
+                                 y_position: 5,
+                                 game_id: board.id,
+                                 color: false)
+        white_pawn = Pawn.create(x_position: 5,
+                                 y_position: 4,
+                                 game_id: board.id,
+                                 color: true)
+        board.reload
+        actual = black_pawn.valid_move?(5, 4)
+        expect(actual).to be(true)
+      end
+      it "should be false when moving 3 spaces diagonally" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 6,
+                           y_position: 5,
+                           game_id: board.id,
+                           color: false)
+        board.reload
+        actual = pawn.valid_move?(3, 2)
+        expect(actual).to be(false)
+      end
+    end
+  end
+end
