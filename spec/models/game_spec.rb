@@ -146,4 +146,15 @@ RSpec.describe Game, type: :model do
       expect(game.errors[:base].size).to eq 1
     end
   end
+
+  describe "is in check?" do
+    it "should be false when check_status is 0" do
+      game.update_attributes(check_status: 0)
+      expect(game.check?).to eq(false)
+    end
+    it "should be true when check_status is 1" do
+      game.update_attributes(check_status: 1)
+      expect(game.check?).to eq(true)
+    end
+  end
 end
