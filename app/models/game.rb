@@ -46,6 +46,10 @@ class Game < ActiveRecord::Base
     white_user.nil? || black_user.nil?
   end
 
+  def check?
+    check_status == 0 ? false : true
+  end
+
   private
 
   def populate_white_pieces
