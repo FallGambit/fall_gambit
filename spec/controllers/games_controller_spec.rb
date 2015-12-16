@@ -92,7 +92,7 @@ RSpec.describe GamesController, type: :controller do
         let(:black_player) { create(:user) }
         let(:game_to_update) do
           Game.create(game_name: "Test",
-                      black_user_id: black_player.id)
+                      black_user_id: black_player.id, user_turn: black_player.id)
         end
         it 'redirects to show page' do
           put :update, id: game_to_update.id, game: {
@@ -110,7 +110,7 @@ RSpec.describe GamesController, type: :controller do
         let(:white_player) { create(:user) }
         let(:game_to_update) do
           Game.create(game_name: "Test",
-                      white_user_id: white_player.id)
+                      white_user_id: white_player.id, user_turn: white_player.id)
         end
         it 'redirects to show page' do
           put :update, id: game_to_update.id, game: {

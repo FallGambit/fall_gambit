@@ -167,7 +167,6 @@ class Game < ActiveRecord::Base
 
   def user_turn_must_be_valid
     return unless (user_turn != white_user_id) && (user_turn != black_user_id)
-    binding.pry
     errors.add(:user_turn, 'Current turn is neither white or black user!')
   end
 end
