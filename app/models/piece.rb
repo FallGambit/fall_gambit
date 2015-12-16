@@ -1,6 +1,7 @@
 class Piece < ActiveRecord::Base
   belongs_to :user
   belongs_to :game
+  attr_accessor :flash_message
   validates :x_position, :presence => true,
                          :numericality => { greater_than_or_equal_to: 0,
                                             less_than_or_equal_to: 7 },
@@ -39,13 +40,18 @@ class Piece < ActiveRecord::Base
 
   def move_to!(x, y)
     @target = game.pieces.where(:x_position => x, :y_position => y).take
-    fail "Invalid move: [error to be defined]" unless valid_move?(x, y)
+    unless valid_move?(x, y)
+      self.flash_message = "Invalid move: [error to be defined]"
+      return false
+    end
+    #fail "Invalid move: [error to be defined]" unless valid_move?(x, y)
     if @target.nil?
       update_attributes(:x_position => x, :y_position => y)
     else
       fail "Invalid move: same color piece" if color == @target.color
       capture(x, y)
     end
+    return true
   end
 
   def capture(x, y)
@@ -79,7 +85,8 @@ class Piece < ActiveRecord::Base
     if delta_x != 0 && delta_y != 0 && delta_x.abs != delta_y.abs
       # this handles invalid input or invalid moves.
       # should this include tests for values over 7 and non-numeric input?
-      fail "Invalid input or invalid move."
+      self.flash_message = "Invalid input or invalid move."
+      return true
     elsif delta_y == 0 && delta_x > 0 && delta_x.abs > 1
       # horizontal move where start is < destination and distance > 1
       return self.range_occupied?((state_x + 1), (dest_x - 1), state_y, state_y)

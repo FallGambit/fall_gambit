@@ -71,15 +71,15 @@ class GamesController < ApplicationController
 
   def merge_player_color_choice_param
     if params[:game][:creator_plays_as_black] == '1'
-      { black_user_id: current_user.id }
+      { black_user_id: current_user.id, user_turn: current_user.id }
     else
-      { white_user_id: current_user.id }
+      { white_user_id: current_user.id, user_turn: current_user.id }
     end
   end
 
   def game_create_params
     params.require(:game).permit(:game_name, :creator_plays_as_black,
-                                 :white_user_id, :black_user_id)
+                                 :white_user_id, :black_user_id, :user_turn)
       .merge(merge_player_color_choice_param)
   end
 
