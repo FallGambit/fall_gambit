@@ -1,4 +1,4 @@
-<h1>Available games:</h1>
+<h3>Games players can join:</h3>
 <% @games.each do |game|  %>
   <div class="list-group">
     <div class="list-group-item">
@@ -7,12 +7,11 @@
           <%= game.game_name %>
         </h4>
         <%= link_to 'Join Game', game_path(game, id: game.id), method: :patch, :class => 'btn btn-success btn-large join-game-link' %>
-      <% else %>
-        <h2>
-          No game available...
-        </h2>
-        <%= link_to 'Create Game', new_game_path, class: 'btn btn-success btn-large' %>
       <% end  %>
+      <br />
+      <br />
     </div>
   </div>
 <% end %>
+
+<h3>Future list of games players can watch??</h3>
