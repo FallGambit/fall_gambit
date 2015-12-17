@@ -1,5 +1,6 @@
 class PiecesController < ApplicationController
   before_action :authenticate_user!
+  after_action :flash_notice, only: :update
 
   def show
     @piece = Piece.find(params[:id])
@@ -15,6 +16,12 @@ class PiecesController < ApplicationController
   end
 
   private
+
+  def flash_notice
+    if @piece.flash_message.present?
+      flash[:alert] = @piece.flash_message
+    end
+  end
 
   helper_method :current_game, :show_piece_td
 

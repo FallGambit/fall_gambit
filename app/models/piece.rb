@@ -1,6 +1,7 @@
 class Piece < ActiveRecord::Base
   belongs_to :user
   belongs_to :game
+  attr_accessor :flash_message
   validates :x_position, :presence => true,
                          :numericality => { greater_than_or_equal_to: 0,
                                             less_than_or_equal_to: 7 },
@@ -41,7 +42,7 @@ class Piece < ActiveRecord::Base
     @target = game.pieces.where(:x_position => x, :y_position => y).take
     fail "Invalid move: [error to be defined]" unless valid_move?(x, y)
     if @target.nil?
-      update_attributes(:x_position => x, :y_position => y)
+      update_attributes(:x_position => x, :y_position => y, :has_moved => true)
     else
       fail "Invalid move: same color piece" if color == @target.color
       capture(x, y)
@@ -49,9 +50,8 @@ class Piece < ActiveRecord::Base
   end
 
   def capture(x, y)
-    update_attributes(:x_position => x, :y_position => y)
-    @target.update_attributes(:captured => true,
-                              :x_position => nil,
+    update_attributes(:x_position => x, :y_position => y, :has_moved => true)
+    @target.update_attributes(:captured => true, :x_position => nil,
                               :y_position => nil)
   end
 
