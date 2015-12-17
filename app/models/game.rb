@@ -46,6 +46,14 @@ class Game < ActiveRecord::Base
     white_user.nil? || black_user.nil?
   end
 
+  def determine_check(king)
+    opponents_pieces = pieces.where(color: !king.color)
+    opponents_pieces.each do |piece|
+      return true if piece.valid_move?(king.x_position, king.y_position)
+    end
+    false
+  end
+
   def check?
     check_status == 0 ? false : true
   end

@@ -147,6 +147,25 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe "determine check" do
+    context "white King" do
+      it "should be held in check by black Knight" do
+        white_king = game.kings.where(color: true).take
+        black_knight = game.knights.where(color: false).first
+        white_king.update_attributes(x_position: 4, y_position: 3)
+        black_knight.update_attributes(x_position: 2, y_position: 4)
+        expect(game.determine_check(white_king)).to eq(true)
+      end
+      it "should be held in check by black Pawn" do
+        white_king = game.kings.where(color: true).take
+        black_pawn = game.pawns.where(color: false).first
+        white_king.update_attributes(x_position: 4, y_position: 3)
+        black_pawn.update_attributes(x_position: 5, y_position: 4)
+        expect(game.determine_check(white_king)).to eq(true)
+      end
+    end
+  end
+
   describe "is in check?" do
     it "should be false when check_status is 0" do
       game.update_attributes(check_status: 0)
