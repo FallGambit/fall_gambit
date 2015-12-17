@@ -1,6 +1,7 @@
 class Piece < ActiveRecord::Base
   belongs_to :user
   belongs_to :game
+  attr_accessor :flash_message
   validates :x_position, :presence => true,
                          :numericality => { greater_than_or_equal_to: 0,
                                             less_than_or_equal_to: 7 },
