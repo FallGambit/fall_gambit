@@ -99,6 +99,32 @@ RSpec.describe Pawn, type: :model do
         actual = pawn.valid_move?(4, 5)
         expect(actual).to be(false)
       end
+      it "should be false when moving onto tile of same colored piece" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 1,
+                           y_position: 2,
+                           game_id: board.id,
+                           color: true)
+        knight = Knight.create(x_position: 1,
+                           y_position: 3,
+                           game_id: board.id,
+                           color: true)
+        board.reload
+        actual = pawn.valid_move?(1, 3)
+        expect(actual).to be(false)
+      end
+      it "should raise exception when moving off the board" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 1,
+                           y_position: 2,
+                           game_id: board.id,
+                           color: false)
+        board.reload
+        actual = pawn.valid_move?(1, -1)
+        expect(actual).to be(false)
+      end
     end
 
     context "black moving" do
@@ -196,6 +222,32 @@ RSpec.describe Pawn, type: :model do
                            color: false)
         board.reload
         actual = pawn.valid_move?(3, 2)
+        expect(actual).to be(false)
+      end
+      it "should be false when moving onto tile of same colored piece" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 6,
+                           y_position: 5,
+                           game_id: board.id,
+                           color: false)
+        knight = Knight.create(x_position: 6,
+                           y_position: 4,
+                           game_id: board.id,
+                           color: false)
+        board.reload
+        actual = pawn.valid_move?(6, 4)
+        expect(actual).to be(false)
+      end
+      it "should raise exception when moving off the board" do
+        board = create(:game)
+        board.pieces.delete_all
+        pawn = Pawn.create(x_position: 6,
+                           y_position: 5,
+                           game_id: board.id,
+                           color: false)
+        board.reload
+        actual = pawn.valid_move?(6, 8)
         expect(actual).to be(false)
       end
     end
