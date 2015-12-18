@@ -1,11 +1,11 @@
 class Rook < Piece
-  def valid_move?(x, y)
+  def valid_move?(dest_x, dest_y)
     dest_piece = game.pieces
-                 .where("x_position = ? AND y_position = ?", x, y)
+                 .where("x_position = ? AND y_position = ?", dest_x, dest_y)
                  .take
-    return false if is_obstructed?(x, y)
-    return false if x < 0 || x > 7 || y < 0 || y > 7
+    return false if is_obstructed?(dest_x, dest_y)
+    return false if dest_x < 0 || dest_x > 7 || dest_y < 0 || dest_y > 7
     return false if dest_piece && dest_piece.color == color
-    x == x_position || y == y_position
+    dest_x == x_position || dest_y == y_position
   end
 end
