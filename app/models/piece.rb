@@ -45,7 +45,7 @@ class Piece < ActiveRecord::Base
       return false
     end
     if @target.nil?
-      update_attributes(:x_position => x, :y_position => y)
+      update_attributes(:x_position => x, :y_position => y, :has_moved => true)
     else
       if color == @target.color
         self.flash_message =  "Invalid move: same color piece"
@@ -57,9 +57,8 @@ class Piece < ActiveRecord::Base
   end
 
   def capture(x, y)
-    update_attributes(:x_position => x, :y_position => y)
-    @target.update_attributes(:captured => true,
-                              :x_position => nil,
+    update_attributes(:x_position => x, :y_position => y, :has_moved => true)
+    @target.update_attributes(:captured => true, :x_position => nil,
                               :y_position => nil)
   end
 
