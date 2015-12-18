@@ -94,6 +94,25 @@ RSpec.describe PiecesController, type: :controller do
       expect(knight.x_y_coords).to eq [6, 6]
       expect(response).to redirect_to(@current_game)
     end
+    it "will not allow player to move another player's pieces" do
+      pending "to be implemented"
+      this_should_not_get_executed
+    end
+    it "will not let a player move until two players have joined the game" do
+      pending "to be implemented"
+      this_should_not_get_executed
+    end
+    it "will update player turn to other user after move" do
+      pending "to be implemented"
+      this_should_not_get_executed
+    end
+  end
+
+  describe "#show" do
+    it "will not let a player move until two players have joined the game" do
+      pending "to be implemented"
+      this_should_not_get_executed
+    end
   end
 
   end

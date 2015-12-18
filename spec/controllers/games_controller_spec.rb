@@ -26,6 +26,14 @@ RSpec.describe GamesController, type: :controller do
         get :show, id: game.id
         expect(response).to render_template("show")
       end
+      it "shows whose turn it is" do
+        pending "to be implemented"
+        this_should_not_get_executed
+      end
+      it "has current turn set to either white or black user" do
+        pending "to be implemented"
+        this_should_not_get_executed
+      end
     end
     context 'with invalid params' do
       it "has a 404 status code for an non-existant game" do
@@ -68,6 +76,14 @@ RSpec.describe GamesController, type: :controller do
             expect(Game.last.pieces.where(user_id: nil)
               .count).to eq 16
           end
+          it "sets the current user's turn if they are the white player" do
+            pending "to be implemented"
+            this_should_not_get_executed
+          end
+          it "does not set the user's turn if they are black player" do
+            pending "to be implemented"
+            this_should_not_get_executed
+          end
         end
       end
       context 'with invalid params' do
@@ -105,6 +121,10 @@ RSpec.describe GamesController, type: :controller do
           expect(game_to_update.pieces.where(user_id: subject.current_user.id)
             .count).to eq 16
         end
+        it "sets the current user's turn" do
+          pending "to be implemented"
+          this_should_not_get_executed
+        end
       end
       context 'with black player joining game' do
         let(:white_player) { create(:user) }
@@ -122,6 +142,10 @@ RSpec.describe GamesController, type: :controller do
             white_user_id: subject.current_user.id }
           expect(game_to_update.pieces.where(user_id: subject.current_user.id)
             .count).to eq 16
+        end
+        it "does not set the current user's turn" do
+          pending "to be implemented"
+          this_should_not_get_executed
         end
       end
       it 'won\'t let player join full game' do
