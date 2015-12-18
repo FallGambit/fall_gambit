@@ -149,19 +149,140 @@ RSpec.describe Game, type: :model do
 
   describe "determine check" do
     context "white King" do
-      it "should be held in check by black Knight" do
+      it "should be held in check by black Knight and evades check" do
         white_king = game.kings.where(color: true).take
         black_knight = game.knights.where(color: false).first
         white_king.update_attributes(x_position: 4, y_position: 3)
         black_knight.update_attributes(x_position: 2, y_position: 4)
-        expect(game.determine_check(white_king)).to eq(true)
+        game.determine_check(white_king)
+        expect(game.check?).to eq(true)
+        # King evades check
+        white_king.update_attributes(x_position: 3, y_position: 3)
+        game.determine_check(white_king)
+        expect(game.check?).to eq(false)
       end
       it "should be held in check by black Pawn" do
         white_king = game.kings.where(color: true).take
         black_pawn = game.pawns.where(color: false).first
         white_king.update_attributes(x_position: 4, y_position: 3)
         black_pawn.update_attributes(x_position: 5, y_position: 4)
-        expect(game.determine_check(white_king)).to eq(true)
+        game.determine_check(white_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should not be held in check by black Pawn" do
+        white_king = game.kings.where(color: true).take
+        black_pawn = game.pawns.where(color: false).first
+        white_king.update_attributes(x_position: 3, y_position: 3)
+        black_pawn.update_attributes(x_position: 5, y_position: 4)
+        game.determine_check(white_king)
+        expect(game.check?).to eq(false)
+      end
+      it "should be held in check by black Queen" do
+        white_king = game.kings.where(color: true).take
+        black_queen = game.queens.where(color: false).take
+        white_king.update_attributes(x_position: 4, y_position: 3)
+        black_queen.update_attributes(x_position: 6, y_position: 5)
+        game.determine_check(white_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should be held in check by black Rook" do
+        white_king = game.kings.where(color: true).take
+        black_rook = game.rooks.where(color: false).first
+        white_king.update_attributes(x_position: 4, y_position: 3)
+        black_rook.update_attributes(x_position: 0, y_position: 3)
+        game.determine_check(white_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should be held in check by black Bishop" do
+        white_king = game.kings.where(color: true).take
+        black_bishop = game.bishops.where(color: false).first
+        white_king.update_attributes(x_position: 3, y_position: 2)
+        black_bishop.update_attributes(x_position: 0, y_position: 5)
+        game.determine_check(white_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should be held in check by black King" do
+        white_king = game.kings.where(color: true).take
+        black_king = game.kings.where(color: false).take
+        white_king.update_attributes(x_position: 4, y_position: 3)
+        black_king.update_attributes(x_position: 4, y_position: 4)
+        game.determine_check(white_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should NOT be held in check by black King" do
+        white_king = game.kings.where(color: true).take
+        black_king = game.kings.where(color: false).take
+        white_king.update_attributes(x_position: 4, y_position: 3)
+        black_king.update_attributes(x_position: 2, y_position: 4)
+        game.determine_check(white_king)
+        expect(game.check?).to eq(false)
+      end
+    end
+
+    context "black King" do
+      it "should be held in check by white Knight" do
+        black_king = game.kings.where(color: false).take
+        white_knight = game.knights.where(color: true).first
+        black_king.update_attributes(x_position: 4, y_position: 5)
+        white_knight.update_attributes(x_position: 2, y_position: 4)
+        game.determine_check(black_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should be held in check by white Pawn" do
+        black_king = game.kings.where(color: false).take
+        white_pawn = game.pawns.where(color: true).first
+        black_king.update_attributes(x_position: 4, y_position: 5)
+        white_pawn.update_attributes(x_position: 3, y_position: 4)
+        game.determine_check(black_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should not be held in check by white Pawn" do
+        black_king = game.kings.where(color: false).take
+        white_pawn = game.pawns.where(color: true).first
+        black_king.update_attributes(x_position: 4, y_position: 5)
+        white_pawn.update_attributes(x_position: 4, y_position: 4)
+        game.determine_check(black_king)
+        expect(game.check?).to eq(false)
+      end
+      it "should be held in check by white Queen" do
+        black_king = game.kings.where(color: false).take
+        white_queen = game.queens.where(color: true).take
+        black_king.update_attributes(x_position: 4, y_position: 5)
+        white_queen.update_attributes(x_position: 1, y_position: 2)
+        game.determine_check(black_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should be held in check by white Rook" do
+        black_king = game.kings.where(color: false).take
+        white_rook = game.rooks.where(color: true).first
+        black_king.update_attributes(x_position: 4, y_position: 5)
+        white_rook.update_attributes(x_position: 4, y_position: 2)
+        game.determine_check(black_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should be held in check by white Bishop" do
+        black_king = game.kings.where(color: false).take
+        white_bishop = game.bishops.where(color: true).first
+        black_king.update_attributes(x_position: 4, y_position: 5)
+        white_bishop.update_attributes(x_position: 7, y_position: 2)
+        game.determine_check(black_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should be held in check by white King" do
+        black_king = game.kings.where(color: false).take
+        white_king = game.kings.where(color: true).take
+        black_king.update_attributes(x_position: 4, y_position: 4)
+        white_king.update_attributes(x_position: 3, y_position: 3)
+        game.determine_check(black_king)
+        expect(game.check?).to eq(true)
+      end
+      it "should NOT be held in check by white King" do
+        black_king = game.kings.where(color: false).take
+        white_king = game.kings.where(color: true).take
+        black_king.update_attributes(x_position: 4, y_position: 4)
+        white_king.update_attributes(x_position: 5, y_position: 2)
+        game.determine_check(black_king)
+        expect(game.check?).to eq(false)
       end
     end
   end

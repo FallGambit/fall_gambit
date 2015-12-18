@@ -49,13 +49,17 @@ class Game < ActiveRecord::Base
   def determine_check(king)
     opponents_pieces = pieces.where(color: !king.color)
     opponents_pieces.each do |piece|
-      return true if piece.valid_move?(king.x_position, king.y_position)
+      if !piece.valid_move?(king.x_position, king.y_position)
+        self.check_status = 0
+      else
+        self.check_status = 1
+        break
+      end
     end
-    false
   end
 
   def check?
-    check_status == 0 ? false : true
+    check_status == 1 ? true : false
   end
 
   private
