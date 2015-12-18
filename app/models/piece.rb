@@ -79,7 +79,9 @@ class Piece < ActiveRecord::Base
     if delta_x != 0 && delta_y != 0 && delta_x.abs != delta_y.abs
       # this handles invalid input or invalid moves.
       # should this include tests for values over 7 and non-numeric input?
-      fail "Invalid input or invalid move."
+      nil
+      # Commented out and replaced with nil: will need to discuss this...
+      # fail "Invalid input or invalid move."
     elsif delta_y == 0 && delta_x > 0 && delta_x.abs > 1
       # horizontal move where start is < destination and distance > 1
       return self.range_occupied?((state_x + 1), (dest_x - 1), state_y, state_y)
