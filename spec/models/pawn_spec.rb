@@ -88,6 +88,21 @@ RSpec.describe Pawn, type: :model do
         actual = white_pawn.valid_move?(0, 3)
         expect(actual).to be(true)
       end
+      it "should be false when moving 1 space diagonal on friendly piece" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_pawn1 = Pawn.create(x_position: 1,
+                                  y_position: 2,
+                                  game_id: board.id,
+                                  color: true)
+        white_pawn2 = Pawn.create(x_position: 0,
+                                  y_position: 3,
+                                  game_id: board.id,
+                                  color: true)
+        board.reload
+        actual = white_pawn1.valid_move?(0, 3)
+        expect(actual).to be(false)
+      end
       it "should be false when moving 3 spaces diagonally" do
         board = create(:game)
         board.pieces.delete_all

@@ -1,7 +1,10 @@
 class Pawn < Piece
   def valid_move?(x, y)
     is_obstructed?(x, y)
-    one_forward(x, y) || two_forward(x, y) || one_diagonal(x, y)
+    destination = game.pieces.where(x_position: x, y_position: y).take
+    (one_forward(x, y) && destination.nil?) ||
+    (two_forward(x, y) && destination.nil?) ||
+    (one_diagonal(x, y) && !destination.nil? && destination.color == !color)
   end
 
   def white_moving
@@ -25,12 +28,10 @@ class Pawn < Piece
   end
 
   def one_diagonal(x, y)
-    unless game.pieces.where(:x_position => x, :y_position => y).nil?
-      if white_moving
-        y == y_position + 1 && (x == x_position + 1 || x == x_position - 1)
-      else
-        y == y_position - 1 && (x == x_position + 1 || x == x_position - 1)
-      end
+    if white_moving
+      y == y_position + 1 && (x == x_position + 1 || x == x_position - 1)
+    else
+      y == y_position - 1 && (x == x_position + 1 || x == x_position - 1)
     end
   end
 end
