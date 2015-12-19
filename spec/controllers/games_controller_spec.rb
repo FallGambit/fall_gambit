@@ -26,14 +26,6 @@ RSpec.describe GamesController, type: :controller do
         get :show, id: game.id
         expect(response).to render_template("show")
       end
-      it "shows whose turn it is" do
-        pending "to be implemented"
-        this_should_not_get_executed
-      end
-      it "has current turn set to either white or black user" do
-        pending "to be implemented"
-        this_should_not_get_executed
-      end
     end
     context 'with invalid params' do
       it "has a 404 status code for an non-existant game" do
@@ -54,16 +46,15 @@ RSpec.describe GamesController, type: :controller do
             expect(response).to redirect_to(Game.last)
           end
           it 'sets all white pieces to be owned by white player' do
-            post :create, game: { game_name: "Test White",
-                                  white_user_id: subject.current_user.id }
+            post :create, game: { game_name: "Test White", creator_plays_as_black: "0" }
             expect(Game.last.pieces.where(user_id: subject.current_user.id)
               .count).to eq 16
             expect(Game.last.pieces.where(user_id: nil)
               .count).to eq 16
           end
           it "sets the current user's turn if they are the white player" do
-            pending "to be implemented"
-            this_should_not_get_executed
+            post :create, game: { game_name: "Test White", creator_plays_as_black: "0" }
+            expect(Game.last.user_turn).to eq(subject.current_user.id)
           end
         end
         context 'with black player creating the game' do
@@ -81,8 +72,9 @@ RSpec.describe GamesController, type: :controller do
               .count).to eq 16
           end
           it "does not set the user's turn if they are black player" do
-            pending "to be implemented"
-            this_should_not_get_executed
+            post :create, game: { game_name: "Test Black",
+                                  creator_plays_as_black: "1" }
+            expect(Game.last.user_turn).to be_nil
           end
         end
       end

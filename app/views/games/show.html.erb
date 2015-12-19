@@ -5,7 +5,13 @@
   <div class="col-md-6 col-md-offset-3 text-center">
     <h3><%= current_game.game_name %></h3>
     <br />
-    <h4>Current turn: <%= current_game.current_player.email %>
+    <% if current_game.user_turn == current_user.id %>
+      <h4 class="turn-indicator">It is your turn!</h4>
+    <% elsif current_game.user_turn.nil? %>
+      <h4 class="turn-indicator">Waiting for another player to join...</h4>
+    <% else  %>
+      <h4 class="turn-indicator">It is your opponent's turn</h4>
+    <% end %>
     <br />
   </div>
 </div>

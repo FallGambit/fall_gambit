@@ -71,7 +71,7 @@ class GamesController < ApplicationController
 
   def merge_player_color_choice_param
     if params[:game][:creator_plays_as_black] == '1'
-      { black_user_id: current_user.id, user_turn: current_user.id }
+      { black_user_id: current_user.id }
     else
       { white_user_id: current_user.id, user_turn: current_user.id }
     end
@@ -85,7 +85,7 @@ class GamesController < ApplicationController
 
   def update_player
     if @game.white_user_id.nil?
-      @game.update_attributes(white_user_id: current_user.id)
+      @game.update_attributes(white_user_id: current_user.id, user_turn: current_user.id)
       @game.set_pieces_white_user_id
     else
       @game.update_attributes(black_user_id: current_user.id)
