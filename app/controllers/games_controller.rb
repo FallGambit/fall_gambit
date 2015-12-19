@@ -23,7 +23,7 @@ class GamesController < ApplicationController
 
   def update
     @game = Game.find(params[:id])
-    if @game.white_user_id.nil? || @game.black_user_id.nil?
+    if @game.player_missing?
       update_player
       if @game.errors.empty?
         redirect_to game_path(@game)
