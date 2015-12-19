@@ -50,6 +50,7 @@ group :development, :test do
   gem 'rubocop', require: false
   gem 'faker'
   gem 'pry-byebug'
+  gem 'database_cleaner', '~> 1.5', '>= 1.5.1'
 end
 
 # Use ActiveModel has_secure_password
