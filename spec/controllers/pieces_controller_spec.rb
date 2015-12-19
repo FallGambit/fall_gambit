@@ -95,23 +95,60 @@ RSpec.describe PiecesController, type: :controller do
       expect(response).to redirect_to(@current_game)
     end
     it "will not allow player to move another player's pieces" do
-      pending "to be implemented"
-      this_should_not_get_executed
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      black_pawn = current_game.pawns.where(color: false, x_position: 0).first
+      put :update, id: black_pawn.id, x: 0, y: 5
+      expect(response).to redirect_to(current_game)
+      expect(flash[:alert]).to be_present
+      expect(flash[:alert]).to match("Not your piece!")
+      expect(black_pawn.x_y_coords).to eq [0,6]
     end
     it "will not let a player move until two players have joined the game" do
-      pending "to be implemented"
-      this_should_not_get_executed
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id, black_user_id: nil)
+      current_game.save!
+      white_user = current_game.white_user
+      sign_in white_user
+      white_pawn = current_game.pawns.where(color: true, x_position: 0).first
+      put :update, id: white_pawn.id, x: 0, y: 2
+      expect(response).to redirect_to(current_game)
+      expect(flash[:alert]).to be_present
+      expect(flash[:alert]).to match("Cannot move until both players have joined!")
+      expect(white_pawn.x_y_coords).to eq [0,1]
     end
     it "will update player turn to other user after move" do
-      pending "to be implemented"
-      this_should_not_get_executed
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      white_pawn = current_game.pawns.where(color: true, x_position: 0).first
+      put :update, id: white_pawn.id, x: 0, y: 2
+      expect(response).to redirect_to(current_game)
+      expect(flash[:alert]).to be_nil
+      white_pawn.reload
+      expect(white_pawn.x_y_coords).to eq [0,2]
+      current_game.reload
+      expect(current_game.user_turn).to eq current_game.black_user_id
     end
   end
 
   describe "#show" do
-    it "will not let a player move until two players have joined the game" do
-      pending "to be implemented"
-      this_should_not_get_executed
+    it "will redirect to game show until two players have joined the game" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id, black_user_id: nil)
+      current_game.save!
+      white_user = current_game.white_user
+      sign_in white_user
+      white_pawn = current_game.pawns.where(color: true, x_position: 0).first
+      put :show, id: white_pawn.id
+      expect(response).to redirect_to(current_game)
     end
   end
 

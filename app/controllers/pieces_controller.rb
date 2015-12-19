@@ -15,7 +15,7 @@ class PiecesController < ApplicationController
   def update
     if @piece.game.player_missing?
       flash[:alert] = "Cannot move until both players have joined!"
-      redirect_to game_path(@piece.game)
+      redirect_to game_path(@piece.game) and return
     end
     @piece = Piece.find(params[:id])
     new_x = params[:x].to_i
