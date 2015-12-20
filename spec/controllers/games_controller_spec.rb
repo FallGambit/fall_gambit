@@ -79,7 +79,7 @@ RSpec.describe GamesController, type: :controller do
         end
       end
       context 'with invalid params' do
-        it 're-renders #new form' do
+        it 're-renders #new form with bad game name' do
           post :create, game: { game_name: "" }
           expect(response).to render_template(:new)
         end
