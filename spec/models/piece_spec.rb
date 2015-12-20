@@ -170,8 +170,8 @@ RSpec.describe Piece, type: :model do
     end
 
     it 'will raise an Error Message with invalid input' do
-      expect { @white_queen.is_obstructed?(4, 3) }
-        .to raise_error("Invalid input or invalid move.")
+      @white_queen.is_obstructed?(4, 3)
+      expect(@white_queen.flash_message).to be_present
     end
 
     it 'will be false when horizontal axis path is clear' do
