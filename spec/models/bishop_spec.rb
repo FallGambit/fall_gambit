@@ -50,7 +50,7 @@ RSpec.describe Bishop, type: :model do
         # can't move off the board
         expect(bishop.valid_move?(-1, 1)).to be false
         # can't move onto tile of same colored piece
-        expect{bishop.valid_move?(3, 1)}.to raise_error(RuntimeError)
+        expect(bishop.valid_move?(3, 1)).to be false
       end
     end
   end

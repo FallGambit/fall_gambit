@@ -6,7 +6,9 @@ class Pawn < Piece
     return false if is_obstructed?(dest_x, dest_y)
     return false if dest_x < 0 || dest_x > 7 || dest_y < 0 || dest_y > 7
     return false if dest_piece && dest_piece.color == color
-    one_forward(dest_x, dest_y) || two_forward(dest_x, dest_y) || one_diagonal(dest_x, dest_y)
+    (one_forward(dest_x, dest_y) && dest_piece.nil?) ||
+    (two_forward(dest_x, dest_y) && dest_piece.nil?) ||
+    one_diagonal(dest_x, dest_y)
   end
 
   def white_moving
@@ -30,12 +32,10 @@ class Pawn < Piece
   end
 
   def one_diagonal(dest_x, dest_y)
-    unless game.pieces.where(:x_position => dest_x, :y_position => dest_y).nil?
-      if white_moving
-        dest_y == y_position + 1 && (dest_x == x_position + 1 || dest_x == x_position - 1)
-      else
-        dest_y == y_position - 1 && (dest_x == x_position + 1 || dest_x == x_position - 1)
-      end
+    if white_moving
+      dest_y == y_position + 1 && (dest_x == x_position + 1 || dest_x == x_position - 1)
+    else
+      dest_y == y_position - 1 && (dest_x == x_position + 1 || dest_x == x_position - 1)
     end
   end
 end
