@@ -83,6 +83,11 @@ RSpec.describe GamesController, type: :controller do
           post :create, game: { game_name: "" }
           expect(response).to render_template(:new)
         end
+        it 'raises error with bad user turn id value' do
+          expect{post :create, game: { game_name: "Test Black",
+                                creator_plays_as_black: "1", user_turn: (User.count+1) }}
+                                .to raise_error(ActiveRecord::InvalidForeignKey)
+        end
       end
     end
     context 'without being logged in' do
