@@ -297,4 +297,26 @@ RSpec.describe Game, type: :model do
       expect(game.check?).to eq(true)
     end
   end
+
+  describe "checkmate?" do
+    context "is in checkmate" do
+      it "if in check and no valid moves to get out" do
+      
+      end
+    end
+    context "is not in checkmate" do
+      it "if in check and can move king out" do
+      
+      end
+      it "if in check and can move a friendly piece to block" do
+      
+      end
+      it "if in check and can capture threatening piece" do
+      
+      end
+      it "if not in check" do
+        
+      end
+    end
+  end
 end

@@ -69,7 +69,7 @@ class Game < ActiveRecord::Base
   end
 
   def determine_check(king)
-    opponents_pieces = pieces.where(color: !king.color)
+    opponents_pieces = pieces.where(color: !king.color, , captured: false)
     opponents_pieces.each do |piece|
       if !piece.valid_move?(king.x_position, king.y_position)
         self.update_attributes(check_status: 0)
@@ -91,10 +91,10 @@ class Game < ActiveRecord::Base
     else
       return false
     end
-    opponents_pieces = pieces.where(color: !king.color)
+    opponents_pieces = pieces.where(color: !king.color, , captured: false)
     opponents_pieces.each do |piece|
       if piece.valid_move?(temp_king.x_position, temp_king.y_position)
-        return piece # will use this for processing in checkmate method
+        return piece # will use this for processing in checkmate method - will count as true
       end
     end
     return false
@@ -103,32 +103,142 @@ class Game < ActiveRecord::Base
   def checkmate?(king)
     return false unless determine_check(king)
     # try moving every direction to escape check, any valid move then false
-    if king.valid_move?(king.x_position, king.y_position+1) # up
-      temp_king = king.assign_attributes(x_position: king.x_position, y_position: king.y_position+1)
-      return false unless determine_check(temp_king)
+    if puts_in_check?(king, king.x_position, king.y_position+1) # up
+      threatening_pieces << puts_in_check?(king, king.x_position, king.y_position+1)
+    else
+      return false
     end
-    if king.valid_move?(king.x_position+1, king.y_position+1) # up-right
+    if puts_in_check?(king, king.x_position+1, king.y_position+1) # up-right
+      threatening_pieces << puts_in_check?(king, king.x_position+1, king.y_position+1)
+    else
+      return false
     end
-    if king.valid_move?(king.x_position+1, king.y_position) # right
+    if puts_in_check?(king, king.x_position+1, king.y_position) # right
+      threatening_pieces << puts_in_check?(king, king.x_position+1, king.y_position)
+    else
+      return false
     end
-    if king.valid_move?(king.x_position+1, king.y_position-1) # down-right
+    if puts_in_check?(king, king.x_position+1, king.y_position-1) # down-right
+      threatening_pieces << puts_in_check?(king, king.x_position+1, king.y_position-1)
+    else
+      return false
     end
-    if king.valid_move?(king.x_position, king.y_position-1) # down
+    if puts_in_check?(king, king.x_position, king.y_position-1) # down
+      threatening_pieces << puts_in_check?(king, king.x_position, king.y_position-1)
+    else
+      return false
     end
-    if king.valid_move?(king.x_position-1, king.y_position-1) # down-left
+    if puts_in_check?(king, king.x_position-1, king.y_position-1) # down-left
+      threatening_pieces << puts_in_check?(king, king.x_position-1, king.y_position-1)
+    else
+      return false
     end
-    if king.valid_move?(king.x_position-1, king.y_position) # left
+    if puts_in_check?(king, king.x_position-1, king.y_position) # left
+      threatening_pieces << puts_in_check?(king, king.x_position-1, king.y_position)
+    else
+      return false
     end
-    if king.valid_move?(king.x_position-1, king.y_position+1) # up-left
+    if puts_in_check?(king, king.x_position-1, king.y_position+1) # up-left
+      threatening_pieces << puts_in_check?(king, king.x_position-1, king.y_position+1)
+    else
+      return false
     end
-    if king.valid_move?(king.x_position, king.y_position+1) # up
+    if puts_in_check?(king, king.x_position, king.y_position+1) # up
+      threatening_pieces << puts_in_check?(king, king.x_position, king.y_position+1)
+    else
+      return false
     end
-    # determine threatening piece
-    # can any friendly piece capture threatening piece? then false
-    # can any friendly piece block check? then false
-      # can't block knight
-      # need to determine movement path - then see if any piece has valid move within that line
+    # determine threatening piece - will be in threatening_pieces
+    threatening_pieces.each do |enemy_piece|
+      range_to_check = range_between_pieces(king, enemy_piece) #get x and y coord of squares between king and enemy
+      friendly_pieces = pieces.where(color: king.color, captured: false)
+      friendly_pieces.each do |friendly_piece|
+        # can any friendly piece capture threatening piece? then false
+        return false if friendly_piece.valid_move?(enemy_piece.x_position, enemy_piece.y_position)
+        return true if enemy_piece.piece_type == "Knight" # can't block knight
+        # can any friendly piece block check? then false
+        # need to determine movement path - then see if any piece has valid move within that line
+        range_to_check.each do |square|
+          return false if friendly_piece.valid_move?(square[0], square[1]) #pull out x and y values to see if we can block
+        end
+        
+      end
+    end
     # otherwise, return true
+    return true
+  end
+
+  def range_between_pieces(piece_one, piece_two)
+    # will return an array of all x + y coords between 2 squares
+    # only horizontal, vertical, and diagonal ranges are allowed (will return empty array if invalid)
+    # does not include the start or end square
+    position_array = []
+    return position_array if piece_one == piece_two # same position
+    if piece_one.x_position == piece_two.x_position #vertical
+      vert_range = (piece_one.y_position..piece_two.y_position).to_a
+      vert_range = vert_range[1, vert_range.length - 2] # chop off first and last element
+      if piece_one.y_position > piece_two.y_position
+        vert_range = vert_range.reverse
+      end
+      vert_range.each do |y_coord|
+        position_array << [piece_one.x_position, y_coord]
+      end
+      return position_array
+    end
+    if piece_one.y_position == piece_two.y_position #horizontal
+      horiz_range = (piece_one.x_position..piece_two.x_position).to_a
+      horiz_range = horiz_range[1, horiz_range.length - 2] # chop off first and last element
+      if piece_one.x_position > piece_two.x_position
+        horiz_range = horiz_range.reverse
+      end
+      horiz_range.each do |x_coord|
+        position_array << [x_coord, piece_one.y_position]
+      end
+      return position_array
+    end
+    if (piece_one.x_position - piece_two.x_position).abs == (piece_one.y_position - piece_two.y_position).abs #diagonal
+      state_x = piece_one.x_position
+      state_y = piece_one.y_position
+      delta_x = piece_two.x_position - piece_one.x_position
+      delta_y = piece_two.y_position - piece_one.y_position
+      if delta_x == delta_y && delta_x > 0
+        # NE move: positive X, positive Y diagonal
+        steps = delta_x - 1
+        steps.times do
+          state_x += 1
+          state_y += 1
+          position_array << [state_x, state_y]
+        end
+        return position_array
+      elsif delta_x == delta_y && delta_x < 0
+        # SW move: negative X negative Y diagonal
+        steps = delta_x.abs - 1
+        steps.times do
+          state_x -= 1
+          state_y -= 1
+          position_array << [state_x, state_y]
+        end
+        return position_array
+      elsif delta_x > 0 && delta_y < 0 && delta_x == delta_y.abs
+        # SE move: positive X, negative Y diagonal
+        steps = delta_x - 1
+        steps.times do
+          state_x += 1
+          state_y -= 1
+          position_array << [state_x, state_y]
+        end
+        return position_array
+      elsif delta_x < 0 && delta_y > 0 && delta_x.abs == delta_y
+        # NW move: negative X, positive Y diagonal
+        steps = delta_y - 1
+        steps.times do
+          state_x -= 1
+          state_y += 1
+          position_array << [state_x, state_y]
+        end
+        return position_array
+      end
+    end
   end
 
   private
