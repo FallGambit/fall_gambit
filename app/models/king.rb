@@ -65,18 +65,22 @@ class King < Piece
   def puts_in_check?(rook)
     if queenside?(rook) # rook on queenside
       first_x_space = -1 # move left one
-      second_x_space = -2 # move left two
+      #second_x_space = -2 # move left two
     else # rook on kingside - checked they didn't move in castle method
       first_x_space = 1 # move right one
-      second_x_space = 2 # move right two
+      #second_x_space = 2 # move right two
     end
     # helper game method to see if square is in check
     first = self.game.puts_king_in_check?(self, x_position + first_x_space, y_position)
-    second = self.game.puts_king_in_check?(self, x_position + second_x_space, y_position)
+    orig_x_pos = self.x_position
+    self.update_attributes(x_position: x_position + first_x_space)
+    second = self.game.puts_king_in_check?(self, x_position + first_x_space, y_position)
     if (first || second)
       self.flash_message = "Cannot move King into check while castling!"
+      self.update_attributes(x_position: orig_x_pos)
       return true
     end
+    self.update_attributes(x_position: orig_x_pos)
     return false
   end
 

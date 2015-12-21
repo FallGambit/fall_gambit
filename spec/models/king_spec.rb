@@ -157,11 +157,15 @@ RSpec.describe King, type: :model do
         end
         it "does not allow castle if the king moves through check" do
           # set up situation where the king moves through check while castling
-          expect(false).to be false
+          @black_kingside_rook.update_attributes(x_position: 5, y_position: 5)
+          expect(@white_king.can_castle?(@white_kingside_rook)).to be false
+          expect(@white_king.flash_message).to eq "Cannot move King into check while castling!"
         end
         it "does not allow castle if the king ends in check" do
           # set up situation where king ends in check after a castle
-          expect(false).to be false
+          @black_kingside_rook.update_attributes(x_position: 6, y_position: 5)
+          expect(@white_king.can_castle?(@white_kingside_rook)).to be false
+          expect(@white_king.flash_message).to eq "Cannot move King into check while castling!"
         end
       end
       it "does not move the pieces" do
