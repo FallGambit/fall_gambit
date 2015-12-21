@@ -1,6 +1,6 @@
 class Rook < Piece
   def valid_move?(dest_x, dest_y)
-    dest_piece = game.pieces
+    dest_piece = self.game.pieces
                  .where("x_position = ? AND y_position = ?", dest_x, dest_y)
                  .take
     return false if is_obstructed?(dest_x, dest_y)

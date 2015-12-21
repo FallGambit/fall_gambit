@@ -69,7 +69,7 @@ class Game < ActiveRecord::Base
   end
 
   def determine_check(king)
-    opponents_pieces = pieces.where(color: !king.color, , captured: false)
+    opponents_pieces = pieces.where(color: !king.color, captured: false)
     opponents_pieces.each do |piece|
       if !piece.valid_move?(king.x_position, king.y_position)
         self.update_attributes(check_status: 0)
@@ -86,82 +86,100 @@ class Game < ActiveRecord::Base
   end
 
   def puts_in_check?(king, x_dest, y_dest)
+    king_orig_x_pos = king.x_position
+    king_orig_y_pos = king.y_position
     if king.valid_move?(x_dest, y_dest)
-      temp_king = king.assign_attributes(x_position: x_dest, y_position: y_dest)
+      king.update_attributes(x_position: x_dest, y_position: y_dest)
     else
-      return false
+      return nil #nil for bad moves
     end
-    opponents_pieces = pieces.where(color: !king.color, , captured: false)
+    opponents_pieces = king.game.pieces.where(color: !king.color, captured: false)
     opponents_pieces.each do |piece|
-      if piece.valid_move?(temp_king.x_position, temp_king.y_position)
+      if piece.valid_move?(king.x_position, king.y_position)
+        king.update_attributes(x_position: king_orig_x_pos, y_position: king_orig_y_pos)
         return piece # will use this for processing in checkmate method - will count as true
       end
     end
+    king.update_attributes(x_position: king_orig_x_pos, y_position: king_orig_y_pos)
     return false
   end
 
   def checkmate?(king)
+    threatening_pieces = []
     return false unless determine_check(king)
     # try moving every direction to escape check, any valid move then false
-    if puts_in_check?(king, king.x_position, king.y_position+1) # up
-      threatening_pieces << puts_in_check?(king, king.x_position, king.y_position+1)
-    else
+    result = puts_in_check?(king, king.x_position, king.y_position+1) # up
+    if result # returning a piece is equal to true
+      threatening_pieces << result # store piece
+    elsif !result.nil? # if not nil then it is a valid move not in check
+      return false # can escape check
+    end
+    result = puts_in_check?(king, king.x_position+1, king.y_position+1) # up-right
+    if result
+      threatening_pieces << result
+    elsif !result.nil?
       return false
     end
-    if puts_in_check?(king, king.x_position+1, king.y_position+1) # up-right
-      threatening_pieces << puts_in_check?(king, king.x_position+1, king.y_position+1)
-    else
+    result = puts_in_check?(king, king.x_position+1, king.y_position) # right
+    if result
+      threatening_pieces << result
+    elsif !result.nil?
       return false
     end
-    if puts_in_check?(king, king.x_position+1, king.y_position) # right
-      threatening_pieces << puts_in_check?(king, king.x_position+1, king.y_position)
-    else
+    result = puts_in_check?(king, king.x_position+1, king.y_position-1) # down-right
+    if result
+      threatening_pieces << result
+    elsif !result.nil?
       return false
     end
-    if puts_in_check?(king, king.x_position+1, king.y_position-1) # down-right
-      threatening_pieces << puts_in_check?(king, king.x_position+1, king.y_position-1)
-    else
+    result = puts_in_check?(king, king.x_position, king.y_position-1) # down
+    if result
+      threatening_pieces << result
+    elsif !result.nil?
       return false
     end
-    if puts_in_check?(king, king.x_position, king.y_position-1) # down
-      threatening_pieces << puts_in_check?(king, king.x_position, king.y_position-1)
-    else
+    result = puts_in_check?(king, king.x_position-1, king.y_position-1) # down-left
+    if result
+      threatening_pieces << result
+    elsif !result.nil?
       return false
     end
-    if puts_in_check?(king, king.x_position-1, king.y_position-1) # down-left
-      threatening_pieces << puts_in_check?(king, king.x_position-1, king.y_position-1)
-    else
+    result = puts_in_check?(king, king.x_position-1, king.y_position) # left
+    if result
+      threatening_pieces << result
+    elsif !result.nil?
       return false
     end
-    if puts_in_check?(king, king.x_position-1, king.y_position) # left
-      threatening_pieces << puts_in_check?(king, king.x_position-1, king.y_position)
-    else
+    result = puts_in_check?(king, king.x_position-1, king.y_position+1) # up-left
+    if result 
+      threatening_pieces << result
+    elsif !result.nil?
       return false
     end
-    if puts_in_check?(king, king.x_position-1, king.y_position+1) # up-left
-      threatening_pieces << puts_in_check?(king, king.x_position-1, king.y_position+1)
-    else
+    result = puts_in_check?(king, king.x_position, king.y_position+1) # up
+    if result
+      threatening_pieces << result
+    elsif !result.nil?
       return false
     end
-    if puts_in_check?(king, king.x_position, king.y_position+1) # up
-      threatening_pieces << puts_in_check?(king, king.x_position, king.y_position+1)
-    else
-      return false
-    end
+    # only pull out unique enemy pieces that are a threat
+    threatening_pieces.uniq!
     # determine threatening piece - will be in threatening_pieces
     threatening_pieces.each do |enemy_piece|
       range_to_check = range_between_pieces(king, enemy_piece) #get x and y coord of squares between king and enemy
-      friendly_pieces = pieces.where(color: king.color, captured: false)
+      friendly_pieces = self.pieces.where(color: king.color, captured: false).where.not(piece_type: "King")
+      binding.pry
       friendly_pieces.each do |friendly_piece|
         # can any friendly piece capture threatening piece? then false
         return false if friendly_piece.valid_move?(enemy_piece.x_position, enemy_piece.y_position)
         return true if enemy_piece.piece_type == "Knight" # can't block knight
         # can any friendly piece block check? then false
         # need to determine movement path - then see if any piece has valid move within that line
-        range_to_check.each do |square|
-          return false if friendly_piece.valid_move?(square[0], square[1]) #pull out x and y values to see if we can block
+        unless range_to_check.nil? # only has values if squares are not adjecent
+          range_to_check.each do |square|
+            return false if friendly_piece.valid_move?(square[0], square[1]) #pull out x and y values to see if we can block
+          end
         end
-        
       end
     end
     # otherwise, return true
@@ -176,23 +194,27 @@ class Game < ActiveRecord::Base
     return position_array if piece_one == piece_two # same position
     if piece_one.x_position == piece_two.x_position #vertical
       vert_range = (piece_one.y_position..piece_two.y_position).to_a
-      vert_range = vert_range[1, vert_range.length - 2] # chop off first and last element
-      if piece_one.y_position > piece_two.y_position
-        vert_range = vert_range.reverse
-      end
-      vert_range.each do |y_coord|
-        position_array << [piece_one.x_position, y_coord]
+      vert_range = vert_range[1, vert_range.length - 2] # chop off first and last element - nil if squares adjacent
+      unless vert_range.nil? # if squares aren't next to each other
+        if piece_one.y_position > piece_two.y_position
+          vert_range = vert_range.reverse
+        end
+        vert_range.each do |y_coord|
+          position_array << [piece_one.x_position, y_coord]
+        end
       end
       return position_array
     end
     if piece_one.y_position == piece_two.y_position #horizontal
       horiz_range = (piece_one.x_position..piece_two.x_position).to_a
       horiz_range = horiz_range[1, horiz_range.length - 2] # chop off first and last element
-      if piece_one.x_position > piece_two.x_position
-        horiz_range = horiz_range.reverse
-      end
-      horiz_range.each do |x_coord|
-        position_array << [x_coord, piece_one.y_position]
+      unless horiz_range.nil?
+        if piece_one.x_position > piece_two.x_position
+          horiz_range = horiz_range.reverse
+        end
+        horiz_range.each do |x_coord|
+          position_array << [x_coord, piece_one.y_position]
+        end
       end
       return position_array
     end

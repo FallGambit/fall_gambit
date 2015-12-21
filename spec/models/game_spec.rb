@@ -299,23 +299,42 @@ RSpec.describe Game, type: :model do
   end
 
   describe "checkmate?" do
+    before :each do
+      @game = FactoryGirl.create(:game)
+      @game.pieces.delete_all
+    end
     context "is in checkmate" do
       it "if in check and no valid moves to get out" do
-      
+        black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 7)
+        white_rook1 = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 6)
+        white_rook2 = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 7)
+        expect(@game.checkmate?(black_king)).to eq true
       end
     end
     context "is not in checkmate" do
       it "if in check and can move king out" do
-      
+        black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 7)
+        white_rook = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 7)
+        expect(@game.checkmate?(black_king)).to eq false
       end
       it "if in check and can move a friendly piece to block" do
-      
+        black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 7)
+        white_rook1 = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 6)
+        white_rook2 = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 7)
+        black_queen = Queen.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 3, y_position: 3)
+        binding.pry
+        expect(@game.checkmate?(black_king)).to eq false
       end
       it "if in check and can capture threatening piece" do
-      
+        black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 7)
+        white_rook1 = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 6)
+        white_rook2 = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 3, y_position: 7)
+        expect(@game.checkmate?(black_king)).to eq false
       end
       it "if not in check" do
-        
+        black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 7)
+        white_rook = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 6)
+        expect(@game.checkmate?(black_king)).to eq false
       end
     end
   end
