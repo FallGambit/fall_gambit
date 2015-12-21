@@ -72,16 +72,63 @@ class Game < ActiveRecord::Base
     opponents_pieces = pieces.where(color: !king.color)
     opponents_pieces.each do |piece|
       if !piece.valid_move?(king.x_position, king.y_position)
-        self.check_status = 0
+        self.update_attributes(check_status: 0)
       else
-        self.check_status = 1
-        break
+        self.update_attributes(check_status: 1)
+        return true
       end
     end
+    return false
   end
 
   def check?
     check_status == 1 ? true : false
+  end
+
+  def puts_in_check?(king, x_dest, y_dest)
+    if king.valid_move?(x_dest, y_dest)
+      temp_king = king.assign_attributes(x_position: x_dest, y_position: y_dest)
+    else
+      return false
+    end
+    opponents_pieces = pieces.where(color: !king.color)
+    opponents_pieces.each do |piece|
+      if piece.valid_move?(temp_king.x_position, temp_king.y_position)
+        return piece # will use this for processing in checkmate method
+      end
+    end
+    return false
+  end
+
+  def checkmate?(king)
+    return false unless determine_check(king)
+    # try moving every direction to escape check, any valid move then false
+    if king.valid_move?(king.x_position, king.y_position+1) # up
+      temp_king = king.assign_attributes(x_position: king.x_position, y_position: king.y_position+1)
+      return false unless determine_check(temp_king)
+    end
+    if king.valid_move?(king.x_position+1, king.y_position+1) # up-right
+    end
+    if king.valid_move?(king.x_position+1, king.y_position) # right
+    end
+    if king.valid_move?(king.x_position+1, king.y_position-1) # down-right
+    end
+    if king.valid_move?(king.x_position, king.y_position-1) # down
+    end
+    if king.valid_move?(king.x_position-1, king.y_position-1) # down-left
+    end
+    if king.valid_move?(king.x_position-1, king.y_position) # left
+    end
+    if king.valid_move?(king.x_position-1, king.y_position+1) # up-left
+    end
+    if king.valid_move?(king.x_position, king.y_position+1) # up
+    end
+    # determine threatening piece
+    # can any friendly piece capture threatening piece? then false
+    # can any friendly piece block check? then false
+      # can't block knight
+      # need to determine movement path - then see if any piece has valid move within that line
+    # otherwise, return true
   end
 
   private
