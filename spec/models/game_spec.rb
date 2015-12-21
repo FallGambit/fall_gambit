@@ -322,7 +322,6 @@ RSpec.describe Game, type: :model do
         white_rook1 = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 6)
         white_rook2 = Rook.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 7)
         black_queen = Queen.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 3, y_position: 3)
-        binding.pry
         expect(@game.checkmate?(black_king)).to eq false
       end
       it "if in check and can capture threatening piece" do

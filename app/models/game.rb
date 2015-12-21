@@ -69,15 +69,19 @@ class Game < ActiveRecord::Base
   end
 
   def determine_check(king)
-    opponents_pieces = pieces.where(color: !king.color, captured: false)
+    # if king is in check, returns list of pieces that threaten it - will evaluate to true if present
+    threatening_pieces = []
+    opponents_pieces = self.pieces.where(color: !king.color, captured: false)
     opponents_pieces.each do |piece|
-      if !piece.valid_move?(king.x_position, king.y_position)
-        self.update_attributes(check_status: 0)
-      else
+      if piece.valid_move?(king.x_position, king.y_position)
         self.update_attributes(check_status: 1)
-        return true
+        threatening_pieces << piece
       end
     end
+    if threatening_pieces.any?
+      return threatening_pieces
+    end
+    self.update_attributes(check_status: 0)
     return false
   end
 
@@ -85,7 +89,8 @@ class Game < ActiveRecord::Base
     check_status == 1 ? true : false
   end
 
-  def puts_in_check?(king, x_dest, y_dest)
+  def puts_king_in_check?(king, x_dest, y_dest)
+    # have to temporarily move the king around to see if it ends up in check
     king_orig_x_pos = king.x_position
     king_orig_y_pos = king.y_position
     if king.valid_move?(x_dest, y_dest)
@@ -93,11 +98,11 @@ class Game < ActiveRecord::Base
     else
       return nil #nil for bad moves
     end
-    opponents_pieces = king.game.pieces.where(color: !king.color, captured: false)
+    opponents_pieces = self.pieces.where(color: !king.color, captured: false)
     opponents_pieces.each do |piece|
       if piece.valid_move?(king.x_position, king.y_position)
         king.update_attributes(x_position: king_orig_x_pos, y_position: king_orig_y_pos)
-        return piece # will use this for processing in checkmate method - will count as true
+        return true 
       end
     end
     king.update_attributes(x_position: king_orig_x_pos, y_position: king_orig_y_pos)
@@ -105,70 +110,49 @@ class Game < ActiveRecord::Base
   end
 
   def checkmate?(king)
-    threatening_pieces = []
-    return false unless determine_check(king)
+    threatening_pieces = determine_check(king)
+    return false unless threatening_pieces
     # try moving every direction to escape check, any valid move then false
-    result = puts_in_check?(king, king.x_position, king.y_position+1) # up
-    if result # returning a piece is equal to true
-      threatening_pieces << result # store piece
-    elsif !result.nil? # if not nil then it is a valid move not in check
+    result = puts_king_in_check?(king, king.x_position, king.y_position+1) # up
+    if !result && !result.nil? # if false and not nil then it is a valid move out of check
       return false # can escape check
     end
-    result = puts_in_check?(king, king.x_position+1, king.y_position+1) # up-right
-    if result
-      threatening_pieces << result
-    elsif !result.nil?
+    result = puts_king_in_check?(king, king.x_position+1, king.y_position+1) # up-right
+    if !result && !result.nil?
       return false
     end
-    result = puts_in_check?(king, king.x_position+1, king.y_position) # right
-    if result
-      threatening_pieces << result
-    elsif !result.nil?
+    result = puts_king_in_check?(king, king.x_position+1, king.y_position) # right
+    if !result && !result.nil?
       return false
     end
-    result = puts_in_check?(king, king.x_position+1, king.y_position-1) # down-right
-    if result
-      threatening_pieces << result
-    elsif !result.nil?
+    result = puts_king_in_check?(king, king.x_position+1, king.y_position-1) # down-right
+    if !result && !result.nil?
       return false
     end
-    result = puts_in_check?(king, king.x_position, king.y_position-1) # down
-    if result
-      threatening_pieces << result
-    elsif !result.nil?
+    result = puts_king_in_check?(king, king.x_position, king.y_position-1) # down
+    if !result && !result.nil?
       return false
     end
-    result = puts_in_check?(king, king.x_position-1, king.y_position-1) # down-left
-    if result
-      threatening_pieces << result
-    elsif !result.nil?
+    result = puts_king_in_check?(king, king.x_position-1, king.y_position-1) # down-left
+    if !result && !result.nil?
       return false
     end
-    result = puts_in_check?(king, king.x_position-1, king.y_position) # left
-    if result
-      threatening_pieces << result
-    elsif !result.nil?
+    result = puts_king_in_check?(king, king.x_position-1, king.y_position) # left
+    if !result && !result.nil?
       return false
     end
-    result = puts_in_check?(king, king.x_position-1, king.y_position+1) # up-left
-    if result 
-      threatening_pieces << result
-    elsif !result.nil?
+    result = puts_king_in_check?(king, king.x_position-1, king.y_position+1) # up-left
+    if !result && !result.nil?
       return false
     end
-    result = puts_in_check?(king, king.x_position, king.y_position+1) # up
-    if result
-      threatening_pieces << result
-    elsif !result.nil?
+    result = puts_king_in_check?(king, king.x_position, king.y_position+1) # up
+    if !result && !result.nil?
       return false
     end
-    # only pull out unique enemy pieces that are a threat
-    threatening_pieces.uniq!
     # determine threatening piece - will be in threatening_pieces
     threatening_pieces.each do |enemy_piece|
       range_to_check = range_between_pieces(king, enemy_piece) #get x and y coord of squares between king and enemy
       friendly_pieces = self.pieces.where(color: king.color, captured: false).where.not(piece_type: "King")
-      binding.pry
       friendly_pieces.each do |friendly_piece|
         # can any friendly piece capture threatening piece? then false
         return false if friendly_piece.valid_move?(enemy_piece.x_position, enemy_piece.y_position)
@@ -193,12 +177,13 @@ class Game < ActiveRecord::Base
     position_array = []
     return position_array if piece_one == piece_two # same position
     if piece_one.x_position == piece_two.x_position #vertical
-      vert_range = (piece_one.y_position..piece_two.y_position).to_a
+      if piece_one.y_position > piece_two.y_position
+        vert_range = (piece_two.y_position..piece_one.y_position).to_a
+      else
+        vert_range = (piece_one.y_position..piece_two.y_position).to_a
+      end
       vert_range = vert_range[1, vert_range.length - 2] # chop off first and last element - nil if squares adjacent
       unless vert_range.nil? # if squares aren't next to each other
-        if piece_one.y_position > piece_two.y_position
-          vert_range = vert_range.reverse
-        end
         vert_range.each do |y_coord|
           position_array << [piece_one.x_position, y_coord]
         end
@@ -206,12 +191,13 @@ class Game < ActiveRecord::Base
       return position_array
     end
     if piece_one.y_position == piece_two.y_position #horizontal
-      horiz_range = (piece_one.x_position..piece_two.x_position).to_a
+      if piece_one.x_position > piece_two.x_position
+        horiz_range = (piece_two.x_position..piece_one.x_position).to_a
+      else
+        horiz_range = (piece_one.x_position..piece_two.x_position).to_a
+      end
       horiz_range = horiz_range[1, horiz_range.length - 2] # chop off first and last element
       unless horiz_range.nil?
-        if piece_one.x_position > piece_two.x_position
-          horiz_range = horiz_range.reverse
-        end
         horiz_range.each do |x_coord|
           position_array << [x_coord, piece_one.y_position]
         end
