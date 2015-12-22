@@ -72,6 +72,7 @@ class King < Piece
     end
     # helper game method to see if square is in check
     first = self.game.puts_king_in_check?(self, x_position + first_x_space, y_position)
+    # need to pretend to move king forward one so move is valid
     orig_x_pos = self.x_position
     self.update_attributes(x_position: x_position + first_x_space)
     second = self.game.puts_king_in_check?(self, x_position + first_x_space, y_position)

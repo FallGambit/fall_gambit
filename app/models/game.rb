@@ -70,6 +70,8 @@ class Game < ActiveRecord::Base
 
   def determine_check(king)
     # if king is in check, returns list of pieces that threaten it - will evaluate to true if present
+    # instead of just returning true/false, I have this method return the list of enemy pieces putting the
+    # king in check to try to DRY up the code
     threatening_pieces = []
     opponents_pieces = self.pieces.where(color: !king.color, captured: false)
     opponents_pieces.each do |piece|
@@ -94,6 +96,11 @@ class Game < ActiveRecord::Base
     king_orig_x_pos = king.x_position
     king_orig_y_pos = king.y_position
     if king.valid_move?(x_dest, y_dest)
+      # see if enemy piece is there, temporarily remove it for these checks
+      destination_piece = self.pieces.where(color: !king.color, x_position: x_dest, y_position: y_dest).first
+      if destination_piece
+        destination_piece.update_attributes(x_position: nil, y_position: nil, captured: true)
+      end
       king.update_attributes(x_position: x_dest, y_position: y_dest)
     else
       return nil #nil for bad moves
@@ -102,17 +109,24 @@ class Game < ActiveRecord::Base
     opponents_pieces.each do |piece|
       if piece.valid_move?(king.x_position, king.y_position)
         king.update_attributes(x_position: king_orig_x_pos, y_position: king_orig_y_pos)
+        if destination_piece
+          destination_piece.update_attributes(x_position: x_dest, y_position: y_dest, captured: false)
+        end
         return true 
       end
     end
     king.update_attributes(x_position: king_orig_x_pos, y_position: king_orig_y_pos)
+    if destination_piece
+      destination_piece.update_attributes(x_position: x_dest, y_position: y_dest, captured: false)
+    end
     return false
   end
 
   def checkmate?(king)
-    threatening_pieces = determine_check(king)
-    return false unless threatening_pieces
-    # try moving every direction to escape check, any valid move then false
+    # going to assume for now that a valid king object is passed in...
+    threatening_pieces = determine_check(king) # piece(s) putting king into check
+    return false unless threatening_pieces # king isn't in check! 
+    # try moving king in every direction to escape check, if any valid move then checkmate is false
     result = puts_king_in_check?(king, king.x_position, king.y_position+1) # up
     if !result && !result.nil? # if false and not nil then it is a valid move out of check
       return false # can escape check
@@ -149,29 +163,56 @@ class Game < ActiveRecord::Base
     if !result && !result.nil?
       return false
     end
-    # determine threatening piece - will be in threatening_pieces
+
     threatening_pieces.each do |enemy_piece|
       range_to_check = range_between_pieces(king, enemy_piece) #get x and y coord of squares between king and enemy
-      friendly_pieces = self.pieces.where(color: king.color, captured: false).where.not(piece_type: "King")
+      friendly_pieces = self.pieces.where(color: king.color, captured: false).where.not(piece_type: "King") # returns empty array if no results
       friendly_pieces.each do |friendly_piece|
-        # can any friendly piece capture threatening piece? then false
-        return false if friendly_piece.valid_move?(enemy_piece.x_position, enemy_piece.y_position)
-        return true if enemy_piece.piece_type == "Knight" # can't block knight
-        # can any friendly piece block check? then false
-        # need to determine movement path - then see if any piece has valid move within that line
-        unless range_to_check.nil? # only has values if squares are not adjecent
-          range_to_check.each do |square|
-            return false if friendly_piece.valid_move?(square[0], square[1]) #pull out x and y values to see if we can block
+        # can any friendly piece capture threatening piece? then break for this threatening piece
+        if friendly_piece.valid_move?(enemy_piece.x_position, enemy_piece.y_position)
+          enemy_piece_orig_x_pos = enemy_piece.x_position
+          enemy_piece_orig_y_pos = enemy_piece.y_position
+          friendly_piece_orig_x_pos = friendly_piece.x_position
+          friendly_piece_orig_y_pos = friendly_piece.y_position
+          # temporarily move pieces to determine if king still in check
+          enemy_piece.update_attributes(x_position: nil, y_position: nil, captured: true)
+          friendly_piece.update_attributes(x_position: enemy_piece_orig_x_pos, y_position: enemy_piece_orig_y_pos)
+          king_still_checked = determine_check(king)
+          # set pieces back to original state
+          enemy_piece.update_attributes(x_position: enemy_piece_orig_x_pos, y_position: enemy_piece_orig_y_pos, captured: false)
+          friendly_piece.update_attributes(x_position: friendly_piece_orig_x_pos, y_position: friendly_piece_orig_y_pos)
+          if !king_still_checked # capturing enemy piece takes king out of check
+            return false
           end
         end
-      end
-    end
-    # otherwise, return true
+        unless enemy_piece.piece_type == "Knight" # can't block knight, and it couldn't be captured by this friendly piece
+          # can this friendly piece block check?
+          # determine movement path from enemy to king - then see if any friendly piece has valid move within that line
+          if !range_to_check.nil? # either an enemy knight or a non-threat (shouldn't happen) - not vert, horiz, or diagonal
+            range_to_check.each do |square| # loop through every square between enemy and king (not including their positions)
+              if friendly_piece.valid_move?(square[0], square[1]) #pull out x and y values to see if we can block
+                friendly_piece_orig_x_pos = friendly_piece.x_position
+                friendly_piece_orig_y_pos = friendly_piece.y_position
+                # temporarily update friendly piece to blocking position to see if it blocks check
+                friendly_piece.update_attributes(x_position: square[0], y_position: square[1])
+                king_still_checked = determine_check(king)
+                # set friendly piece back
+                friendly_piece.update_attributes(x_position: friendly_piece_orig_x_pos, y_position: friendly_piece_orig_y_pos)
+                if !king_still_checked # blocking this enemy piece will take friendly king out of check
+                  return false # not checkmate
+                end
+              end # if piece can move into blocking path
+            end # range loop
+          end # nil check
+        end # check if enemy is knight to skip block-checking
+      end # friendly pieces
+    end # enemy pieces
+    # if nothing can get king out of check, then it is checkmate :(
     return true
   end
 
   def range_between_pieces(piece_one, piece_two)
-    # will return an array of all x + y coords between 2 squares
+    # will return an array of all x + y coords between 2 squares occupied by the 2 passed in pieces
     # only horizontal, vertical, and diagonal ranges are allowed (will return empty array if invalid)
     # does not include the start or end square
     position_array = []
@@ -182,7 +223,7 @@ class Game < ActiveRecord::Base
       else
         vert_range = (piece_one.y_position..piece_two.y_position).to_a
       end
-      vert_range = vert_range[1, vert_range.length - 2] # chop off first and last element - nil if squares adjacent
+      vert_range = vert_range[1, vert_range.length - 2] # chop off first and last element (for enemy and king) - nil if squares adjacent
       unless vert_range.nil? # if squares aren't next to each other
         vert_range.each do |y_coord|
           position_array << [piece_one.x_position, y_coord]
@@ -196,7 +237,7 @@ class Game < ActiveRecord::Base
       else
         horiz_range = (piece_one.x_position..piece_two.x_position).to_a
       end
-      horiz_range = horiz_range[1, horiz_range.length - 2] # chop off first and last element
+      horiz_range = horiz_range[1, horiz_range.length - 2] # chop off first and last element (for enemy and king) - nil if squares adjacent
       unless horiz_range.nil?
         horiz_range.each do |x_coord|
           position_array << [x_coord, piece_one.y_position]
