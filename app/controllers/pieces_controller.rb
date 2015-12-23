@@ -27,7 +27,8 @@ class PiecesController < ApplicationController
     begin
       PrivatePub.publish_to("/games/#{@piece.game.id}", "window.location.reload();")
     rescue Errno::ECONNREFUSED
-      flash.now[:alert] = "Pushing to Faye Failed"
+      # flash.now[:alert] = "Pushing to Faye Failed"
+      return
     end
   end
 
