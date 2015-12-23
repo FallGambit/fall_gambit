@@ -7,9 +7,9 @@
     <br />
     <% if !current_game.game_winner.nil? %>
       <% if current_game.game_winner == current_game.white_user_id %>
-        <h4 class="turn-indicator">Game over, white player wins!</h4>
+        <h4 class="turn-indicator">Checkmate! White player wins!</h4>
       <% else %>
-        <h4 class="turn-indicator">Game over, black player wins!</h4>
+        <h4 class="turn-indicator">Checkmate! Black player wins!</h4>
       <% end %>
     <% elsif current_game.user_turn == current_user.id %>
       <% if current_game.user_turn == current_game.white_user_id %>
@@ -18,7 +18,7 @@
         <h4 class="turn-indicator">It is your turn! (black)</h4>
       <% end %>
     <% elsif current_game.player_missing? %>
-      <% if current_game.white_player_id.nil? %>
+      <% if current_game.white_user_id.nil? %>
         <h4 class="turn-indicator">Waiting for white player to join...</h4>
       <% else %>
         <h4 class="turn-indicator">Waiting for black player to join...</h4>
@@ -31,8 +31,8 @@
       <% end %>
     <% end %>
     <br />
-    <% if current_game.check? %>
-      <% if current_game.user_turn == current_game.white_player_id %>
+    <% if current_game.check? && current_game.game_winner.nil?%>
+      <% if current_game.user_turn == current_game.white_user_id %>
         <h4 class ="check-message">White player is in check!</h4>
       <% else %>
         <h4 class ="check-message">Black player is in check!</h4>

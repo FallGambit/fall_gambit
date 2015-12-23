@@ -1,20 +1,11 @@
 class PiecesController < ApplicationController
   before_action :authenticate_user!
-  before_action :must_be_users_turn, :must_be_users_piece
+  before_action :game_must_not_be_over, :must_be_users_turn, :must_be_users_piece
   after_action :flash_notice, only: :update
 
   def show
     if @piece.game.player_missing?
       flash[:alert] = "Cannot move until both players have joined!"
-      redirect_to game_path(@piece.game)
-    end
-    if !@piece.game.game_winner.nil?
-      if @piece.game.game_winner == @piece.game.black_user_id
-        winner = "black"
-      else
-        winner = "white"
-      end
-      flash[:alert] = "Game is over, " + winner + " wins!"
       redirect_to game_path(@piece.game)
     end
     @piece = Piece.find(params[:id])
@@ -39,7 +30,7 @@ class PiecesController < ApplicationController
         end
         flash[:alert] = winner + " wins!"
       else
-        @piece.game.determine_check(@piece.game.kings.where.not(color: @piece.color).first)
+        @piece.game.determine_check(@piece.game.kings.where.not(color: @piece.color).first) # set check field in game model
         @piece.game.finish_turn(@piece.user) # otherwise turn goes to other player
       end
     end
@@ -94,6 +85,18 @@ class PiecesController < ApplicationController
 
   def piece_type(piece)
     piece.present? ? piece.piece_type : nil
+  end
+
+  def game_must_not_be_over
+    if !current_game.game_winner.nil?
+      if @piece.game.game_winner == @piece.game.black_user_id
+        winner = "black"
+      else
+        winner = "white"
+      end
+      flash[:alert] = "Game is over, " + winner + " wins!"
+      redirect_to game_path(@piece.game)
+    end
   end
 
   def must_be_users_turn
