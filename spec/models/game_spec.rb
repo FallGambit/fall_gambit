@@ -297,4 +297,29 @@ RSpec.describe Game, type: :model do
       expect(game.check?).to eq(true)
     end
   end
+
+  describe "stalemate" do
+    before :each do
+      @game = FactorGirl.create(:game)
+      @game.pieces.delete_all
+    end
+    it "is in stalemate when no legal moves available without moving into check - white king only" do
+      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 4, y_position: 2)
+      black_bishop = Bishop.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 3)
+      black_rook1 = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 1)
+      black_rook2 = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 3)
+      expect(@game.determine_check(white_king)).to eq false
+      expect(@game.stalemate?(white_king)).to eq true
+    end
+    it "is in stalemate when no legal moves available without moving into check - white king and bishop" do
+      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 4, y_position: 2)
+      white_bishop = Bishop.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 4, y_position: 1)
+      black_queen = Queen.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 0)
+      black_bishop = Bishop.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 3)
+      black_rook1 = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 1)
+      black_rook2 = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 3)
+      expect(@game.determine_check(white_king)).to eq false
+      expect(@game.stalemate?(white_king)).to eq true
+    end
+  end
 end
