@@ -27,7 +27,11 @@ class GamesController < ApplicationController
       update_player
       if @game.errors.empty?
         redirect_to game_path(@game)
-        PrivatePub.publish_to("/games/#{@game.id}", "window.location.reload();")
+        begin
+          PrivatePub.publish_to("/games/#{@game.id}", "window.location.reload();")
+        rescue Errno::ECONNREFUSED
+          flash.now[:alert] = "Pushing to Faye Failed"
+        end
         return
       end
     end
