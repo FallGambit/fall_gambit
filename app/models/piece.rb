@@ -44,6 +44,10 @@ class Piece < ActiveRecord::Base
       self.flash_message = "Invalid move: [error to be defined]"
       return false
     end
+    if game.puts_king_in_check?(self, x, y) # putting this in for now, will update when sharon's branch is merged
+      self.flash_message = "Can't put yourself in check!"
+      return false 
+    end
     if @target.nil?
       update_attributes(:x_position => x, :y_position => y, :has_moved => true)
     else

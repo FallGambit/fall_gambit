@@ -8,6 +8,15 @@ class PiecesController < ApplicationController
       flash[:alert] = "Cannot move until both players have joined!"
       redirect_to game_path(@piece.game)
     end
+    if !@piece.game.game_winner.nil?
+      if @piece.game.game_winner == @piece.game.black_user_id
+        winner = "black"
+      else
+        winner = "white"
+      end
+      flash[:alert] = "Game is over, " + winner + " wins!"
+      redirect_to game_path(@piece.game)
+    end
     @piece = Piece.find(params[:id])
     @current_game = current_game
   end
@@ -21,7 +30,18 @@ class PiecesController < ApplicationController
     new_x = params[:x].to_i
     new_y = params[:y].to_i
     if @piece.move_to!(new_x, new_y)
-      @piece.game.finish_turn(@piece.user)
+      if @piece.game.checkmate?(@piece.game.kings.where.not(color: @piece.color).first) # current player placed other player in checkmate - wins!
+        @piece.game.update_attributes(game_winner: @piece.user_id) # set game winner
+        if @piece.game.game_winner == @piece.game.black_user_id
+          winner = "Black"
+        else
+          winner = "White"
+        end
+        flash[:alert] = winner + " wins!"
+      else
+        @piece.game.determine_check(@piece.game.kings.where.not(color: @piece.color).first)
+        @piece.game.finish_turn(@piece.user) # otherwise turn goes to other player
+      end
     end
     redirect_to game_path(@piece.game)
   end
