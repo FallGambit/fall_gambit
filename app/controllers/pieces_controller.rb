@@ -23,6 +23,7 @@ class PiecesController < ApplicationController
     if @piece.move_to!(new_x, new_y)
       @piece.game.finish_turn(@piece.user)
     end
+    PrivatePub.publish_to("/games/" + @piece.game.id.to_s, "window.location.reload();")
     redirect_to game_path(@piece.game)
   end
 

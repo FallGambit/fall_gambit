@@ -26,6 +26,7 @@ class GamesController < ApplicationController
     if @game.player_missing?
       update_player
       if @game.errors.empty?
+        PrivatePub.publish_to("/games/" + @game.id.to_s, "window.location.reload();")
         redirect_to game_path(@game)
         return
       end
