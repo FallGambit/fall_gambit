@@ -6,7 +6,12 @@ class PiecesController < ApplicationController
   def show
     if @piece.game.player_missing?
       flash[:alert] = "Cannot move until both players have joined!"
-      redirect_to game_path(@piece.game)
+      redirect_to game_path(@piece.game) and return
+    end
+    @piece.game.user_turn == @piece.game.white_user_id ? current_player_turn = "White" : current_player_turn = "Black"
+    if @piece.game.draw?
+      flash[:alert] = "Stalemate! " + current_player_turn + " can't move without going into check!"
+      redirect_to game_path(@piece.game) and return
     end
     @piece = Piece.find(params[:id])
     @current_game = current_game
@@ -17,10 +22,21 @@ class PiecesController < ApplicationController
       flash[:alert] = "Cannot move until both players have joined!"
       redirect_to game_path(@piece.game) and return
     end
+    @piece.game.user_turn == @piece.game.white_user_id ? current_player_turn = "White" : current_player_turn = "Black"
+    if @piece.game.draw?
+      flash[:alert] = "Stalemate! " + current_player_turn + " can't move without going into check!"
+      redirect_to game_path(@piece.game) and return
+    end
     @piece = Piece.find(params[:id])
     new_x = params[:x].to_i
     new_y = params[:y].to_i
     if @piece.move_to!(new_x, new_y)
+      # check for stalemate of other player after move and set game model field
+      opponent_king = @piece.game.kings.where.not(color: @piece.color).first
+      if @piece.game.stalemate?(opponent_king)
+        flash[:alert] = current_player_turn + " is in stalemate! Game is a draw."
+      end
+      # end turn
       @piece.game.finish_turn(@piece.user)
     end
     redirect_to game_path(@piece.game)

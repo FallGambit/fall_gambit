@@ -300,26 +300,62 @@ RSpec.describe Game, type: :model do
 
   describe "stalemate" do
     before :each do
-      @game = FactorGirl.create(:game)
+      @game = FactoryGirl.create(:game)
+      @game.assign_attributes(user_turn: @game.white_user_id)
+      @game.save!
       @game.pieces.delete_all
     end
-    it "is in stalemate when no legal moves available without moving into check - white king only" do
-      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 4, y_position: 2)
-      black_bishop = Bishop.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 3)
-      black_rook1 = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 1)
-      black_rook2 = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 3)
+    it "is in stalemate when no legal moves available without moving into check - wikipedia diagram 1" do
+      # changed black to white from the example since our board is technically reversed
+      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 5, y_position: 0)
+      black_pawn = Pawn.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 5, y_position: 1)
+      black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 5, y_position: 2)
       expect(@game.determine_check(white_king)).to eq false
       expect(@game.stalemate?(white_king)).to eq true
+      expect(@game.draw?).to eq true
     end
-    it "is in stalemate when no legal moves available without moving into check - white king and bishop" do
-      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 4, y_position: 2)
-      white_bishop = Bishop.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 4, y_position: 1)
-      black_queen = Queen.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 0)
-      black_bishop = Bishop.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 3)
-      black_rook1 = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 1)
-      black_rook2 = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 3)
+    it "is in stalemate when no legal moves available without moving into check - wikipedia diagram 2" do
+      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 0, y_position: 0)
+      white_bishop = Bishop.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 1, y_position: 0)
+      black_rook = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 0)
+      black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 1, y_position: 2)
       expect(@game.determine_check(white_king)).to eq false
       expect(@game.stalemate?(white_king)).to eq true
+      expect(@game.draw?).to eq true
+    end
+    it "is in stalemate when no legal moves available without moving into check - wikipedia diagram 3" do
+      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 0, y_position: 7)
+      black_rook = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 1, y_position: 6)
+      black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 2, y_position: 5)
+      expect(@game.determine_check(white_king)).to eq false
+      expect(@game.stalemate?(white_king)).to eq true
+      expect(@game.draw?).to eq true
+    end
+    it "is in stalemate when no legal moves available without moving into check - wikipedia diagram 4" do
+      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 0, y_position: 7)
+      black_queen = Queen.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 1, y_position: 5)
+      black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 6, y_position: 3)
+      expect(@game.determine_check(white_king)).to eq false
+      expect(@game.stalemate?(white_king)).to eq true
+      expect(@game.draw?).to eq true
+    end
+    it "is in stalemate when no legal moves available without moving into check - wikipedia diagram 5" do
+      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 0, y_position: 0)
+      black_pawn = Pawn.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 0, y_position: 1)
+      black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 0, y_position: 2)
+      black_bishop = Bishop.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 5, y_position: 4)
+      expect(@game.determine_check(white_king)).to eq false
+      expect(@game.stalemate?(white_king)).to eq true
+      @game.stalemate?(white_king)
+      expect(@game.draw?).to eq true
+    end
+    it "is not in stalemate when a legal move is available" do
+      white_king = King.create(color: true, game_id: @game.id, user_id: @game.white_user_id, x_position: 4, y_position: 2)
+      black_bishop = Bishop.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 3)
+      black_rook = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 3)
+      expect(@game.determine_check(white_king)).to eq false
+      expect(@game.stalemate?(white_king)).to eq false
+      expect(@game.draw?).to eq false
     end
   end
 end

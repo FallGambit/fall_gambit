@@ -69,19 +69,75 @@ class Game < ActiveRecord::Base
   end
 
   def determine_check(king)
-    opponents_pieces = pieces.where(color: !king.color)
+    # if king is in check, returns list of pieces that threaten it - will evaluate to true if present
+    # instead of just returning true/false, I have this method return the list of enemy pieces putting the
+    # king in check to try to DRY up the code
+    threatening_pieces = []
+    opponents_pieces = self.pieces.where(color: !king.color, captured: false)
     opponents_pieces.each do |piece|
-      if !piece.valid_move?(king.x_position, king.y_position)
-        self.check_status = 0
-      else
-        self.check_status = 1
-        break
+      if piece.valid_move?(king.x_position, king.y_position)
+        self.update_attributes(check_status: 1)
+        threatening_pieces << piece
       end
     end
+    if threatening_pieces.any?
+      return threatening_pieces
+    end
+    self.update_attributes(check_status: 0)
+    return false
   end
 
   def check?
     check_status == 1 ? true : false
+  end
+
+  def puts_king_in_check?(moving_piece, x_dest, y_dest) # move any piece and see if it puts that piece's color king in check
+    # have to temporarily move the piece around to see if the king ends up in check
+    king = self.pieces.where(color: moving_piece.color, piece_type: "King").first #player's king
+    piece_orig_x_pos = moving_piece.x_position
+    piece_orig_y_pos = moving_piece.y_position
+    if moving_piece.valid_move?(x_dest, y_dest)
+      # see if enemy piece is there, temporarily remove it for these checks
+      destination_piece = self.pieces.where(color: !king.color, x_position: x_dest, y_position: y_dest).first
+      if destination_piece
+        destination_piece.update_attributes(x_position: nil, y_position: nil, captured: true)
+      end
+      moving_piece.update_attributes(x_position: x_dest, y_position: y_dest)
+      king.reload # this is in case moving_piece is the king, updates king variable to match
+    else
+      return nil #nil for bad moves
+    end
+    opponents_pieces = self.pieces.where(color: !king.color, captured: false)
+    opponents_pieces.each do |piece| # see if any piece can capture king
+      if piece.valid_move?(king.x_position, king.y_position)
+        moving_piece.update_attributes(x_position: piece_orig_x_pos, y_position: piece_orig_y_pos)
+        if destination_piece
+          destination_piece.update_attributes(x_position: x_dest, y_position: y_dest, captured: false)
+        end
+        return true 
+      end
+    end
+    moving_piece.update_attributes(x_position: piece_orig_x_pos, y_position: piece_orig_y_pos)
+    if destination_piece
+      destination_piece.update_attributes(x_position: x_dest, y_position: y_dest, captured: false)
+    end
+    return false
+  end
+
+  def stalemate?(king)
+    friendly_pieces = pieces.where(color: king.color, captured: false)
+    return false if determine_check(king) # king can't currently be in check
+    (0..7).to_a.each do |row| # loop through all board squares 
+      (0..7).to_a.each do |column| # see if and valid moves which don't put king in check
+        friendly_pieces.each do |friendly_piece|
+          if friendly_piece.valid_move?(row, column) && !puts_king_in_check?(friendly_piece, row, column)
+            return false # found at least one valid move, so not a stalemate
+          end
+        end
+      end
+    end
+    self.update_attributes(draw: true) # set database field
+    return true # no valid moves, stalemate!
   end
 
   private
