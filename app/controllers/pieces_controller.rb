@@ -26,6 +26,11 @@ class PiecesController < ApplicationController
     respond_to do |format|
       format.json { render :json => @piece.to_json }
       format.html { redirect_to game_path(@piece.game) }
+    begin
+      PrivatePub.publish_to("/games/#{@piece.game.id}", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      # flash.now[:alert] = "Pushing to Faye Failed"
+      return
     end
   end
 
