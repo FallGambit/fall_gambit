@@ -12,7 +12,7 @@
         <h4 class="turn-indicator">It is your turn! (black)</h4>
       <% end %>
     <% elsif current_game.player_missing? %>
-      <% if current_game.white_player_id.nil? %>
+      <% if current_game.white_user_id.nil? %>
         <h4 class="turn-indicator">Waiting for white player to join...</h4>
       <% else %>
         <h4 class="turn-indicator">Waiting for black player to join...</h4>
@@ -37,3 +37,4 @@
   <% end %>
 </table>
 <% end %>
+<%= subscribe_to "/games/" + @game.id.to_s %>
