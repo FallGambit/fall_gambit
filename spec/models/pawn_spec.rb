@@ -111,6 +111,28 @@ RSpec.describe Pawn, type: :model do
         actual = white_pawn.valid_move?(0, 2)
         expect(actual).to be(false)
       end
+      it "should be false when moving 2 spaces forward diagonal-right when not capturing and hasn't moved" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_pawn = Pawn.create(x_position: 2,
+                                 y_position: 1,
+                                 game_id: board.id,
+                                 color: true)
+        board.reload
+        actual = white_pawn.valid_move?(4, 3)
+        expect(actual).to be(false)
+      end
+      it "should be false when moving 2 spaces forward diagonal-left when not capturing and hasn't moved" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_pawn = Pawn.create(x_position: 2,
+                                 y_position: 1,
+                                 game_id: board.id,
+                                 color: true)
+        board.reload
+        actual = white_pawn.valid_move?(0, 3)
+        expect(actual).to be(false)
+      end
       it "should be false when moving 1 space backwards diagonal-right when not capturing" do
         board = create(:game)
         board.pieces.delete_all
@@ -294,6 +316,28 @@ RSpec.describe Pawn, type: :model do
                                  color: false)
         board.reload
         actual = black_pawn.valid_move?(0, 5)
+        expect(actual).to be(false)
+      end
+      it "should be false when moving 2 spaces forward diagonal-right when not capturing and hasn't moved" do
+        board = create(:game)
+        board.pieces.delete_all
+        black_pawn = Pawn.create(x_position: 2,
+                                 y_position: 6,
+                                 game_id: board.id,
+                                 color: false)
+        board.reload
+        actual = black_pawn.valid_move?(4, 4)
+        expect(actual).to be(false)
+      end
+      it "should be false when moving 2 spaces forward diagonal-left when not capturing and hasn't moved" do
+        board = create(:game)
+        board.pieces.delete_all
+        black_pawn = Pawn.create(x_position: 2,
+                                 y_position: 6,
+                                 game_id: board.id,
+                                 color: false)
+        board.reload
+        actual = black_pawn.valid_move?(0, 4)
         expect(actual).to be(false)
       end
       it "should be false when moving 1 space backward diagonal-right when not capturing" do
