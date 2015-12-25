@@ -107,17 +107,40 @@ RSpec.describe Piece, type: :model do
         expect(white_king.flash_message).to match(/Invalid move/)
       end
     end
+    it "updates game last moved piece id and previous coordinates" do
+      board = create(:game)
+      white_player = board.white_user_id
+      board.assign_attributes(user_turn: white_player)
+      board.save(validate: false)
+      board.pieces.delete_all
+      # need both kings
+      black_king = King.create(x_position: 7, y_position: 7, game_id: board.id, color: false)
+      white_king = King.create(x_position: 0, y_position: 0, game_id: board.id, color: true)
+      white_pawn = Pawn.create(x_position: 5, y_position: 1, game_id: board.id, color: true)
+      expect(white_pawn.move_to!(5, 3)).to eq true
+      board.reload
+      expect(board.last_moved_piece_id).to eq white_pawn.id
+      expect(board.last_moved_prev_x_pos).to eq 5
+      expect(board.last_moved_prev_y_pos).to eq 1
+    end
     context "pawn en passant" do
       it "captures enemy pawn after move" do
         board = create(:game)
+        white_player = board.white_user_id
+        board.assign_attributes(user_turn: white_player)
+        board.save(validate: false)
         board.pieces.delete_all
+        # need both kings
+        black_king = King.create(x_position: 7, y_position: 7, game_id: board.id, color: false)
+        white_king = King.create(x_position: 0, y_position: 0, game_id: board.id, color: true)
         black_pawn = Pawn.create(x_position: 4, y_position: 4, game_id: board.id, color: false, has_moved: true)
-        board.update_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 6)
+        board.assign_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 6)
+        board.save(validate: false)
         white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: board.id, color: true, has_moved: true)
-        board.reload
         expect(black_pawn.captured?).to be false
         expect(black_pawn.x_y_coords).to eq [4, 4]
-        expect(white_pawn.move_to!(4, 5)).to be true
+        expect(white_pawn.move_to!(4, 5)).to eq true
+        black_pawn.reload
         expect(black_pawn.captured?).to be true
         expect(black_pawn.x_y_coords).to eq [nil, nil]
       end

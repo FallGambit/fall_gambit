@@ -212,7 +212,8 @@ RSpec.describe Pawn, type: :model do
           board = create(:game)
           board.pieces.delete_all
           black_pawn = Pawn.create(x_position: 4, y_position: 4, game_id: board.id, color: false, has_moved: true)
-          board.update_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 6)
+          board.assign_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 6)
+          board.save(validate: false)
           white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: board.id, color: true, has_moved: true)
           board.reload
           expect(white_pawn.valid_move?(4, 5)).to be true
@@ -221,7 +222,8 @@ RSpec.describe Pawn, type: :model do
           board = create(:game)
           board.pieces.delete_all
           black_pawn = Pawn.create(x_position: 6, y_position: 4, game_id: board.id, color: false, has_moved: true)
-          board.update_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 6, last_moved_prev_y_pos: 6)
+          board.assign_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 6, last_moved_prev_y_pos: 6)
+          board.save(validate: false)
           white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: board.id, color: true, has_moved: true)
           board.reload
           expect(white_pawn.valid_move?(6, 5)).to be true
@@ -231,7 +233,8 @@ RSpec.describe Pawn, type: :model do
           board.pieces.delete_all
           black_king = King.create(x_position: 0, y_position: 7, game_id: board.id, color: false, has_moved: true)
           black_pawn = Pawn.create(x_position: 4, y_position: 4, game_id: board.id, color: false, has_moved: true)
-          board.update_attributes(last_moved_piece_id: black_king.id, last_moved_prev_x_pos: 1, last_moved_prev_y_pos: 7)
+          board.assign_attributes(last_moved_piece_id: black_king.id, last_moved_prev_x_pos: 1, last_moved_prev_y_pos: 7)
+          board.save(validate: false)
           white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: board.id, color: true, has_moved: true)
           board.reload
           expect(white_pawn.valid_move?(4, 5)).to be false
@@ -241,7 +244,8 @@ RSpec.describe Pawn, type: :model do
           board.pieces.delete_all
           black_king = King.create(x_position: 0, y_position: 7, game_id: board.id, color: false, has_moved: true)
           black_pawn = Pawn.create(x_position: 6, y_position: 4, game_id: board.id, color: false, has_moved: true)
-          board.update_attributes(last_moved_piece_id: black_king.id, last_moved_prev_x_pos: 1, last_moved_prev_y_pos: 7)
+          board.assign_attributes(last_moved_piece_id: black_king.id, last_moved_prev_x_pos: 1, last_moved_prev_y_pos: 7)
+          board.save(validate: false)
           white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: board.id, color: true, has_moved: true)
           board.reload
           expect(white_pawn.valid_move?(6, 5)).to be false
@@ -250,7 +254,8 @@ RSpec.describe Pawn, type: :model do
           board = create(:game)
           board.pieces.delete_all
           black_pawn = Pawn.create(x_position: 4, y_position: 4, game_id: board.id, color: false, has_moved: true)
-          board.update_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 5)
+          board.assign_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 5)
+          board.save(validate: false)
           white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: board.id, color: true, has_moved: true)
           board.reload
           expect(white_pawn.valid_move?(4, 5)).to be false
@@ -259,7 +264,8 @@ RSpec.describe Pawn, type: :model do
           board = create(:game)
           board.pieces.delete_all
           black_queen = Queen.create(x_position: 4, y_position: 4, game_id: board.id, color: false, has_moved: true)
-          board.update_attributes(last_moved_piece_id: black_queen.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 6)
+          board.assign_attributes(last_moved_piece_id: black_queen.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 6)
+          board.save(validate: false)
           white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: board.id, color: true, has_moved: true)
           board.reload
           expect(white_pawn.valid_move?(4, 5)).to be false
@@ -462,7 +468,8 @@ RSpec.describe Pawn, type: :model do
           board = create(:game)
           board.pieces.delete_all
           white_pawn = Pawn.create(x_position: 4, y_position: 3, game_id: board.id, color: true, has_moved: true)
-          board.update_attributes(last_moved_piece_id: white_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 1)
+          board.assign_attributes(last_moved_piece_id: white_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 1)
+          board.save(validate: false)
           black_pawn = Pawn.create(x_position: 5, y_position: 3, game_id: board.id, color: false, has_moved: true)
           board.reload
           expect(black_pawn.valid_move?(4, 2)).to be true
@@ -471,7 +478,8 @@ RSpec.describe Pawn, type: :model do
           board = create(:game)
           board.pieces.delete_all
           white_pawn = Pawn.create(x_position: 6, y_position: 3, game_id: board.id, color: true, has_moved: true)
-          board.update_attributes(last_moved_piece_id: white_pawn.id, last_moved_prev_x_pos: 6, last_moved_prev_y_pos: 1)
+          board.assign_attributes(last_moved_piece_id: white_pawn.id, last_moved_prev_x_pos: 6, last_moved_prev_y_pos: 1)
+          board.save(validate: false)
           black_pawn = Pawn.create(x_position: 5, y_position: 3, game_id: board.id, color: false, has_moved: true)
           board.reload
           expect(black_pawn.valid_move?(6, 2)).to be true
@@ -481,7 +489,8 @@ RSpec.describe Pawn, type: :model do
           board.pieces.delete_all
           white_king = King.create(x_position: 0, y_position: 0, game_id: board.id, color: true, has_moved: true)
           white_pawn = Pawn.create(x_position: 4, y_position: 3, game_id: board.id, color: true, has_moved: true)
-          board.update_attributes(last_moved_piece_id: white_king.id, last_moved_prev_x_pos: 1, last_moved_prev_y_pos: 0)
+          board.assign_attributes(last_moved_piece_id: white_king.id, last_moved_prev_x_pos: 1, last_moved_prev_y_pos: 0)
+          board.save(validate: false)
           black_pawn = Pawn.create(x_position: 5, y_position: 3, game_id: board.id, color: false, has_moved: true)
           board.reload
           expect(black_pawn.valid_move?(4, 2)).to be false
@@ -491,7 +500,8 @@ RSpec.describe Pawn, type: :model do
           board.pieces.delete_all
           white_king = King.create(x_position: 0, y_position: 0, game_id: board.id, color: true, has_moved: true)
           white_pawn = Pawn.create(x_position: 6, y_position: 3, game_id: board.id, color: true, has_moved: true)
-          board.update_attributes(last_moved_piece_id: white_king.id, last_moved_prev_x_pos: 1, last_moved_prev_y_pos: 0)
+          board.assign_attributes(last_moved_piece_id: white_king.id, last_moved_prev_x_pos: 1, last_moved_prev_y_pos: 0)
+          board.save(validate: false)
           black_pawn = Pawn.create(x_position: 5, y_position: 3, game_id: board.id, color: false, has_moved: true)
           board.reload
           expect(black_pawn.valid_move?(6, 2)).to be false
@@ -500,16 +510,18 @@ RSpec.describe Pawn, type: :model do
           board = create(:game)
           board.pieces.delete_all
           white_pawn = Pawn.create(x_position: 4, y_position: 3, game_id: board.id, color: true, has_moved: true)
-          board.update_attributes(last_moved_piece_id: white_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 2)
+          board.assign_attributes(last_moved_piece_id: white_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 2)
+          board.save(validate: false)
           black_pawn = Pawn.create(x_position: 5, y_position: 3, game_id: board.id, color: false, has_moved: true)
           board.reload
-          expect(black_pawn.valid_move?(4, 5)).to be false
+          expect(black_pawn.valid_move?(4, 2)).to be false
         end
         it "will not allow move if enemy piece is not a pawn" do
           board = create(:game)
           board.pieces.delete_all
           white_queen = Queen.create(x_position: 4, y_position: 3, game_id: board.id, color: true, has_moved: true)
-          board.update_attributes(last_moved_piece_id: white_queen.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 1)
+          board.assign_attributes(last_moved_piece_id: white_queen.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 1)
+          board.save(validate: false)
           black_pawn = Pawn.create(x_position: 5, y_position: 3, game_id: board.id, color: false, has_moved: true)
           board.reload
           expect(black_pawn.valid_move?(4, 2)).to be false
