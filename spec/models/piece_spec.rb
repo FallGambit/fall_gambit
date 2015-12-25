@@ -107,6 +107,21 @@ RSpec.describe Piece, type: :model do
         expect(white_king.flash_message).to match(/Invalid move/)
       end
     end
+    context "pawn en passant" do
+      it "captures enemy pawn after move" do
+        board = create(:game)
+        board.pieces.delete_all
+        black_pawn = Pawn.create(x_position: 4, y_position: 4, game_id: board.id, color: false, has_moved: true)
+        board.update_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 6)
+        white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: board.id, color: true, has_moved: true)
+        board.reload
+        expect(black_pawn.captured?).to be false
+        expect(black_pawn.x_y_coords).to eq [4, 4]
+        expect(white_pawn.move_to!(4, 5)).to be true
+        expect(black_pawn.captured?).to be true
+        expect(black_pawn.x_y_coords).to eq [nil, nil]
+      end
+    end
   end
 
   describe 'is_obstructed?' do
