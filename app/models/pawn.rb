@@ -11,6 +11,22 @@ class Pawn < Piece
     (one_diagonal(dest_x, dest_y) && !dest_piece.nil?)
   end
 
+  def promote!(type)
+    # pawn must reach last row of other side
+    if white_moving
+      return false unless y_position == 7
+    else
+      return false unless y_position == 0
+    end
+    # can't swap for another pawn or king
+    return false unless type == "Queen" || type == "Knight" || type == "Rook" || type == "Bishop"
+    # change piece type
+    self.piece_type = type
+    self.set_image
+    self.save!
+    return true
+  end
+
   def white_moving
     color
   end

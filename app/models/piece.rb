@@ -35,7 +35,7 @@ class Piece < ActiveRecord::Base
 
   def set_image
     color ? color_string = "white" : color_string = "black"
-    self.image_name ||= "#{color_string}-#{piece_type.downcase}.png"
+    self.image_name = "#{color_string}-#{piece_type.downcase}.png"
   end
 
   def move_to!(x, y)
