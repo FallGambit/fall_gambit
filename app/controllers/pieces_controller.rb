@@ -1,6 +1,6 @@
 class PiecesController < ApplicationController
   before_action :authenticate_user!
-  before_action :must_be_users_turn, :must_be_users_piece
+  before_action :game_must_not_be_over, :must_be_users_turn, :must_be_users_piece
   after_action :flash_notice, only: :update
 
   def show
@@ -11,6 +11,11 @@ class PiecesController < ApplicationController
     @piece.game.user_turn == @piece.game.white_user_id ? current_player_turn = "White" : current_player_turn = "Black"
     if @piece.game.draw?
       flash[:alert] = "Stalemate! " + current_player_turn + " can't move without going into check!"
+      redirect_to game_path(@piece.game) and return
+    end
+    if !@piece.game.game_winner.nil?
+      if current_user && (@piece.game.game_winner == current_user.id) ? win_msg = "You won!" : win_msg = "You lost!"
+      flash[:alert] = "Game is over, " + current_player_turn + " is in checkmate! " + win_msg
       redirect_to game_path(@piece.game) and return
     end
     @piece = Piece.find(params[:id])
@@ -27,14 +32,31 @@ class PiecesController < ApplicationController
       flash[:alert] = "Stalemate! " + current_player_turn + " can't move without going into check!"
       redirect_to game_path(@piece.game) and return
     end
+    if !@piece.game.game_winner.nil?
+      if current_user && (@piece.game.game_winner == current_user.id) ? win_msg = "You won!" : win_msg = "You lost!"
+      flash[:alert] = "Game is over, " + current_player_turn + " is in checkmate! " + win_msg
+      redirect_to game_path(@piece.game) and return
+    end
     @piece = Piece.find(params[:id])
     new_x = params[:x].to_i
     new_y = params[:y].to_i
     if @piece.move_to!(new_x, new_y)
-      # check for stalemate of other player after move and set game model field
-      opponent_king = @piece.game.kings.where.not(color: @piece.color).first
-      if @piece.game.stalemate?(opponent_king)
-        flash[:alert] = current_player_turn + " is in stalemate! Game is a draw."
+      if @piece.game.checkmate?(@piece.game.kings.where.not(color: @piece.color).first) # current player placed other player in checkmate - wins!
+        @piece.game.update_attributes(game_winner: @piece.user_id) # set game winner
+        if @piece.game.game_winner == @piece.game.black_user_id
+          winner = "Black"
+        else
+          winner = "White"
+        end
+        flash[:alert] = winner + " wins!"
+      else
+        # check for stalemate of other player after move and set game model field
+        opponent_king = @piece.game.kings.where.not(color: @piece.color).first
+        if @piece.game.stalemate?(opponent_king)
+          flash[:alert] = current_player_turn + " is in stalemate! Game is a draw."
+        else
+          @piece.game.determine_check(@piece.game.kings.where.not(color: @piece.color).first) # set check field in game model
+        end
       end
       # end turn
       @piece.game.finish_turn(@piece.user)
@@ -96,6 +118,18 @@ class PiecesController < ApplicationController
 
   def piece_type(piece)
     piece.present? ? piece.piece_type : nil
+  end
+
+  def game_must_not_be_over
+    if !current_game.game_winner.nil?
+      if @piece.game.game_winner == @piece.game.black_user_id
+        winner = "black"
+      else
+        winner = "white"
+      end
+      flash[:alert] = "Game is over, " + winner + " wins!"
+      redirect_to game_path(@piece.game)
+    end
   end
 
   def must_be_users_turn
