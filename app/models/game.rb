@@ -1,6 +1,7 @@
 class Game < ActiveRecord::Base
   attr_accessor :creator_plays_as_black # for checkbox access
   has_many :pieces
+  has_one  :last_moved_piece, class_name: 'Piece', foreign_key: :last_moved_piece
   belongs_to :white_user, class_name: 'User', foreign_key: :white_user_id
   belongs_to :black_user, class_name: 'User', foreign_key: :black_user_id
   validates :game_name, presence: { :message => "Game name is required!" }

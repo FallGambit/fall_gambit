@@ -207,6 +207,20 @@ RSpec.describe Pawn, type: :model do
         actual = pawn.valid_move?(1, -1)
         expect(actual).to be(false)
       end
+      context "en passant" do
+        it "will let adjacent pawn capture enemy pawn that moved 2 spaces as immediate next move - left" do
+          
+        end
+        it "will let adjacent pawn capture enemy pawn that moved 2 spaces as immediate next move - right" do
+          
+        end
+        it "will not let adjacent pawn capture enemy pawn that moved 2 spaces if not the immediate next move - left" do
+          
+        end
+        it "will not let adjacent pawn capture enemy pawn that moved 2 spaces if not the immediate next move - right" do
+          
+        end
+      end
     end
 
     context "black moving" do
@@ -398,6 +412,20 @@ RSpec.describe Pawn, type: :model do
         board.reload
         actual = pawn.valid_move?(6, 8)
         expect(actual).to be(false)
+      end
+      context "en passant" do
+        it "will let adjacent pawn capture enemy pawn that moved 2 spaces as immediate next move - left" do
+          
+        end
+        it "will let adjacent pawn capture enemy pawn that moved 2 spaces as immediate next move - right" do
+          
+        end
+        it "will not let adjacent pawn capture enemy pawn that moved 2 spaces if not the immediate next move - left" do
+          
+        end
+        it "will not let adjacent pawn capture enemy pawn that moved 2 spaces if not the immediate next move - right" do
+          
+        end
       end
     end
   end
