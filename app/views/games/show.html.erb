@@ -11,7 +11,7 @@
         <% else %>
           <h4 class="turn-indicator">Checkmate! Black player wins!</h4>
         <% end %>
-      <% elsif current.game.draw? %>
+      <% elsif current_game.draw? %>
         <% if current_game.user_turn == current_game.white_user_id %>
           <h4 class="turn-indicator">Game is a draw! White player in stalemate!</h4>
         <% else %>
