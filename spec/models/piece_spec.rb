@@ -95,6 +95,14 @@ RSpec.describe Piece, type: :model do
       end
     end
     context "when the pieces are of the same color" do
+      it "allows castling" do
+        board = create(:game)
+        board.bishops.where("x_position = ? AND color = ?", 5, false).delete_all
+        board.knights.where("x_position = ? AND color = ?", 6, false).delete_all
+        black_king = board.kings.where("x_position = ? AND color = ?", 4, false).take
+        expect(black_king.move_to!(7, 7)).to be(true)
+        expect(black_king.x_position).to be(6)    
+      end
       it "doesn't capture a same color piece" do
         board = create(:game)
         board.pieces.delete_all
