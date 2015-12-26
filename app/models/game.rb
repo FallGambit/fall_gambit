@@ -125,6 +125,22 @@ class Game < ActiveRecord::Base
     return false
   end
 
+  def stalemate?(king)
+    friendly_pieces = pieces.where(color: king.color, captured: false)
+    return false if determine_check(king) # king can't currently be in check
+    (0..7).to_a.each do |row| # loop through all board squares 
+      (0..7).to_a.each do |column| # see if and valid moves which don't put king in check
+        friendly_pieces.each do |friendly_piece|
+          if friendly_piece.valid_move?(row, column) && !puts_king_in_check?(friendly_piece, row, column)
+            return false # found at least one valid move, so not a stalemate
+          end
+        end
+      end
+    end
+    self.update_attributes(draw: true) # set database field
+    return true # no valid moves, stalemate!
+  end
+
   def checkmate?(king)
     # going to assume for now that a valid king object is passed in...
     threatening_pieces = determine_check(king) # piece(s) putting king into check

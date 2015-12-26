@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 20151225120113) do
     t.integer  "white_user_id"
     t.integer  "black_user_id"
     t.integer  "game_winner"
+    t.boolean  "draw",                  default: false
     t.integer  "last_moved_piece_id"
     t.integer  "last_moved_prev_x_pos"
     t.integer  "last_moved_prev_y_pos"
