@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151223044337) do
+ActiveRecord::Schema.define(version: 20151224080334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 20151223044337) do
     t.integer  "white_user_id"
     t.integer  "black_user_id"
     t.integer  "game_winner"
+    t.boolean  "draw",          default: false
   end
 
   add_index "games", ["black_user_id"], name: "index_games_on_black_user_id", using: :btree
