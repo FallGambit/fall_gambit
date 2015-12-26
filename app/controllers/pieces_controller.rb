@@ -4,12 +4,12 @@ class PiecesController < ApplicationController
   after_action :flash_notice, only: :update
 
   def show
+    @piece = Piece.find(params[:id])
+    @current_game = current_game
     if @piece.game.player_missing?
       flash[:alert] = "Cannot move until both players have joined!"
       redirect_to game_path(@piece.game)
     end
-    @piece = Piece.find(params[:id])
-    @current_game = current_game
   end
 
   def update
@@ -21,6 +21,9 @@ class PiecesController < ApplicationController
     new_x = params[:x].to_i
     new_y = params[:y].to_i
     if @piece.move_to!(new_x, new_y)
+      if @piece.piece_type == "Pawn" && @piece.promote? # pawn can be promoted
+        redirect_to promotion_choice_piece_path(@piece)
+      end
       if @piece.game.checkmate?(@piece.game.kings.where.not(color: @piece.color).first) # current player placed other player in checkmate - wins!
         @piece.game.update_attributes(game_winner: @piece.user_id) # set game winner
         if @piece.game.game_winner == @piece.game.black_user_id
@@ -41,6 +44,17 @@ class PiecesController < ApplicationController
       # flash.now[:alert] = "Pushing to Faye Failed"
       return
     end
+  end
+
+  def promotion_choice
+    @piece = Piece.find(params[:id])
+    # need to loop through these to check for stalemate once that branch is merged 
+    @promotion_list = %w(Queen Knight Rook Bishop)
+  end
+
+  def promote_pawn
+    type_update = pawn_update_params
+    @piece = @piece.promote!(type_update)
   end
 
   private
@@ -117,6 +131,10 @@ class PiecesController < ApplicationController
       flash[:alert] = "Not your piece!"
       redirect_to game_path(current_game)
     end
+  end
+
+  def pawn_update_params
+    params.require(:piece).permit(:piece_type)
   end
 
 end

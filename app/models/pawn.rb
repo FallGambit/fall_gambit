@@ -12,18 +12,24 @@ class Pawn < Piece
   end
 
   def promote!(type)
+    # change piece type
+    # can't swap for another pawn or king
+    return false unless type == "Queen" || type == "Knight" || type == "Rook" || type == "Bishop"
+    # must be on last row on other side of board
+    return false unless promote?
+    self.piece_type = type
+    self.set_image
+    self.save!
+    return true
+  end
+
+  def promote?
     # pawn must reach last row of other side
     if white_moving
       return false unless y_position == 7
     else
       return false unless y_position == 0
     end
-    # can't swap for another pawn or king
-    return false unless type == "Queen" || type == "Knight" || type == "Rook" || type == "Bishop"
-    # change piece type
-    self.piece_type = type
-    self.set_image
-    self.save!
     return true
   end
 
