@@ -28,11 +28,6 @@ class King < Piece
   end
 
   def can_castle?(rook) # pass in rook object
-    # king can't be in check
-    if self.game.determine_check(self)
-      self.flash_message = "Can't castle while in check!"
-      return false 
-    end
     # other piece must be a rook of same color as king
     return false unless friendly_rook?(rook)
     # king/rook must not have moved
@@ -43,6 +38,11 @@ class King < Piece
     return false if is_obstructed?(rook.x_position, rook.y_position)
     # can't pass through or end in check
     return false if puts_in_check?(rook)
+    # king can't be in check
+    if self.game.determine_check(self)
+      self.flash_message = "Can't castle while in check!"
+      return false 
+    end
     true # castle move is valid!
   end
 
@@ -68,10 +68,8 @@ class King < Piece
   def puts_in_check?(rook)
     if queenside?(rook) # rook on queenside
       first_x_space = -1 # move left one
-      #second_x_space = -2 # move left two
     else # rook on kingside - checked they didn't move in castle method
       first_x_space = 1 # move right one
-      #second_x_space = 2 # move right two
     end
     # helper game method to see if square is in check
     first = self.game.puts_king_in_check?(self, x_position + first_x_space, y_position)
@@ -92,7 +90,7 @@ class King < Piece
     if rook.is_a?(Rook) && (rook.game == game)
       (rook.piece_type == 'Rook') && (rook.color == color)
     else
-      self.flash_message = "Must target a friendly Rook to castle!"
+      #self.flash_message = "Must target a friendly Rook to castle!"
       return false
     end
   end
