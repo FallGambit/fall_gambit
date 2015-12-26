@@ -18,12 +18,11 @@ class PiecesController < ApplicationController
       redirect_to game_path(@piece.game) and return
     end
     @piece = Piece.find(params[:id])
+    @old_x = @piece.x_position
+    @old_y = @piece.y_position
     new_x = params[:x].to_i
     new_y = params[:y].to_i
     if @piece.move_to!(new_x, new_y)
-      if @piece.piece_type == "Pawn" && @piece.promote? # pawn can be promoted
-        redirect_to promotion_choice_piece_path(@piece)
-      end
       if @piece.game.checkmate?(@piece.game.kings.where.not(color: @piece.color).first) # current player placed other player in checkmate - wins!
         @piece.game.update_attributes(game_winner: @piece.user_id) # set game winner
         if @piece.game.game_winner == @piece.game.black_user_id
@@ -32,6 +31,8 @@ class PiecesController < ApplicationController
           winner = "White"
         end
         flash[:alert] = winner + " wins!"
+      elsif @piece.piece_type == "Pawn" && @piece.promote? # pawn can be promoted
+        redirect_to promotion_choice_piece_path(@piece) and return 
       else
         @piece.game.determine_check(@piece.game.kings.where.not(color: @piece.color).first) # set check field in game model
         @piece.game.finish_turn(@piece.user) # otherwise turn goes to other player
@@ -53,8 +54,20 @@ class PiecesController < ApplicationController
   end
 
   def promote_pawn
-    type_update = pawn_update_params
-    @piece = @piece.promote!(type_update)
+    type_update = pawn_update_params # grab from params
+    if @piece.promote!(type_update)
+      new_piece = @piece
+      @piece = new_piece
+      flash[:success] = "Pawn promoted!"
+      # success, check for check, advance turn
+      @piece.game.determine_check(@piece.game.kings.where.not(color: @piece.color).first) # set check field in game model
+      @piece.game.finish_turn(@piece.user)
+    else
+      # promote failed so move pawn back, don't advance turn
+      @piece.update_attributes(x_position: @old_x, y_position: @old_y)
+      flash[:alert] = "Could not promote pawn!"
+    end
+    redirect_to game_path(@piece.game)
   end
 
   private
@@ -134,7 +147,7 @@ class PiecesController < ApplicationController
   end
 
   def pawn_update_params
-    params.require(:piece).permit(:piece_type)
+    params.require(:pawn).permit(:piece_type)
   end
 
 end

@@ -6,7 +6,7 @@ FallGambit::Application.routes.draw do
   resources :pieces do
     member do
       get 'promotion_choice', :action => :promotion_choice
-      put 'promote_pawn', :action => :promote_pawn
+      patch 'promote_pawn', :action => :promote_pawn
     end
   end
   # The priority is based upon order of creation: first created -> highest priority.

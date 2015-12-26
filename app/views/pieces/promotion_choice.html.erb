@@ -3,7 +3,7 @@
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
     <h3 class ="text-center">Promote Your Pawn</h3>
-    <%= simple_form_for @piece, :url => pawn_promotion_piece_path do |f| %>
+    <%= simple_form_for @piece, :url => promote_pawn_piece_path do |f| %>
       <%= f.input :piece_type, collection: [['Queen', 'Queen'],['Knight', 'Knight'],['Rook', 'Rook'],['Bishop', 'Bishop']], as: :radio_buttons, label: 'Promote to:' %>
       <br />
       <%= f.submit "Promote!", :class => 'btn btn-primary' %>
