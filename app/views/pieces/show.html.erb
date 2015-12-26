@@ -1,52 +1,86 @@
 <% if current_game %>
-<br />
-<br />
-<div class="row">
-  <div class="col-md-6 col-md-offset-3 text-center">
-    <h3><%= current_game.game_name %></h3>
-    <br />
-    <% if !current_game.game_winner.nil? %>
-      <% if current_game.game_winner == current_game.white_user_id %>
-        <h4 class="turn-indicator">Checkmate! White player wins!</h4>
-      <% else %>
-        <h4 class="turn-indicator">Checkmate! Black player wins!</h4>
+  <br />
+  <br />
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 text-center">
+      <h3><%= current_game.game_name %></h3>
+      <br />
+      <% if !current_game.game_winner.nil? %>
+        <% if current_game.game_winner == current_game.white_user_id %>
+          <h4 class="turn-indicator">Checkmate! White player wins!</h4>
+        <% else %>
+          <h4 class="turn-indicator">Checkmate! Black player wins!</h4>
+        <% end %>
+      <% elsif current_game.user_turn == current_user.id %>
+        <% if current_game.user_turn == current_game.white_user_id %>
+          <h4 class="turn-indicator">It is your turn! (white)</h4>
+        <% else %>
+          <h4 class="turn-indicator">It is your turn! (black)</h4>
+        <% end %>
+      <% elsif current_game.player_missing? %>
+        <% if current_game.white_user_id.nil? %>
+          <h4 class="turn-indicator">Waiting for white player to join...</h4>
+        <% else %>
+          <h4 class="turn-indicator">Waiting for black player to join...</h4>
+        <% end %>
+      <% else  %>
+        <% if current_game.user_turn == current_game.white_user_id %>
+          <h4 class="turn-indicator">It is your opponent's turn (white)</h4>
+        <% else %>
+          <h4 class="turn-indicator">It is your opponent's turn (black)</h4>
+        <% end %>
       <% end %>
-    <% elsif current_game.user_turn == current_user.id %>
-      <% if current_game.user_turn == current_game.white_user_id %>
-        <h4 class="turn-indicator">It is your turn! (white)</h4>
-      <% else %>
-        <h4 class="turn-indicator">It is your turn! (black)</h4>
+      <br />
+      <% if current_game.check? && current_game.game_winner.nil?%>
+        <% if current_game.user_turn == current_game.white_user_id %>
+          <h4 class ="check-message">White player is in check!</h4>
+        <% else %>
+          <h4 class ="check-message">Black player is in check!</h4>
+        <% end %>
       <% end %>
-    <% elsif current_game.player_missing? %>
-      <% if current_game.white_user_id.nil? %>
-        <h4 class="turn-indicator">Waiting for white player to join...</h4>
-      <% else %>
-        <h4 class="turn-indicator">Waiting for black player to join...</h4>
-      <% end %>
-    <% else  %>
-      <% if current_game.user_turn == current_game.white_user_id %>
-        <h4 class="turn-indicator">It is your opponent's turn (white)</h4>
-      <% else %>
-        <h4 class="turn-indicator">It is your opponent's turn (black)</h4>
-      <% end %>
-    <% end %>
-    <br />
-    <% if current_game.check? && current_game.game_winner.nil?%>
-      <% if current_game.user_turn == current_game.white_user_id %>
-        <h4 class ="check-message">White player is in check!</h4>
-      <% else %>
-        <h4 class ="check-message">Black player is in check!</h4>
-      <% end %>
-    <% end %>
+    </div>
   </div>
-</div>
-<table class="chessboard">
-  <% (0..7).to_a.reverse.each do |row| %>
-    <tr class="y-position-<%= row %>" >
-      <% (0..7).each do |column| %>
-        <%= show_piece_td(row, column).html_safe %>
+  <div class="col-xs-12 col-sm-3 text-center blackside">
+    <h4>Black Piece Controls</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
+    <p><%= current_game.black_user.email %></p>
+    <% if current_game.user_turn == current_game.black_user_id %>
+      <br />
+      <% if @piece.piece_type == "King" %>
+        <% if @piece.can_castle?(current_user.rooks.where(x_position: 0).take) %>
+          <b>Click on Queen's Rook to Castle Queenside</b>
+        <% end %>
+        <% if @piece.can_castle?(current_user.rooks.where(x_position: 7).take) %>
+          <b>Click on King's Rook to Castle Kingside</b>
+        <% end %>
       <% end %>
-    </tr>
-  <% end %>
-</table>
+    <% end %>
+    <p>Placeholder for captured pieces</p>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <table class="chessboard">
+      <% (0..7).to_a.reverse.each do |row| %>
+        <tr class="y-position-<%= row %>" >
+          <% (0..7).each do |column| %>
+            <%= show_piece_td(row, column).html_safe %>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+  <div class="col-xs-12 col-sm-3 text-center whiteside">
+    <h4>White Piece Controls</h4> <!-- start to the Right so they will be on the BOTTOM with White in mobile configuration. -->
+    <%= current_game.white_user.email %><br />
+    <% if current_game.user_turn == current_game.white_user_id %>
+      <br />
+      <% if @piece.piece_type == "King" %>
+        <% if @piece.can_castle?(current_user.rooks.where(x_position: 0).take) %>
+          <b>Click on Queen's Rook to Castle Queenside</b>
+        <% end %>
+        <% if @piece.can_castle?(current_user.rooks.where(x_position: 7).take) %>
+          <b>Click on King's Rook to Castle Kingside</b>
+        <% end %>
+      <% end %>
+    <% end %>
+    <p>Placeholder for captured pieces</p>
+  </div>
 <% end %>
