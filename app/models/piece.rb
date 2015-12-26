@@ -42,6 +42,7 @@ class Piece < ActiveRecord::Base
     orig_x = self.x_position
     orig_y = self.y_position
     @target = game.pieces.where(:x_position => x, :y_position => y).take
+    return self.castle!(@target) if self.piece_type == "King" && self.can_castle?(@target)
     unless valid_move?(x, y)
       self.flash_message = "Invalid move!"
       return false
