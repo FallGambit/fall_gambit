@@ -23,19 +23,19 @@ class PiecesController < ApplicationController
     new_x = params[:x].to_i
     new_y = params[:y].to_i
     if @piece.move_to!(new_x, new_y)
-      if @piece.game.checkmate?(@piece.game.kings.where.not(color: @piece.color).first) # current player placed other player in checkmate - wins!
+      opponent_king = @piece.game.kings.where.not(color: @piece.color).first
+      if @piece.game.checkmate?(opponent_king) # current player placed other player in checkmate - wins!
         @piece.game.update_attributes(game_winner: @piece.user_id) # set game winner
-        flash[:alert] = "Checkmate! You win!" # will only get set and display on winner's turn
+        flash[:notice] = "Checkmate! You win!" # will only get set and display on winner's turn
       elsif @piece.piece_type == "Pawn" && @piece.promote? # pawn can be promoted
         redirect_to promotion_choice_piece_path(@piece) and return 
       else
         # check for stalemate of other player after move and set game model field
-        opponent_king = @piece.game.kings.where.not(color: @piece.color).first
         if @piece.game.stalemate?(opponent_king)
           @piece.game.user_turn == @piece.game.white_user_id ? other_player = "Black" : other_player = "White"
-          flash[:alert] = other_player + " is in stalemate! Game is a draw."
+          flash[:notice] = other_player + " is in stalemate! Game is a draw."
         else
-          @piece.game.determine_check(@piece.game.kings.where.not(color: @piece.color).first) # set check field in game model
+          @piece.game.determine_check(opponent_king) # set check field in game model
         end
       end
       # end turn
@@ -50,21 +50,44 @@ class PiecesController < ApplicationController
     end
   end
 
-  def promotion_choice
+  def promotion_choiceup
     @piece = Piece.find(params[:id])
     # need to loop through these to check for stalemate once that branch is merged 
     @promotion_list = %w(Queen Knight Rook Bishop)
+    @promotion_list.each do |promo|
+      @piece.promote!(promo)
+      @piece = Piece.find(params[:id]) #reload new type
+      if !@piece.game.stalemate?(@piece.game.kings.where.not(color: @piece.color).first)
+        # button list is what gets passed to the user input form
+        @button_list << [promo, promo] # add piece to possible promotion type if it doesn't cause a stalemate
+      end
+    end
+    @piece.udpate(piece_type: "Pawn")
+    @piece.save!
+    @piece = Piece.find(params[:id]) # reload original pawn type
+    binding.pry
+    # passed to user input form
+    #@button_list = [['Queen', 'Queen'],['Knight', 'Knight'],['Rook', 'Rook'],['Bishop', 'Bishop']]
   end
 
   def promote_pawn
-    type_update = pawn_update_params # grab from params
+    type_update = pawn_update_params[:piece_type] # grab from params
     if @piece.promote!(type_update)
-      new_piece = @piece
-      @piece = new_piece
-      flash[:success] = "Pawn promoted!"
-      # success, check for check, advance turn
-      @piece.game.determine_check(@piece.game.kings.where.not(color: @piece.color).first) # set check field in game model
-      @piece.game.finish_turn(@piece.user)
+      @piece = Piece.find(params[:id]) #reload as new piece type
+      # check for checkmate, stalemate/check, advance turn
+      # a lot of this is pulled from move_to!, but we have to check again with the new piece type
+      opponent_king = @piece.game.kings.where.not(color: @piece.color).first
+      if @piece.game.checkmate?(opponent_king) # current player placed other player in checkmate - wins!
+        @piece.game.update_attributes(game_winner: @piece.user_id) # set game winner
+        flash[:notice] = "Checkmate! You win!" # will only get set and display on winner's turn
+      elsif @piece.game.stalemate?(opponent_king) #ideally we can make sure this never happens by limiting promotion choices
+        @piece.game.user_turn == @piece.game.white_user_id ? other_player = "Black" : other_player = "White"
+        flash[:notice] = other_player + " is in stalemate! Game is a draw."
+      else
+      @piece.game.determine_check(opponent_king) # set check field in game model
+      @piece.game.finish_turn(@piece.user) # next player's turn
+      flash[:notice] = "Pawn promoted!"
+    end
     else
       # promote failed so move pawn back, don't advance turn
       @piece.update_attributes(x_position: @old_x, y_position: @old_y)
@@ -131,7 +154,7 @@ class PiecesController < ApplicationController
       redirect_to game_path(current_game) and return
     elsif current_game.draw?
       current_game.user_turn == current_game.white_user_id ? current_turn = "White" : current_turn = "Black"
-      flash[:alert] = "Game is a draw! " + current_turn + " can't move without going into check!"
+      flash[:info] = "Game is a draw! " + current_turn + " can't move without going into check!"
       redirect_to game_path(current_game) and return
     end 
   end

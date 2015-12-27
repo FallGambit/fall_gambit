@@ -409,9 +409,10 @@ RSpec.describe Pawn, type: :model do
         white_pawn = Pawn.create(x_position: 6, y_position: 7, game_id: board.id, color: true)
         expect(white_pawn.promote?).to eq true
         expect(white_pawn.promote!("Queen")).to eq true
-        white_queen = white_pawn
-        expect(white_queen.piece_type).to eq "Queen"
-        expect(white_queen.image_name).to eq "white-queen.png"
+        white_pawn = Piece.find(white_pawn.id)
+        expect(white_pawn.is_a?(Queen)).to eq true
+        expect(white_pawn.piece_type).to eq "Queen"
+        expect(white_pawn.image_name).to eq "white-queen.png"
       end
       it "promotes to knight" do
         board = create(:game)
@@ -419,9 +420,10 @@ RSpec.describe Pawn, type: :model do
         white_pawn = Pawn.create(x_position: 6, y_position: 7, game_id: board.id, color: true)
         expect(white_pawn.promote?).to eq true
         expect(white_pawn.promote!("Knight")).to eq true
-        white_knight = white_pawn
-        expect(white_knight.piece_type).to eq "Knight"
-        expect(white_knight.image_name).to eq "white-knight.png"
+        white_pawn = Piece.find(white_pawn.id)
+        expect(white_pawn.is_a?(Knight)).to eq true
+        expect(white_pawn.piece_type).to eq "Knight"
+        expect(white_pawn.image_name).to eq "white-knight.png"
       end
       it "promotes to rook" do
         board = create(:game)
@@ -429,9 +431,10 @@ RSpec.describe Pawn, type: :model do
         white_pawn = Pawn.create(x_position: 6, y_position: 7, game_id: board.id, color: true)
         expect(white_pawn.promote?).to eq true
         expect(white_pawn.promote!("Rook")).to eq true
-        white_rook = white_pawn
-        expect(white_rook.piece_type).to eq "Rook"
-        expect(white_rook.image_name).to eq "white-rook.png"
+        white_pawn = Piece.find(white_pawn.id)
+        expect(white_pawn.is_a?(Rook)).to eq true
+        expect(white_pawn.piece_type).to eq "Rook"
+        expect(white_pawn.image_name).to eq "white-rook.png"
       end
       it "promotes to bishop" do
         board = create(:game)
@@ -439,9 +442,10 @@ RSpec.describe Pawn, type: :model do
         white_pawn = Pawn.create(x_position: 6, y_position: 7, game_id: board.id, color: true)
         expect(white_pawn.promote?).to eq true
         expect(white_pawn.promote!("Bishop")).to eq true
-        white_bishop = white_pawn
-        expect(white_bishop.piece_type).to eq "Bishop"
-        expect(white_bishop.image_name).to eq "white-bishop.png"
+        white_pawn = Piece.find(white_pawn.id)
+        expect(white_pawn.is_a?(Bishop)).to eq true
+        expect(white_pawn.piece_type).to eq "Bishop"
+        expect(white_pawn.image_name).to eq "white-bishop.png"
       end
       it "does not promote to pawn" do
         board = create(:game)
@@ -449,7 +453,8 @@ RSpec.describe Pawn, type: :model do
         white_pawn = Pawn.create(x_position: 6, y_position: 7, game_id: board.id, color: true)
         expect(white_pawn.promote?).to eq true
         expect(white_pawn.promote!("Pawn")).to eq false
-        white_pawn.reload
+        white_pawn = Piece.find(white_pawn.id)
+        expect(white_pawn.is_a?(Pawn)).to eq true
         expect(white_pawn.piece_type).to eq "Pawn"
         expect(white_pawn.image_name).to eq "white-pawn.png"
       end
@@ -459,7 +464,8 @@ RSpec.describe Pawn, type: :model do
         white_pawn = Pawn.create(x_position: 6, y_position: 7, game_id: board.id, color: true)
         expect(white_pawn.promote?).to eq true
         expect(white_pawn.promote!("King")).to eq false
-        white_pawn.reload
+        white_pawn = Piece.find(white_pawn.id)
+        expect(white_pawn.is_a?(Pawn)).to eq true
         expect(white_pawn.piece_type).to eq "Pawn"
         expect(white_pawn.image_name).to eq "white-pawn.png"
       end
@@ -469,7 +475,8 @@ RSpec.describe Pawn, type: :model do
         white_pawn = Pawn.create(x_position: 6, y_position: 6, game_id: board.id, color: true)
         expect(white_pawn.promote?).to eq false
         expect(white_pawn.promote!("Queen")).to eq false
-        white_pawn.reload
+        white_pawn = Piece.find(white_pawn.id)
+        expect(white_pawn.is_a?(Pawn)).to eq true
         expect(white_pawn.piece_type).to eq "Pawn"
         expect(white_pawn.image_name).to eq "white-pawn.png"
       end
@@ -481,9 +488,10 @@ RSpec.describe Pawn, type: :model do
         black_pawn = Pawn.create(x_position: 6, y_position: 0, game_id: board.id, color: false)
         expect(black_pawn.promote?).to eq true
         expect(black_pawn.promote!("Queen")).to eq true
-        black_queen = black_pawn
-        expect(black_queen.piece_type).to eq "Queen"
-        expect(black_queen.image_name).to eq "black-queen.png"
+        black_pawn = Piece.find(black_pawn.id)
+        expect(black_pawn.is_a?(Queen)).to eq true
+        expect(black_pawn.piece_type).to eq "Queen"
+        expect(black_pawn.image_name).to eq "black-queen.png"
       end
       it "promotes to knight" do
         board = create(:game)
@@ -491,9 +499,10 @@ RSpec.describe Pawn, type: :model do
         black_pawn = Pawn.create(x_position: 6, y_position: 0, game_id: board.id, color: false)
         expect(black_pawn.promote?).to eq true
         expect(black_pawn.promote!("Knight")).to eq true
-        black_knight = black_pawn
-        expect(black_knight.piece_type).to eq "Knight"
-        expect(black_knight.image_name).to eq "black-knight.png"
+        black_pawn = Piece.find(black_pawn.id)
+        expect(black_pawn.is_a?(Knight)).to eq true
+        expect(black_pawn.piece_type).to eq "Knight"
+        expect(black_pawn.image_name).to eq "black-knight.png"
       end
       it "promotes to rook" do
         board = create(:game)
@@ -502,9 +511,10 @@ RSpec.describe Pawn, type: :model do
         expect(black_pawn.promote?).to eq true
         expect(black_pawn.promote!("Rook")).to eq true
         black_pawn.promote!("Rook")
-        black_rook = black_pawn
-        expect(black_rook.piece_type).to eq "Rook"
-        expect(black_rook.image_name).to eq "black-rook.png"
+        black_pawn = Piece.find(black_pawn.id)
+        expect(black_pawn.is_a?(Rook)).to eq true
+        expect(black_pawn.piece_type).to eq "Rook"
+        expect(black_pawn.image_name).to eq "black-rook.png"
       end
       it "promotes to bishop" do
         board = create(:game)
@@ -512,9 +522,10 @@ RSpec.describe Pawn, type: :model do
         black_pawn = Pawn.create(x_position: 6, y_position: 0, game_id: board.id, color: false)
         expect(black_pawn.promote?).to eq true
         expect(black_pawn.promote!("Bishop")).to eq true
-        black_bishop = black_pawn
-        expect(black_bishop.piece_type).to eq "Bishop"
-        expect(black_bishop.image_name).to eq "black-bishop.png"
+        black_pawn = Piece.find(black_pawn.id)
+        expect(black_pawn.is_a?(Bishop)).to eq true
+        expect(black_pawn.piece_type).to eq "Bishop"
+        expect(black_pawn.image_name).to eq "black-bishop.png"
       end
       it "does not promote to pawn" do
         board = create(:game)
@@ -522,7 +533,8 @@ RSpec.describe Pawn, type: :model do
         black_pawn = Pawn.create(x_position: 6, y_position: 0, game_id: board.id, color: false)
         expect(black_pawn.promote?).to eq true
         expect(black_pawn.promote!("Pawn")).to eq false
-        black_pawn.reload
+        black_pawn = Piece.find(black_pawn.id)
+        expect(black_pawn.is_a?(Pawn)).to eq true
         expect(black_pawn.piece_type).to eq "Pawn"
         expect(black_pawn.image_name).to eq "black-pawn.png"
       end
@@ -532,7 +544,8 @@ RSpec.describe Pawn, type: :model do
         black_pawn = Pawn.create(x_position: 6, y_position: 0, game_id: board.id, color: false)
         expect(black_pawn.promote?).to eq true
         expect(black_pawn.promote!("King")).to eq false
-        black_pawn.reload
+        black_pawn = Piece.find(black_pawn.id)
+        expect(black_pawn.is_a?(Pawn)).to eq true
         expect(black_pawn.piece_type).to eq "Pawn"
         expect(black_pawn.image_name).to eq "black-pawn.png"
       end
@@ -542,7 +555,8 @@ RSpec.describe Pawn, type: :model do
         black_pawn = Pawn.create(x_position: 6, y_position: 1, game_id: board.id, color: false)
         expect(black_pawn.promote?).to eq false
         expect(black_pawn.promote!("Queen")).to eq false
-        black_pawn.reload
+        black_pawn = Piece.find(black_pawn.id)
+        expect(black_pawn.is_a?(Pawn)).to eq true
         expect(black_pawn.piece_type).to eq "Pawn"
         expect(black_pawn.image_name).to eq "black-pawn.png"
       end

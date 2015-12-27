@@ -19,7 +19,7 @@ class Pawn < Piece
     return false unless promote?
     self.piece_type = type
     self.set_image
-    self.save!
+    self.save
     return true
   end
 
