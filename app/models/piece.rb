@@ -44,7 +44,7 @@ class Piece < ActiveRecord::Base
       self.flash_message = "Invalid move!"
       return false
     end
-    if game.puts_king_in_check?(self, x, y) # putting this in for now, will update when sharon's branch is merged
+    if game.puts_king_in_check?(self, x, y) 
       self.flash_message = "Can't put or leave yourself in check!"
       return false 
     end

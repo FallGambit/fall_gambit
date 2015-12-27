@@ -564,4 +564,33 @@ RSpec.describe Game, type: :model do
       end
     end
   end
+
+  describe "puts king in check?" do
+    before :each do
+      game.pieces.delete_all
+      @white_king = King.create(x_position: 4, y_position: 4, 
+                               game_id: game.id, color: true)
+      @white_knight = Knight.create(x_position: 1, y_position: 2,
+                                   game_id: game.id, color: true)
+      @white_rook = Rook.create(x_position: 5, y_position: 5,
+                                game_id: game.id, color: true)
+      @black_queen = Queen.create(x_position: 6, y_position: 6,
+                                 game_id: game.id, color: false)
+      @black_king = King.create(x_position: 3, y_position: 2,
+                               game_id: game.id, color: false)
+    end
+    context "puts friendly king in check" do
+      it "will not move white king if it will put itself into check" do
+        expect(@white_king.move_to!(2, 2)).to eq false
+      end
+      it "will not move white knight if it will put friendly king into check" do
+        expect(@white_rook.move_to!(6, 4)).to eq false
+      end
+    end
+    context "puts enemy king in check" do
+      it "will move if it puts opposite king into check" do
+        expect(@white_knight.move_to!(2, 4)).to eq true
+      end
+    end
+  end
 end

@@ -107,6 +107,20 @@ RSpec.describe Piece, type: :model do
         expect(white_king.flash_message).to match(/Invalid move/)
       end
     end
+    context "when piece movement will place king in check" do
+      it "will not move" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_king = King.create(x_position: 1, y_position: 1, 
+                                 game_id: board.id, color: true)
+        white_knight = Knight.create(x_position: 1, y_position: 2,
+                                     game_id: board.id, color: true)
+        black_queen = Queen.create(x_position: 1, y_position: 3,
+                                   game_id: board.id, color: false)
+        expect(white_knight.move_to!(3, 1)).to eq false
+        expect(white_king.move_to!(2, 2)).to eq false
+      end
+    end
   end
 
   describe 'is_obstructed?' do
