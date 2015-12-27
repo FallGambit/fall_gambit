@@ -57,7 +57,11 @@
   </div>
   <div class="col-xs-12 col-sm-3 text-center blackside">
     <h4>Black Piece Controls</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
-    <p><%= current_game.black_user.email %></p>
+    <% if !current_game.black_user.nil? %>
+      <p><%= current_game.black_user.email %></p>
+    <% else %>
+      <p>Waiting for player</p>
+    <% end %>
     <p>Placeholder for captured pieces</p>
   </div>
   <div class="col-xs-12 col-sm-6">
@@ -73,7 +77,11 @@
   </div>
   <div class="col-xs-12 col-sm-3 text-center whiteside">
     <h4>White Piece Controls</h4> <!-- start to the Right so they will be on the BOTTOM with White in mobile configuration. -->
-    <p><%= current_game.white_user.email %></p>
+    <% if !current_game.white_user.nil? %>
+      <p><%= current_game.white_user.email %></p>
+    <% else %>
+      <p>Waiting for player</p>
+    <% end %>
     <p>Placeholder for captured pieces</p>
   </div>
 <% end %>
