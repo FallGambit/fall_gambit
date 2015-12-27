@@ -57,7 +57,11 @@
   </div>
   <div class="col-xs-12 col-sm-3 text-center blackside">
     <h4>Black Piece Controls</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
-    <p><%= current_game.black_user.email %></p>
+    <% if !current_game.black_user.nil? %>
+      <p><%= current_game.black_user.email %></p>
+    <% else %>
+      <p>Waiting for player</p>
+    <% end %>
     <% if current_game.user_turn == current_game.black_user_id %>
       <% if @piece.piece_type == "King" %>
         <% if @piece.can_castle?(current_user.rooks.where(x_position: 0).take) %>
@@ -83,7 +87,11 @@
   </div>
   <div class="col-xs-12 col-sm-3 text-center whiteside">
     <h4>White Piece Controls</h4> <!-- start to the Right so they will be on the BOTTOM with White in mobile configuration. -->
-    <p><%= current_game.white_user.email %></p>
+    <% if !current_game.white_user.nil? %>
+      <p><%= current_game.white_user.email %></p>
+    <% else %>
+      <p>Waiting for player</p>
+    <% end %>
     <% if current_game.user_turn == current_game.white_user_id %>
       <% if @piece.piece_type == "King" %>
         <% if @piece.can_castle?(current_user.rooks.where(x_position: 0).take) %>
