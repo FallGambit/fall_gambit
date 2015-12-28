@@ -1,3 +1,47 @@
-<h1>User Dashboard</h1>
-<h1><%= @user.email %></h1>
-<h3>Member Since: <%= @user.created_at.strftime("%B %d, %Y") %></h3>
+<div class="dashboard col-md-6 col-md-offset-3 text-center">
+  <h3><%= @user.email %></h3>
+  <p>Member Since: <%= @user.created_at.strftime("%B %d, %Y") %></p>
+
+  <h4><%= pluralize(@user.games.uniq.count, 'game') %> played</h4>
+  <span>
+    <b><%= @user.games.where(game_winner: @user.id).uniq.count %> WON /</b>
+    <b><%= @user.games.where.not(game_winner: @user.id).uniq.count %> LOST /</b>
+    <b><%= @user.games.where(draw: true).uniq.count %> DRAW </b>
+  </span>
+
+  <br />
+  <br />
+
+  <h3>Games in Progress:</h3>
+  <% @games.each do |game| %>
+    <div class="list-group">
+      <% if !game.player_missing? && game.game_winner.nil? && game.draw == false %>
+        <div class="list-group-item">
+          <h4><%= game.game_name %></h4>
+          <% if current_user && (current_user.id == game.white_user_id || current_user.id == game.black_user_id) %>
+            <% if game.user_turn == current_user.id %>
+              <%= link_to 'Your Turn!', game_path(game, id: game.id), :class => 'btn btn-warning btn-large join-game-link' %>
+            <% else %>
+              <%= link_to "Your Opponent's Turn", game_path(game, id: game.id), :class => 'btn btn-primary btn-large join-game-link' %>
+            <% end %>
+          <% else %>
+            <%= link_to 'Watch Game', game_path(game, id: game.id), :class => 'btn btn-success btn-large join-game-link' %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <br />
+  <h3>Past Games:</h3>
+  <% @games.each do |game| %>
+    <div class="list-group">
+      <% if !game.game_winner.nil? || game.draw == true %>
+        <div class="list-group-item">
+          <h4><%= game.game_name %></h4>
+            <%= link_to 'View Game', game_path(game, id: game.id), :class => 'btn btn-warning btn-large join-game-link' %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
