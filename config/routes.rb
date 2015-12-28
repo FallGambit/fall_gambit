@@ -5,6 +5,10 @@ FallGambit::Application.routes.draw do
   resources :pieces, :only => [:show, :update]
   resources :users, :only => :show
 
+  resources :games do
+    post :forfait, to: "games#forfait"
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

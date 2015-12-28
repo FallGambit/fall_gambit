@@ -38,6 +38,17 @@ class GamesController < ApplicationController
     handle_update_errors
   end
 
+  def forfait
+    #code
+    @game_to_forfait = Game.find(params[:game_id])
+    if current_user.id == @game_to_forfait.white_user_id
+      @game_to_forfait.update_attributes(game_winner: @game_to_forfait.black_user_id)
+    else
+      @game_to_forfait.update_attributes(game_winner: @game_to_forfait.white_user_id)
+    end
+    redirect_to game_path(@game_to_forfait)
+  end
+
   private
 
   helper_method :current_game, :place_piece_td

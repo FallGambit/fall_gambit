@@ -65,7 +65,7 @@
     <% if current_user == current_game.black_user %>
       <%= button_to 'Offer draw', '#', :class => 'btn btn-warning' %>
       <br>
-      <%= button_to 'Forfait!', '#', :class => 'btn btn-danger' %>
+      <%= button_to 'Forfait!', game_forfait_path(current_game), :class => 'btn btn-danger', :confirm => 'Are you sure you want to forfait?' %>
     <% end %>
     <p>Placeholder for captured pieces</p>
   </div>
@@ -90,7 +90,7 @@
     <% if current_user == current_game.white_user %>
       <%= button_to 'Offer draw', '#', :class => 'btn btn-warning' %>
       <br>
-      <%= button_to 'Forfait!', '#', :class => 'btn btn-danger' %>
+      <%= button_to 'Forfait!', game_forfait_path(current_game), :class => 'btn btn-danger', :confirm => 'Are you sure you want to forfait?' %>
     <% end %>
     <p>Placeholder for captured pieces</p>
   </div>
