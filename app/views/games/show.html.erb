@@ -62,6 +62,11 @@
     <% else %>
       <p>Waiting for player</p>
     <% end %>
+    <% if current_user == current_game.black_user %>
+      <%= button_to 'Offer draw', '#', :class => 'btn btn-warning' %>
+      <br>
+      <%= button_to 'Forfait!', '#', :class => 'btn btn-danger' %>
+    <% end %>
     <p>Placeholder for captured pieces</p>
   </div>
   <div class="col-xs-12 col-sm-6">
@@ -81,6 +86,11 @@
       <p><%= current_game.white_user.email %></p>
     <% else %>
       <p>Waiting for player</p>
+    <% end %>
+    <% if current_user == current_game.white_user %>
+      <%= button_to 'Offer draw', '#', :class => 'btn btn-warning' %>
+      <br>
+      <%= button_to 'Forfait!', '#', :class => 'btn btn-danger' %>
     <% end %>
     <p>Placeholder for captured pieces</p>
   </div>
