@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe King, type: :model do
   describe 'valid_move?' do
-    before :all do
+    before :each do
       @game = FactoryGirl.create(:game)
       @game.pieces.destroy_all
       @wking = King.create(x_position: 4, y_position: 3, game_id: @game.id, color: true)
