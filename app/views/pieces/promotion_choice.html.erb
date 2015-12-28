@@ -3,10 +3,10 @@
 <div class="row">
   <h3 class ="text-center">Promote Your Pawn</h3>
   <div class="col-md-2 col-md-offset-5">
-    <%= simple_form_for @piece, :url => promote_pawn_piece_path do |f| %>
-      <%= f.collection_radio_buttons :piece_type, @button_list, label: 'Promote to:', class: 'form-control' %>
+    <%= simple_form_for @piece, :url => promote_pawn_piece_path, method: :patch do |f| %>
+      <%= f.input :piece_type, collection: @button_list, as: :radio_buttons, label: 'Promote to:', class: 'form-control' %>
       <br />
-      <%= f.submit "Promote!", :class => 'btn btn-primary' %>
+      <p><%= f.submit "Promote!", :class => 'btn btn-primary' %> <%= link_to "Cancel", game_path(@piece.game), {:class=>"btn btn-danger"} %> </p>
       <br />
     <% end %>
     <br />

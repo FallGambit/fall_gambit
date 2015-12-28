@@ -1,4 +1,6 @@
 class Pawn < Piece
+  attr_accessor :old_x, :old_y, :intended_x, :intended_y # for promoting
+
   def valid_move?(dest_x, dest_y)
     dest_piece = game.pieces
                  .where("x_position = ? AND y_position = ?", dest_x, dest_y)
@@ -24,11 +26,21 @@ class Pawn < Piece
   end
 
   def promote?
-    # pawn must reach last row of other side
+    # pawn must be on last row of other side
     if white_moving
       return false unless y_position == 7
     else
       return false unless y_position == 0
+    end
+    return true
+  end
+
+  def promote_at?(dest_x, dest_y)
+    # pawn must reach last row of other side
+    if white_moving
+      return false unless dest_y == 7 && valid_move?(dest_x, dest_y)
+    else
+      return false unless dest_y == 0 && valid_move?(dest_x, dest_y)
     end
     return true
   end

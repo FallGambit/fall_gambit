@@ -162,7 +162,7 @@ RSpec.describe PiecesController, type: :controller do
       put :update, id: black_queen.id, x: 1, y: 1
       current_game.reload
       expect(current_game.game_winner).to eq current_game.black_user_id
-      expect(flash[:alert]).to eq("Checkmate! You win!")
+      expect(flash[:notice]).to eq("Checkmate! You win!")
       expect(response).to redirect_to(current_game)
       # turn should change to loser
       expect(current_game.user_turn).to eq current_game.white_user_id
@@ -183,10 +183,13 @@ RSpec.describe PiecesController, type: :controller do
       put :update, id: black_king.id, x: 5, y: 2
       current_game.reload
       expect(current_game.draw?).to eq true
-      expect(flash[:alert]).to eq("White is in stalemate! Game is a draw.")
+      expect(flash[:notice]).to eq("White is in stalemate! Game is a draw.")
       expect(response).to redirect_to(current_game)
       # turn should change to next player
       expect(current_game.user_turn).to eq current_game.white_user_id
+    end
+    it "will redirect to promotion_choice view if pawn moved to final row" do
+      
     end
   end
 
@@ -221,7 +224,43 @@ RSpec.describe PiecesController, type: :controller do
       white_pawn = current_game.pawns.where(color: true, x_position: 0).first
       put :show, id: white_pawn.id
       expect(response).to redirect_to(current_game)
-      expect(flash[:alert]).to eq("Game is a draw! White can't move without going into check!")
+      expect(flash[:notice]).to eq("Game is a draw! White can't move without going into check!")
+    end
+  end
+
+  describe '#promotion_choice' do
+    it "will remove queen from radio button list if promoting from pawn will cause stalemate" do
+      
+    end
+    it "will produce choices for Queen, Knight, Rook, Bishop if they do not cause stalemate when promoted to" do
+      
+    end
+    it "will leave pawn in original pre-move position when displaying promotion choice view" do
+      
+    end
+  end
+
+  describe '#promote_pawn' do
+    it "will promote pawn to queen" do
+      
+    end
+    it "will promote pawn to knight" do
+      
+    end
+    it "will promote pawn to rook" do
+      
+    end
+    it "will promote pawn to bishop" do
+      
+    end
+    it "will set check if promoted piece places opponent king in check" do
+      
+    end
+    it "will set next player's turn after piece promotion" do
+      
+    end
+    it "will redirect to game show view after piece promotion" do
+      
     end
   end
 end
