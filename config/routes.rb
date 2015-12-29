@@ -10,6 +10,7 @@ FallGambit::Application.routes.draw do
     post :forfait, to: "games#forfait"
     post :request_draw, to: "games#request_draw"
     post :accept_draw, to: "games#accept_draw"
+    post :reject_draw, to: "games#reject_draw"
   end
 
   # The priority is based upon order of creation: first created -> highest priority.

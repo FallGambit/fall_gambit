@@ -45,19 +45,45 @@ class GamesController < ApplicationController
     else
       @game_to_forfait.update_attributes(game_winner: @game_to_forfait.white_user_id)
     end
+    begin
+      PrivatePub.publish_to("/games/#{@game_to_forfait.id}", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      flash.now[:alert] = "Pushing to Faye Failed"
+    end
     redirect_to game_path(@game_to_forfait)
   end
 
   def request_draw
     @request_draw_game = Game.find(params[:game_id])
     @request_draw_game.update_attributes(draw_request: current_user.id)
+    begin
+      PrivatePub.publish_to("/games/#{@request_draw_game.id}", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      flash.now[:alert] = "Pushing to Faye Failed"
+    end
     redirect_to game_path(@request_draw_game)
   end
 
   def accept_draw
     @accept_draw_game = Game.find(params[:game_id])
     @accept_draw_game.update_attributes(draw: true)
+    begin
+      PrivatePub.publish_to("/games/#{@accept_draw_game.id}", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      flash.now[:alert] = "Pushing to Faye Failed"
+    end
     redirect_to game_path(@accept_draw_game)
+  end
+
+  def reject_draw
+    @reject_draw_game = Game.find(params[:game_id])
+    @reject_draw_game.update_attributes(draw_request: nil)
+    begin
+      PrivatePub.publish_to("/games/#{@reject_draw_game.id}", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      flash.now[:alert] = "Pushing to Faye Failed"
+    end
+    redirect_to game_path(@reject_draw_game)
   end
 
   private
