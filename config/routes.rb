@@ -5,8 +5,11 @@ FallGambit::Application.routes.draw do
   resources :pieces, :only => [:show, :update]
   resources :users, :only => :show
 
+  # Custom actions for Forfait and Draw functionality
   resources :games do
     post :forfait, to: "games#forfait"
+    post :request_draw, to: "games#request_draw"
+    post :accept_draw, to: "games#accept_draw"
   end
 
   # The priority is based upon order of creation: first created -> highest priority.
