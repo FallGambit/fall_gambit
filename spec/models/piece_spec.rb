@@ -95,6 +95,14 @@ RSpec.describe Piece, type: :model do
       end
     end
     context "when the pieces are of the same color" do
+      it "allows castling" do
+        board = create(:game)
+        board.bishops.where("x_position = ? AND color = ?", 5, false).delete_all
+        board.knights.where("x_position = ? AND color = ?", 6, false).delete_all
+        black_king = board.kings.where("x_position = ? AND color = ?", 4, false).take
+        expect(black_king.move_to!(7, 7)).to be(true)
+        expect(black_king.x_position).to be(6)    
+      end
       it "doesn't capture a same color piece" do
         board = create(:game)
         board.pieces.delete_all
@@ -105,6 +113,20 @@ RSpec.describe Piece, type: :model do
 
         expect(white_king.move_to!(2, 2)).to eq false
         expect(white_king.flash_message).to match(/Invalid move/)
+      end
+    end
+    context "when piece movement will place king in check" do
+      it "will not move" do
+        board = create(:game)
+        board.pieces.delete_all
+        white_king = King.create(x_position: 1, y_position: 1, 
+                                 game_id: board.id, color: true)
+        white_knight = Knight.create(x_position: 1, y_position: 2,
+                                     game_id: board.id, color: true)
+        black_queen = Queen.create(x_position: 1, y_position: 3,
+                                   game_id: board.id, color: false)
+        expect(white_knight.move_to!(3, 1)).to eq false
+        expect(white_king.move_to!(2, 2)).to eq false
       end
     end
   end

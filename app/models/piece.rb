@@ -40,9 +40,14 @@ class Piece < ActiveRecord::Base
 
   def move_to!(x, y)
     @target = game.pieces.where(:x_position => x, :y_position => y).take
+    return self.castle!(@target) if self.piece_type == "King" && self.can_castle?(@target)
     unless valid_move?(x, y)
-      self.flash_message = "Invalid move: [error to be defined]"
+      self.flash_message = "Invalid move!"
       return false
+    end
+    if game.puts_king_in_check?(self, x, y) 
+      self.flash_message = "Can't put or leave yourself in check!"
+      return false 
     end
     if @target.nil?
       update_attributes(:x_position => x, :y_position => y, :has_moved => true)

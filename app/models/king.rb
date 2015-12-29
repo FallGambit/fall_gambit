@@ -6,7 +6,10 @@ class King < Piece
                  .where("x_position = ? AND y_position = ?", dest_x, dest_y)
                  .take
     return false if dest_x < 0 || dest_x > 7 || dest_y < 0 || dest_y > 7
-    return false if dest_piece && dest_piece.color == color
+    if dest_piece && dest_piece.color == color
+      self.flash_message = "Can't move on top of your own piece!"
+      return false 
+    end
     rows <= 1 && columns <= 1 ? true : false
   end
 
@@ -35,6 +38,11 @@ class King < Piece
     return false if is_obstructed?(rook.x_position, rook.y_position)
     # can't pass through or end in check
     return false if puts_in_check?(rook)
+    # king can't be in check
+    if self.game.determine_check(self)
+      self.flash_message = "Can't castle while in check!"
+      return false 
+    end
     true # castle move is valid!
   end
 
@@ -59,26 +67,30 @@ class King < Piece
 
   def puts_in_check?(rook)
     if queenside?(rook) # rook on queenside
-      first_y_space = -1 # move left one
-      second_y_space = -2 # move left two
+      first_x_space = -1 # move left one
     else # rook on kingside - checked they didn't move in castle method
-      first_y_space = 1 # move right one
-      second_y_space = 2 # move right two
+      first_x_space = 1 # move right one
     end
-    # placeholder method to see if square is in check
-    first = check?(y_position + first_y_space, x_position)
-    second = check?(y_position + second_y_space, x_position)
+    # helper game method to see if square is in check
+    first = self.game.puts_king_in_check?(self, x_position + first_x_space, y_position)
+    # need to pretend to move king forward one so move is valid
+    orig_x_pos = self.x_position
+    self.update_attributes(x_position: x_position + first_x_space)
+    second = self.game.puts_king_in_check?(self, x_position + first_x_space, y_position)
     if (first || second)
       self.flash_message = "Cannot move King into check while castling!"
-      return false
+      self.update_attributes(x_position: orig_x_pos)
+      return true
     end
+    self.update_attributes(x_position: orig_x_pos)
+    return false
   end
 
   def friendly_rook?(rook)
     if rook.is_a?(Rook) && (rook.game == game)
       (rook.piece_type == 'Rook') && (rook.color == color)
     else
-      self.flash_message = "Must target a friendly Rook to castle!"
+      #self.flash_message = "Must target a friendly Rook to castle!"
       return false
     end
   end
@@ -93,10 +105,5 @@ class King < Piece
 
   def queenside?(rook)
     rook.x_position < x_position
-  end
-
-  def check?(x, y)
-    # placeholder method
-    false
   end
 end
