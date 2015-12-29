@@ -39,7 +39,6 @@ class GamesController < ApplicationController
   end
 
   def forfait
-    #code
     @game_to_forfait = Game.find(params[:game_id])
     if current_user.id == @game_to_forfait.white_user_id
       @game_to_forfait.update_attributes(game_winner: @game_to_forfait.black_user_id)
@@ -47,6 +46,18 @@ class GamesController < ApplicationController
       @game_to_forfait.update_attributes(game_winner: @game_to_forfait.white_user_id)
     end
     redirect_to game_path(@game_to_forfait)
+  end
+
+  def request_draw
+    @request_draw_game = Game.find(params[:game_id])
+    @request_draw_game.update_attributes(draw_request: current_user.id)
+    redirect_to game_path(@request_draw_game)
+  end
+
+  def accept_draw
+    @accept_draw_game = Game.find(params[:game_id])
+    @accept_draw_game.update_attributes(draw: true)
+    redirect_to game_path(@accept_draw_game)
   end
 
   private
