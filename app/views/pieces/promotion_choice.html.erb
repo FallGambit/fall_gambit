@@ -6,7 +6,9 @@
     <%= simple_form_for @piece, :url => promote_pawn_piece_path, method: :patch do |f| %>
       <%= f.input :piece_type, collection: @button_list, as: :radio_buttons, label: 'Promote to:', class: 'form-control' %>
       <br />
-      <p><%= f.submit "Promote!", :class => 'btn btn-primary' %> <%= link_to "Cancel", game_path(@piece.game), {:class=>"btn btn-danger"} %> </p>
+      <%= f.submit "Promote!", :class => 'btn btn-primary' %> 
+      <br />
+      <%= link_to "Cancel", game_path(@piece.game), {:class=>"btn btn-danger"} %>
       <br />
     <% end %>
     <br />

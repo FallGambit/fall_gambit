@@ -1,6 +1,4 @@
 class Pawn < Piece
-  attr_accessor :old_x, :old_y, :intended_x, :intended_y # for promoting
-
   def valid_move?(dest_x, dest_y)
     dest_piece = game.pieces
                  .where("x_position = ? AND y_position = ?", dest_x, dest_y)
