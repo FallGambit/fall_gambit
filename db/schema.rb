@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151224080334) do
+ActiveRecord::Schema.define(version: 20151229044855) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,7 +25,10 @@ ActiveRecord::Schema.define(version: 20151224080334) do
     t.integer  "white_user_id"
     t.integer  "black_user_id"
     t.integer  "game_winner"
-    t.boolean  "draw",          default: false
+    t.boolean  "draw",                  default: false
+    t.integer  "last_moved_piece_id"
+    t.integer  "last_moved_prev_x_pos"
+    t.integer  "last_moved_prev_y_pos"
   end
 
   add_index "games", ["black_user_id"], name: "index_games_on_black_user_id", using: :btree
@@ -58,11 +61,15 @@ ActiveRecord::Schema.define(version: 20151224080334) do
     t.inet     "last_sign_in_ip"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
+    t.integer  "user_wins",              default: 0
+    t.integer  "user_losses",            default: 0
+    t.integer  "user_draws",             default: 0
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "games", "pieces", name: "games_last_moved_piece_fk", column: "last_moved_piece_id"
   add_foreign_key "games", "users", name: "games_black_user_id_fk", column: "black_user_id"
   add_foreign_key "games", "users", name: "games_game_winner_fk", column: "game_winner"
   add_foreign_key "games", "users", name: "games_user_turn_fk", column: "user_turn"

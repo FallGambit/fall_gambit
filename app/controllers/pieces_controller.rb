@@ -21,14 +21,27 @@ class PiecesController < ApplicationController
     new_x = params[:x].to_i
     new_y = params[:y].to_i
     if @piece.move_to!(new_x, new_y)
+      #black_user = User.find(@piece.game.black_user.id)
+      #white_user = User.find(@piece.game.white_user.id)
       if @piece.game.checkmate?(@piece.game.kings.where.not(color: @piece.color).first) # current player placed other player in checkmate - wins!
         @piece.game.update_attributes(game_winner: @piece.user_id) # set game winner
+        # update user stats
+        if User.find(@piece.user_id) == black_user
+          black_user.update_attributes(user_wins: black_user.user_wins + 1)
+          white_user.update_attributes(user_losses: white_user.user_losses + 1)
+        else
+          white_user.update_attributes(user_wins: white_user.user_wins + 1)
+         black_user.update_attributes(user_losses: black_user.user_losses + 1)
+        end
         flash[:alert] = "Checkmate! You win!" # will only get set and display on winner's turn
       else
         # check for stalemate of other player after move and set game model field
         opponent_king = @piece.game.kings.where.not(color: @piece.color).first
         if @piece.game.stalemate?(opponent_king)
           @piece.game.user_turn == @piece.game.white_user_id ? other_player = "Black" : other_player = "White"
+          # update user stats
+          white_user.update_attributes(user_draws: white_user.user_draws + 1)
+          black_user.update_attributes(user_draws: black_user.user_draws + 1)
           flash[:alert] = other_player + " is in stalemate! Game is a draw."
         else
           @piece.game.determine_check(@piece.game.kings.where.not(color: @piece.color).first) # set check field in game model
@@ -54,6 +67,14 @@ class PiecesController < ApplicationController
     if @piece.flash_message.present?
       flash[:alert] = @piece.flash_message
     end
+  end
+
+  def black_user
+    black_user ||= User.find(@piece.game.black_user.id)
+  end
+
+  def white_user
+    white_user ||= User.find(@piece.game.white_user.id)
   end
 
   def current_game

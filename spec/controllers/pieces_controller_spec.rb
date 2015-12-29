@@ -167,6 +167,32 @@ RSpec.describe PiecesController, type: :controller do
       # turn should change to loser
       expect(current_game.user_turn).to eq current_game.white_user_id
     end
+    it "will update players wins and losses when game ends in checkmate" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.black_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in black_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 0, y_position: 0)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 7, y_position: 7)
+      black_queen = Queen.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 6, y_position: 1)
+      black_pawn = Pawn.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 2, y_position: 2)
+      expect(current_game.game_winner).to be_nil
+      put :update, id: black_queen.id, x: 1, y: 1
+      current_game.reload
+      expect(current_game.game_winner).to eq current_game.black_user_id
+      expect(flash[:alert]).to eq("Checkmate! You win!")
+      expect(response).to redirect_to(current_game)
+      # turn should change to loser
+      expect(current_game.user_turn).to eq current_game.white_user_id
+      black_user.reload
+      white_user.reload
+      # may need to change this if testing methodology changes
+      expect(black_user.user_wins).to eq 1
+      expect(white_user.user_losses).to eq 1
+    end
     it "will set stalement when opposing player cannot move without going into check" do
       current_game = FactoryGirl.build(:game)
       current_game.assign_attributes(user_turn: current_game.black_user_id)
@@ -187,6 +213,29 @@ RSpec.describe PiecesController, type: :controller do
       expect(response).to redirect_to(current_game)
       # turn should change to next player
       expect(current_game.user_turn).to eq current_game.white_user_id
+    end
+    it "will increment black and white user draws when game is a stalemate" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.black_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in black_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 5, y_position: 0)
+      black_pawn = Pawn.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 5, y_position: 1)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 5, y_position: 3)
+
+      expect(current_game.draw?).to eq false
+      put :update, id: black_king.id, x: 5, y: 2
+      current_game.reload
+      expect(current_game.draw?).to eq true
+      expect(flash[:alert]).to eq("White is in stalemate! Game is a draw.")
+      black_user.reload
+      white_user.reload
+      # may need to change this if testing methodology changes
+      expect(black_user.user_draws).to eq 1
+      expect(white_user.user_draws).to eq 1
     end
   end
 
