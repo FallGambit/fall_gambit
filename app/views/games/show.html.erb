@@ -1,3 +1,4 @@
+<% if current_game && current_user && ((current_user.id == current_game.white_user_id) || (current_user.id == current_game.black_user_id)) %>
 <script type="text/javascript">
 $(document).ready(function () {
   $("[data-piece-id]").children("[href]").children('img').draggable({
@@ -26,15 +27,19 @@ $(document).ready(function () {
             url: "<%=current_game.id%>/move",
             type: 'PUT',
             dataType: 'json',
-            data: { piece_id: current_piece_id, x: x_pos, y: y_pos}
-        })
-        .done (function() {
-          location.reload(true); //refreshes page from server after move
-      });
+            data: { piece_id: current_piece_id, x: x_pos, y: y_pos},
+              success: function () {
+                location.reload(true); //refreshes page from server after move
+              },
+              error: function () {
+                location.reload(true); //refreshes page from server after failed move
+              }
+        });
       }
   });
 });
 </script>
+<% end %>
 <!-- games.show page -->
 <% if current_game %>
   <br />
@@ -104,7 +109,7 @@ $(document).ready(function () {
   <div class="col-xs-12 col-sm-6">
     <table class="chessboard">
       <% (0..7).to_a.reverse.each do |row| %>
-        <tr class="y-position-<%= row %>" >
+        <tr data-y-position="<%= row %>" >
           <% (0..7).each do |column| %>
             <%= place_piece_td(row, column).html_safe %>
           <% end %>

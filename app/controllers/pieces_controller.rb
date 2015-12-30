@@ -40,6 +40,7 @@ class PiecesController < ApplicationController
     respond_to do |format|
       format.json { render :json => @piece.to_json }
       format.html { redirect_to game_path(@piece.game) }
+    end
     begin
       PrivatePub.publish_to("/games/#{@piece.game.id}", "window.location.reload();")
     rescue Errno::ECONNREFUSED
@@ -116,7 +117,10 @@ class PiecesController < ApplicationController
     # run before any pieces controller action
     if current_user.id != current_game.user_turn
       flash[:alert] = "Not your turn!"
-      redirect_to game_path(current_game)
+      respond_to do |format|
+        format.html { redirect_to game_path(current_game)}
+        format.json { render json: @piece.errors, status: "Not your turn!"}
+      end
     end
   end
 
@@ -124,8 +128,10 @@ class PiecesController < ApplicationController
     # run before any pieces controller action
     if @piece.user.nil? || current_user.id != @piece.user.id
       flash[:alert] = "Not your piece!"
-      redirect_to game_path(current_game)
+      respond_to do |format|
+        format.html { redirect_to game_path(current_game)}
+        format.json { render json: @piece.errors, status: "Not your piece!"}
+      end
     end
   end
-
 end
