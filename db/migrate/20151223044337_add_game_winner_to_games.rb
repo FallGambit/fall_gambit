@@ -8,6 +8,6 @@ class AddGameWinnerToGames < ActiveRecord::Migration
     change_table :games do |t|
       t.remove_foreign_key name: "games_game_winner_fk"
     end
-    remove_column :games, :game_winner, :integer
+    remove_column :games, :game_winner
   end
 end

@@ -25,8 +25,11 @@ ActiveRecord::Schema.define(version: 20151229135050) do
     t.integer  "white_user_id"
     t.integer  "black_user_id"
     t.integer  "game_winner"
-    t.boolean  "draw",          default: false
+    t.boolean  "draw",                  default: false
     t.integer  "draw_request"
+    t.integer  "last_moved_piece_id"
+    t.integer  "last_moved_prev_x_pos"
+    t.integer  "last_moved_prev_y_pos"
   end
 
   add_index "games", ["black_user_id"], name: "index_games_on_black_user_id", using: :btree
@@ -64,6 +67,7 @@ ActiveRecord::Schema.define(version: 20151229135050) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "games", "pieces", name: "games_last_moved_piece_fk", column: "last_moved_piece_id"
   add_foreign_key "games", "users", name: "games_black_user_id_fk", column: "black_user_id"
   add_foreign_key "games", "users", name: "games_game_winner_fk", column: "game_winner"
   add_foreign_key "games", "users", name: "games_user_turn_fk", column: "user_turn"

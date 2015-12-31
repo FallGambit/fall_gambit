@@ -15,6 +15,12 @@ FallGambit::Application.routes.draw do
     end
   end
 
+  resources :pieces do
+    member do
+      get 'promotion_choice', :action => :promotion_choice
+      patch 'promote_pawn', :action => :promote_pawn
+    end
+  end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

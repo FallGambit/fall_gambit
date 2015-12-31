@@ -1,6 +1,7 @@
 class Game < ActiveRecord::Base
   attr_accessor :creator_plays_as_black # for checkbox access
   has_many :pieces
+  has_one  :last_moved_piece, class_name: 'Piece', foreign_key: :last_moved_piece_id
   belongs_to :white_user, class_name: 'User', foreign_key: :white_user_id
   belongs_to :black_user, class_name: 'User', foreign_key: :black_user_id
   validates :game_name, presence: { :message => "Game name is required!" }
@@ -125,6 +126,7 @@ class Game < ActiveRecord::Base
   end
 
   def stalemate?(king)
+    # just checks for stalemate, doesn't set game status
     friendly_pieces = pieces.where(color: king.color, captured: false)
     return false if determine_check(king) # king can't currently be in check
     (0..7).to_a.each do |row| # loop through all board squares
@@ -136,6 +138,12 @@ class Game < ActiveRecord::Base
         end
       end
     end
+    return true # no valid moves, stalemate!
+  end
+
+  def stalemate!(king)
+    # sets game database field if game is in stalemate
+    return false unless stalemate?(king)
     self.update_attributes(draw: true) # set database field
     return true # no valid moves, stalemate!
   end

@@ -35,10 +35,12 @@ class Piece < ActiveRecord::Base
 
   def set_image
     color ? color_string = "white" : color_string = "black"
-    self.image_name ||= "#{color_string}-#{piece_type.downcase}.png"
+    self.image_name = "#{color_string}-#{piece_type.downcase}.png"
   end
 
   def move_to!(x, y)
+    orig_x = self.x_position
+    orig_y = self.y_position
     @target = game.pieces.where(:x_position => x, :y_position => y).take
     return self.castle!(@target) if self.piece_type == "King" && self.can_castle?(@target)
     unless valid_move?(x, y)
@@ -49,21 +51,25 @@ class Piece < ActiveRecord::Base
       self.flash_message = "Can't put or leave yourself in check!"
       return false 
     end
-    if @target.nil?
+    if self.piece_type == "Pawn" && self.en_passant?(x, y)
+      capture(self.en_passant?(x, y), x, y) #en_passant? returns captured piece
+    elsif @target.nil?
       update_attributes(:x_position => x, :y_position => y, :has_moved => true)
     else
       if color == @target.color
         self.flash_message =  "Invalid move: same color piece"
         return false
       end
-      capture(x, y)
+      capture(@target, x, y)
     end
+    game.update_attributes(last_moved_piece_id: self.id, last_moved_prev_x_pos: orig_x, last_moved_prev_y_pos: orig_y)
     return true
   end
 
-  def capture(x, y)
+  def capture(target, x, y)
+    # target is the piece to capture. x and y are capturing piece destination
     update_attributes(:x_position => x, :y_position => y, :has_moved => true)
-    @target.update_attributes(:captured => true, :x_position => nil,
+    target.update_attributes(:captured => true, :x_position => nil,
                               :y_position => nil)
   end
 

@@ -311,7 +311,7 @@ RSpec.describe Game, type: :model do
       black_pawn = Pawn.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 5, y_position: 1)
       black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 5, y_position: 2)
       expect(@game.determine_check(white_king)).to eq false
-      expect(@game.stalemate?(white_king)).to eq true
+      expect(@game.stalemate!(white_king)).to eq true
       expect(@game.draw?).to eq true
     end
     it "is in stalemate when no legal moves available without moving into check - wikipedia diagram 2" do
@@ -320,7 +320,7 @@ RSpec.describe Game, type: :model do
       black_rook = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 0)
       black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 1, y_position: 2)
       expect(@game.determine_check(white_king)).to eq false
-      expect(@game.stalemate?(white_king)).to eq true
+      expect(@game.stalemate!(white_king)).to eq true
       expect(@game.draw?).to eq true
     end
     it "is in stalemate when no legal moves available without moving into check - wikipedia diagram 3" do
@@ -328,7 +328,7 @@ RSpec.describe Game, type: :model do
       black_rook = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 1, y_position: 6)
       black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 2, y_position: 5)
       expect(@game.determine_check(white_king)).to eq false
-      expect(@game.stalemate?(white_king)).to eq true
+      expect(@game.stalemate!(white_king)).to eq true
       expect(@game.draw?).to eq true
     end
     it "is in stalemate when no legal moves available without moving into check - wikipedia diagram 4" do
@@ -336,7 +336,7 @@ RSpec.describe Game, type: :model do
       black_queen = Queen.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 1, y_position: 5)
       black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 6, y_position: 3)
       expect(@game.determine_check(white_king)).to eq false
-      expect(@game.stalemate?(white_king)).to eq true
+      expect(@game.stalemate!(white_king)).to eq true
       expect(@game.draw?).to eq true
     end
     it "is in stalemate when no legal moves available without moving into check - wikipedia diagram 5" do
@@ -345,8 +345,7 @@ RSpec.describe Game, type: :model do
       black_king = King.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 0, y_position: 2)
       black_bishop = Bishop.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 5, y_position: 4)
       expect(@game.determine_check(white_king)).to eq false
-      expect(@game.stalemate?(white_king)).to eq true
-      @game.stalemate?(white_king)
+      expect(@game.stalemate!(white_king)).to eq true
       expect(@game.draw?).to eq true
     end
     it "is not in stalemate when a legal move is available" do
@@ -354,7 +353,7 @@ RSpec.describe Game, type: :model do
       black_bishop = Bishop.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 4, y_position: 3)
       black_rook = Rook.create(color: false, game_id: @game.id, user_id: @game.black_user_id, x_position: 7, y_position: 3)
       expect(@game.determine_check(white_king)).to eq false
-      expect(@game.stalemate?(white_king)).to eq false
+      expect(@game.stalemate!(white_king)).to eq false
       expect(@game.draw?).to eq false
     end
   end

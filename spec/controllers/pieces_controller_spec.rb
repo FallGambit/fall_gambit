@@ -162,7 +162,7 @@ RSpec.describe PiecesController, type: :controller do
       put :update, id: black_queen.id, x: 1, y: 1
       current_game.reload
       expect(current_game.game_winner).to eq current_game.black_user_id
-      expect(flash[:alert]).to eq("Checkmate! You win!")
+      expect(flash[:notice]).to eq("Checkmate! You win!")
       expect(response).to redirect_to(current_game)
       # turn should change to loser
       expect(current_game.user_turn).to eq current_game.white_user_id
@@ -178,15 +178,69 @@ RSpec.describe PiecesController, type: :controller do
       white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 5, y_position: 0)
       black_pawn = Pawn.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 5, y_position: 1)
       black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 5, y_position: 3)
-
       expect(current_game.draw?).to eq false
       put :update, id: black_king.id, x: 5, y: 2
       current_game.reload
       expect(current_game.draw?).to eq true
-      expect(flash[:alert]).to eq("White is in stalemate! Game is a draw.")
+      expect(flash[:notice]).to eq("White is in stalemate! Game is a draw.")
       expect(response).to redirect_to(current_game)
       # turn should change to next player
       expect(current_game.user_turn).to eq current_game.white_user_id
+    end
+    it "will redirect to promotion_choice view if pawn moved to final row" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.black_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in black_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 0, y_position: 0)
+      black_pawn = Pawn.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 5, y_position: 1)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 7, y_position: 7)
+      put :update, id: black_pawn.id, x: 5, y: 0
+      expect(response).to redirect_to(promotion_choice_piece_path(black_pawn))
+    end
+    it "updates game last moved piece id and previous coordinates" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      # need both kings
+      black_king = King.create(x_position: 7, y_position: 7, game_id: current_game.id, color: false, user_id: current_game.black_user_id)
+      white_king = King.create(x_position: 0, y_position: 0, game_id: current_game.id, color: true, user_id: current_game.white_user_id)
+      white_pawn = Pawn.create(x_position: 5, y_position: 1, game_id: current_game.id, color: true, user_id: current_game.white_user_id)
+      put :update, id: white_pawn.id, x: 5, y: 3 # double space first move
+      current_game.reload
+      expect(current_game.last_moved_piece_id).to eq white_pawn.id
+      expect(current_game.last_moved_prev_x_pos).to eq 5
+      expect(current_game.last_moved_prev_y_pos).to eq 1
+    end
+    context "pawn en passant" do
+      it "captures enemy pawn after move" do
+        current_game = FactoryGirl.build(:game)
+        current_game.assign_attributes(user_turn: current_game.white_user_id)
+        current_game.save!
+        black_user = current_game.black_user
+        white_user = current_game.white_user
+        sign_in white_user
+        current_game.pieces.delete_all
+        # need both kings
+        black_king = King.create(x_position: 7, y_position: 7, game_id: current_game.id, color: false, user_id: current_game.black_user_id)
+        white_king = King.create(x_position: 0, y_position: 0, game_id: current_game.id, color: true, user_id: current_game.white_user_id)
+        black_pawn = Pawn.create(x_position: 4, y_position: 4, game_id: current_game.id, color: false, has_moved: true, user_id: current_game.black_user_id)
+        current_game.update_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 6)
+        white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: current_game.id, color: true, has_moved: true, user_id: current_game.white_user_id)
+        expect(black_pawn.captured?).to be false
+        expect(black_pawn.x_y_coords).to eq [4, 4]
+        put :update, id: white_pawn.id, x: 4, y: 5
+        black_pawn.reload
+        expect(black_pawn.captured?).to be true
+        expect(black_pawn.x_y_coords).to eq [nil, nil]
+      end
     end
   end
 
@@ -221,7 +275,192 @@ RSpec.describe PiecesController, type: :controller do
       white_pawn = current_game.pawns.where(color: true, x_position: 0).first
       put :show, id: white_pawn.id
       expect(response).to redirect_to(current_game)
-      expect(flash[:alert]).to eq("Game is a draw! White can't move without going into check!")
+      expect(flash[:notice]).to eq("Game is a draw! White can't move without going into check!")
+    end
+  end
+
+  describe '#promotion_choice' do
+    render_views
+    it "will remove queen from radio button list if promoting from pawn will cause stalemate" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 0, y_position: 6)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      expect(assigns(:button_list)).to contain_exactly(["Knight", "Knight"], ["Rook", "Rook"], ["Bishop", "Bishop"])
+    end
+    it "will produce choices for Queen, Knight, Rook, Bishop if they do not cause stalemate when promoted to" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 7, y_position: 7)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      expect(assigns(:button_list)).to contain_exactly(["Knight", "Knight"], ["Rook", "Rook"], ["Bishop", "Bishop"], ["Queen", "Queen"])
+    end
+    it "will leave pawn in original pre-move position when displaying promotion choice view" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 7, y_position: 7)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      expect(white_pawn.x_y_coords).to eq [2, 6]
+    end
+  end
+
+  describe '#promote_pawn' do
+    it "will promote pawn to queen" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 7, y_position: 7)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      put :promote_pawn, id: white_pawn.id, pawn: { piece_type: "Queen" }
+      new_queen = Piece.find(white_pawn.id)
+      expect(new_queen.is_a?(Queen)).to be true
+      expect(new_queen.x_y_coords).to eq [2, 7]
+    end
+    it "will promote pawn to knight" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 7, y_position: 7)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      put :promote_pawn, id: white_pawn.id, pawn: { piece_type: "Knight" }
+      new_knight = Piece.find(white_pawn.id)
+      expect(new_knight.is_a?(Knight)).to be true
+      expect(new_knight.x_y_coords).to eq [2, 7]
+    end
+    it "will promote pawn to rook" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 7, y_position: 7)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      put :promote_pawn, id: white_pawn.id, pawn: { piece_type: "Rook" }
+      new_rook = Piece.find(white_pawn.id)
+      expect(new_rook.is_a?(Rook)).to be true
+      expect(new_rook.x_y_coords).to eq [2, 7]
+    end
+    it "will promote pawn to bishop" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 7, y_position: 7)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      put :promote_pawn, id: white_pawn.id, pawn: { piece_type: "Bishop" }
+      new_bishop = Piece.find(white_pawn.id)
+      expect(new_bishop.is_a?(Bishop)).to be true
+      expect(new_bishop.x_y_coords).to eq [2, 7]
+    end
+    it "will set check if promoted piece places opponent king in check" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 0, y_position: 6)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      put :promote_pawn, id: white_pawn.id, pawn: { piece_type: "Knight" }
+      new_knight = Piece.find(white_pawn.id)
+      expect(new_knight.game.check?).to be true
+    end
+    it "will set next player's turn after piece promotion" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 0, y_position: 6)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      put :promote_pawn, id: white_pawn.id, pawn: { piece_type: "Knight" }
+      new_knight = Piece.find(white_pawn.id)
+      expect(new_knight.game.user_turn).to eq black_user.id
+    end
+    it "will redirect to game show view after piece promotion" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      white_king = King.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 5)
+      white_pawn = Pawn.create(color: true, game_id: current_game.id, user_id: current_game.white_user_id, x_position: 2, y_position: 6)
+      black_king = King.create(color: false, game_id: current_game.id, user_id: current_game.black_user_id, x_position: 0, y_position: 6)
+      put :update, id: white_pawn.id, x: 2, y: 7
+      expect(response).to redirect_to(promotion_choice_piece_path(white_pawn))
+      get :promotion_choice, id: white_pawn.id
+      put :promote_pawn, id: white_pawn.id, pawn: { piece_type: "Knight" }
+      new_knight = Piece.find(white_pawn.id)
+      expect(response).to redirect_to game_path(new_knight.game)
     end
   end
 end
