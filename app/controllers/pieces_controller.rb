@@ -52,7 +52,7 @@ class PiecesController < ApplicationController
     redirect_to game_path(@piece.game)
     begin
       PrivatePub.publish_to("/games/#{@piece.game.id}", "window.location.reload();")
-      PrivatePub.publish_to("/games", "window.location.reload();")
+      PrivatePub.publish_to("/", "window.location.reload();")
     rescue Errno::ECONNREFUSED
       # flash.now[:alert] = "Pushing to Faye Failed"
       return
@@ -209,7 +209,7 @@ class PiecesController < ApplicationController
   def update_game_listing
     begin
       # update game listing in real time
-      PrivatePub.publish_to("/games", "window.location.reload();")
+      PrivatePub.publish_to("/", "window.location.reload();")
     rescue Errno::ECONNREFUSED
       #flash.now[:alert] = "Pushing to Faye Failed"
     end
