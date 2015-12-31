@@ -56,16 +56,30 @@
     </div>
   </div>
   <div class="col-xs-12 col-sm-3 text-center blackside">
-    <h4>Black Piece Controls</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
+    <h4>Black Player</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
     <% if !current_game.black_user.nil? %>
-      <p><%= current_game.black_user.email %></p>
+      <%= link_to "#{current_game.black_user.email}", user_path(current_game.black_user.id) %>
     <% else %>
       <p>Waiting for player</p>
     <% end %>
+    <% if user_signed_in? && current_user == current_game.black_user %>
+      <% if current_game.draw == false && current_game.game_winner.nil? %>
+        <% if current_game.draw_request.nil? %>
+          <%= button_to 'Offer draw', request_draw_game_path(current_game), :class => 'btn btn-warning btn-sm controls', :confirm => 'Are you sure you offer a draw?', :method => :put %>
+        <% elsif current_game.draw_request == current_game.white_user_id %>
+          <%= button_to 'Accept draw', accept_draw_game_path(current_game), :class => 'btn btn-success btn-sm controls', :confirm => 'Are you sure you accept a draw?', :method => :put %>
+          <%= button_to 'Reject draw', reject_draw_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to reject the draw?', :method => :put %>
+        <% else %>
+          <%= link_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
+        <% end %>
+        <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
+      <% end %>
+    <% end %>
     <p>Captured Pieces:</p>
     <% current_game.pieces.where(color: true, captured: true).order(:updated_at).each do |capped_piece| %>
-      <%= image_tag capped_piece.image_name, size: "25x25" %> 
+      <%= image_tag capped_piece.image_name, size: "25x25" %>
     <% end %>
+    <br /><br />
   </div>
   <div class="col-xs-12 col-sm-6">
     <table class="chessboard">
@@ -79,16 +93,30 @@
     </table>
   </div>
   <div class="col-xs-12 col-sm-3 text-center whiteside">
-    <h4>White Piece Controls</h4> <!-- start to the Right so they will be on the BOTTOM with White in mobile configuration. -->
+    <h4>White Player</h4> <!-- start to the Right so they will be on the BOTTOM with White in mobile configuration. -->
     <% if !current_game.white_user.nil? %>
-      <p><%= current_game.white_user.email %></p>
+      <%= link_to "#{current_game.white_user.email}", user_path(current_game.white_user.id) %>
     <% else %>
       <p>Waiting for player</p>
+    <% end %>
+    <% if user_signed_in? && current_user == current_game.white_user %>
+      <% if current_game.draw == false && current_game.game_winner.nil? %>
+        <% if current_game.draw_request.nil? %>
+          <%= button_to 'Offer draw', request_draw_game_path(current_game), :class => 'btn btn-warning btn-sm controls', :confirm => 'Are you sure you offer a draw?', :method => :put %>
+        <% elsif current_game.draw_request == current_game.black_user_id %>
+          <%= button_to 'Accept draw', accept_draw_game_path(current_game), :class => 'btn btn-success btn-sm controls', :confirm => 'Are you sure you want to accept a draw?', :method => :put %>
+          <%= button_to 'Reject draw', reject_draw_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to reject the draw?', :method => :put %>
+        <% else %>
+          <%= link_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
+        <% end %>
+        <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
+      <% end %>
     <% end %>
     <p>Captured Pieces:</p>
     <% current_game.pieces.where(color: false, captured: true).order(:updated_at).each do |capped_piece| %>
       <%= image_tag capped_piece.image_name, size: "25x25" %>
     <% end %>
+    <br /><br />
   </div>
 <% end %>
 <%= subscribe_to "/games/" + @game.id.to_s %>
