@@ -70,7 +70,7 @@
           <%= button_to 'Accept draw', accept_draw_game_path(current_game), :class => 'btn btn-success btn-sm controls', :confirm => 'Are you sure you accept a draw?', :method => :put %>
           <%= button_to 'Reject draw', reject_draw_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to reject the draw?', :method => :put %>
         <% else %>
-          <%= link_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
+          <%= button_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
         <% end %>
         <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
       <% end %>
@@ -107,7 +107,7 @@
           <%= button_to 'Accept draw', accept_draw_game_path(current_game), :class => 'btn btn-success btn-sm controls', :confirm => 'Are you sure you want to accept a draw?', :method => :put %>
           <%= button_to 'Reject draw', reject_draw_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to reject the draw?', :method => :put %>
         <% else %>
-          <%= link_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
+          <%= button_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
         <% end %>
         <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
       <% end %>

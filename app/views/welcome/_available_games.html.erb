@@ -51,7 +51,7 @@
           <%= link_to 'You lost!', game_path(game, id: game.id), :class => 'btn btn-danger btn-large join-game-link' %>
         <% elsif game.game_winner == game.white_user_id %>
           <%= link_to 'White wins!', game_path(game, id: game.id), :class => 'btn btn-info btn-large join-game-link' %>
-        <% else game.game_winner == game.black_user_id %>
+        <% elsif game.game_winner == game.black_user_id %>
           <%= link_to 'Black wins!', game_path(game, id: game.id), :class => 'btn btn-info btn-large join-game-link' %>
         <% end %>
       </div>
