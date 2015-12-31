@@ -201,6 +201,47 @@ RSpec.describe PiecesController, type: :controller do
       put :update, id: black_pawn.id, x: 5, y: 0
       expect(response).to redirect_to(promotion_choice_piece_path(black_pawn))
     end
+    it "updates game last moved piece id and previous coordinates" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      current_game.pieces.delete_all
+      # need both kings
+      black_king = King.create(x_position: 7, y_position: 7, game_id: current_game.id, color: false, user_id: current_game.black_user_id)
+      white_king = King.create(x_position: 0, y_position: 0, game_id: current_game.id, color: true, user_id: current_game.white_user_id)
+      white_pawn = Pawn.create(x_position: 5, y_position: 1, game_id: current_game.id, color: true, user_id: current_game.white_user_id)
+      put :update, id: white_pawn.id, x: 5, y: 3 # double space first move
+      current_game.reload
+      expect(current_game.last_moved_piece_id).to eq white_pawn.id
+      expect(current_game.last_moved_prev_x_pos).to eq 5
+      expect(current_game.last_moved_prev_y_pos).to eq 1
+    end
+    context "pawn en passant" do
+      it "captures enemy pawn after move" do
+        current_game = FactoryGirl.build(:game)
+        current_game.assign_attributes(user_turn: current_game.white_user_id)
+        current_game.save!
+        black_user = current_game.black_user
+        white_user = current_game.white_user
+        sign_in white_user
+        current_game.pieces.delete_all
+        # need both kings
+        black_king = King.create(x_position: 7, y_position: 7, game_id: current_game.id, color: false, user_id: current_game.black_user_id)
+        white_king = King.create(x_position: 0, y_position: 0, game_id: current_game.id, color: true, user_id: current_game.white_user_id)
+        black_pawn = Pawn.create(x_position: 4, y_position: 4, game_id: current_game.id, color: false, has_moved: true, user_id: current_game.black_user_id)
+        current_game.update_attributes(last_moved_piece_id: black_pawn.id, last_moved_prev_x_pos: 4, last_moved_prev_y_pos: 6)
+        white_pawn = Pawn.create(x_position: 5, y_position: 4, game_id: current_game.id, color: true, has_moved: true, user_id: current_game.white_user_id)
+        expect(black_pawn.captured?).to be false
+        expect(black_pawn.x_y_coords).to eq [4, 4]
+        put :update, id: white_pawn.id, x: 4, y: 5
+        black_pawn.reload
+        expect(black_pawn.captured?).to be true
+        expect(black_pawn.x_y_coords).to eq [nil, nil]
+      end
+    end
   end
 
   describe "#show" do
