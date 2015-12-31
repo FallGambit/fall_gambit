@@ -203,10 +203,10 @@ RSpec.describe GamesController, type: :controller do
     end
     context 'without being logged in' do
       context 'with an AJAX request' do
-        it 'returns unauthorized status code' do
+        it 'redirects to sign-in page' do
           game_to_update = create(:game)
           xhr :put, :move, id: game_to_update.id, piece_id: 1, x: 3, y: 3
-          expect(response.status).to eq 401
+          expect(response).to redirect_to(new_user_session_path)
         end
       end
       context 'with an HTML request' do
