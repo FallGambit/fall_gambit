@@ -63,7 +63,7 @@
       <p>Waiting for player</p>
     <% end %>
     <% if user_signed_in? && current_user == current_game.black_user %>
-      <% if current_game.draw == false || !current_game.game_winner.nil? %>
+      <% if current_game.draw == false && current_game.game_winner.nil? %>
         <% if current_game.draw_request.nil? %>
           <%= button_to 'Offer draw', request_draw_game_path(current_game), :class => 'btn btn-warning btn-sm controls', :confirm => 'Are you sure you offer a draw?' %>
         <% elsif current_game.draw_request == current_game.white_user_id %>
@@ -72,7 +72,7 @@
         <% else %>
           <%= link_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
         <% end %>
-        <%= button_to 'Forfait!', forfait_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to forfait?' %>
+        <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?' %>
       <% end %>
     <% end %>
     <p>Placeholder for captured pieces</p>
@@ -96,7 +96,7 @@
       <p>Waiting for player</p>
     <% end %>
     <% if user_signed_in? && current_user == current_game.white_user %>
-      <% if current_game.draw == false || !current_game.game_winner.nil? %>
+      <% if current_game.draw == false && current_game.game_winner.nil? %>
         <% if current_game.draw_request.nil? %>
           <%= button_to 'Offer draw', request_draw_game_path(current_game), :class => 'btn btn-warning btn-sm controls', :confirm => 'Are you sure you offer a draw?' %>
         <% elsif current_game.draw_request == current_game.black_user_id %>
@@ -105,7 +105,7 @@
         <% else %>
           <%= link_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
         <% end %>
-        <%= button_to 'Forfait!', forfait_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to forfait?' %>
+        <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?' %>
       <% end %>
     <% end %>
     <p>Placeholder for captured pieces</p>

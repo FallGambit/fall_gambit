@@ -5,10 +5,10 @@ FallGambit::Application.routes.draw do
   resources :pieces, :only => [:show, :update]
   resources :users, :only => :show
 
-  # Custom actions for Forfait and Draw functionality
+  # Custom actions for Forfeit and Draw functionality
   resources :games do
     member do
-      post :forfait, to: "games#forfait"
+      post :forfeit, to: "games#forfeit"
       post :request_draw, to: "games#request_draw"
       post :accept_draw, to: "games#accept_draw"
       post :reject_draw, to: "games#reject_draw"

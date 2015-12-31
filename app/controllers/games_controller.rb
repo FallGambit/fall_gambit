@@ -38,7 +38,7 @@ class GamesController < ApplicationController
     handle_update_errors
   end
 
-  def forfait
+  def forfeit
     if current_user.id == current_game.white_user_id
       current_game.update_attributes(game_winner: current_game.black_user_id)
     else
