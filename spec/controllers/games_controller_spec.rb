@@ -130,7 +130,7 @@ RSpec.describe GamesController, type: :controller do
               .count).to eq 16
         end
         it "sets the current user's turn" do
-          @game_to_update.assign_attributes(user_turn: nil) 
+          @game_to_update.assign_attributes(user_turn: nil)
           @game_to_update.save(validate: false) #don't validate, it won't pass
           expect(@game_to_update.user_turn).to be_nil
           put :update, id: @game_to_update.id, game: { white_user_id: subject.current_user.id }
@@ -176,6 +176,99 @@ RSpec.describe GamesController, type: :controller do
         game_to_update = create(:game)
         put :update, id: game_to_update.id, game: attributes_for(:game)
         expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe 'PUT #forfeit' do
+    it "will declare Black player as the winner" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.white_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in white_user
+      put :forfeit, id: current_game
+      current_game.reload
+      expect(current_game.game_winner).to eq(current_game.black_user.id)
+    end
+    it "will declare White player as the winner" do
+      current_game = FactoryGirl.build(:game)
+      current_game.assign_attributes(user_turn: current_game.black_user_id)
+      current_game.save!
+      black_user = current_game.black_user
+      white_user = current_game.white_user
+      sign_in black_user
+      put :forfeit, id: current_game
+      current_game.reload
+      expect(current_game.game_winner).to eq(current_game.white_user.id)
+    end
+  end
+  describe 'Draw' do
+    context 'white player' do
+      it "will request draw" do
+        current_game = FactoryGirl.build(:game)
+        current_game.assign_attributes(user_turn: current_game.white_user_id)
+        current_game.save!
+        white_user = current_game.white_user
+        sign_in white_user
+        put :request_draw, id: current_game
+        current_game.reload
+        expect(current_game.draw_request).to eq(current_game.white_user.id)
+      end
+      it "will be accepted" do
+        current_game = FactoryGirl.build(:game)
+        current_game.assign_attributes(user_turn: current_game.black_user_id, draw_request: current_game.white_user)
+        current_game.save!
+        black_user = current_game.black_user
+        sign_in black_user
+        put :accept_draw, id: current_game
+        current_game.reload
+        expect(current_game.draw).to eq(true)
+      end
+      it "will be declined" do
+        current_game = FactoryGirl.build(:game)
+        current_game.assign_attributes(user_turn: current_game.black_user_id, draw_request: current_game.white_user)
+        current_game.save!
+        black_user = current_game.black_user
+        sign_in black_user
+        put :reject_draw, id: current_game
+        current_game.reload
+        expect(current_game.draw).to eq(false)
+        expect(current_game.draw_request).to eq(nil)
+      end
+    end
+    context 'black player' do
+      it "will request draw" do
+        current_game = FactoryGirl.build(:game)
+        current_game.assign_attributes(user_turn: current_game.white_user_id)
+        current_game.save!
+        black_user = current_game.black_user
+        sign_in black_user
+        put :request_draw, id: current_game
+        current_game.reload
+        expect(current_game.draw_request).to eq(current_game.black_user.id)
+      end
+      it "will be accepted" do
+        current_game = FactoryGirl.build(:game)
+        current_game.assign_attributes(user_turn: current_game.black_user_id, draw_request: current_game.black_user)
+        current_game.save!
+        white_user = current_game.white_user
+        sign_in white_user
+        put :accept_draw, id: current_game
+        current_game.reload
+        expect(current_game.draw).to eq(true)
+      end
+      it "will be declined" do
+        current_game = FactoryGirl.build(:game)
+        current_game.assign_attributes(user_turn: current_game.black_user_id, draw_request: current_game.black_user)
+        current_game.save!
+        white_user = current_game.white_user
+        sign_in white_user
+        put :reject_draw, id: current_game
+        current_game.reload
+        expect(current_game.draw).to eq(false)
+        expect(current_game.draw_request).to eq(nil)
       end
     end
   end

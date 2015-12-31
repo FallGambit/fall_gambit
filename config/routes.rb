@@ -1,8 +1,20 @@
 FallGambit::Application.routes.draw do
-  
+
   devise_for :users
   resources :games, :only => [:new, :create, :show, :update]
   resources :pieces, :only => [:show, :update]
+  resources :users, :only => :show
+
+  # Custom actions for Forfeit and Draw functionality
+  resources :games do
+    member do
+      put :forfeit, to: "games#forfeit"
+      put :request_draw, to: "games#request_draw"
+      put :accept_draw, to: "games#accept_draw"
+      put :reject_draw, to: "games#reject_draw"
+    end
+  end
+
   resources :pieces do
     member do
       get 'promotion_choice', :action => :promotion_choice
