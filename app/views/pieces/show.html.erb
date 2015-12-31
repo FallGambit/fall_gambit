@@ -72,7 +72,10 @@
         <% end %>
       <% end %>
     <% end %>
-    <p>Placeholder for captured pieces</p>
+    <p>Captured Pieces:</p>
+    <% current_game.pieces.where(color: true, captured: true).order(:updated_at).each do |capped_piece| %>
+      <%= image_tag capped_piece.image_name, size: "25x25" %> 
+    <% end %>
   </div>
   <div class="col-xs-12 col-sm-6">
     <table class="chessboard">
@@ -102,6 +105,9 @@
         <% end %>
       <% end %>
     <% end %>
-    <p>Placeholder for captured pieces</p>
+    <p>Captured Pieces:</p>
+    <% current_game.pieces.where(color: false, captured: true).order(:updated_at).each do |capped_piece| %>
+      <%= image_tag capped_piece.image_name, size: "25x25" %>
+    <% end %>
   </div>
 <% end %>

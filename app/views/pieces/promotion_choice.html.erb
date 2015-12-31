@@ -1,0 +1,16 @@
+<br />
+<br />
+<div class="row">
+  <h3 class ="text-center">Promote Your Pawn</h3>
+  <div class="col-md-2 col-md-offset-5">
+    <%= simple_form_for @piece, :url => promote_pawn_piece_path, method: :patch do |f| %>
+      <%= f.input :piece_type, collection: @button_list, as: :radio_buttons, label: 'Promote to:', class: 'form-control' %>
+      <br />
+      <%= f.submit "Promote!", :class => 'btn btn-primary' %> 
+      <br />
+      <%= link_to "Cancel", game_path(@piece.game), {:class=>"btn btn-danger"} %>
+      <br />
+    <% end %>
+    <br />
+  </div>
+</div>

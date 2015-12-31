@@ -4,7 +4,12 @@ FallGambit::Application.routes.draw do
   put "games/:id/move", to: "games#move"
   resources :games, :only => [:new, :create, :show, :update]
   resources :pieces, :only => [:show, :update]
-
+  resources :pieces do
+    member do
+      get 'promotion_choice', :action => :promotion_choice
+      patch 'promote_pawn', :action => :promote_pawn
+    end
+  end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
