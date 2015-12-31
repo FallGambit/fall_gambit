@@ -8,10 +8,10 @@ FallGambit::Application.routes.draw do
   # Custom actions for Forfeit and Draw functionality
   resources :games do
     member do
-      post :forfeit, to: "games#forfeit"
-      post :request_draw, to: "games#request_draw"
-      post :accept_draw, to: "games#accept_draw"
-      post :reject_draw, to: "games#reject_draw"
+      put :forfeit, to: "games#forfeit"
+      put :request_draw, to: "games#request_draw"
+      put :accept_draw, to: "games#accept_draw"
+      put :reject_draw, to: "games#reject_draw"
     end
   end
 
