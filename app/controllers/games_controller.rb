@@ -45,6 +45,50 @@ class GamesController < ApplicationController
     handle_update_errors
   end
 
+  def forfeit
+    if current_user.id == current_game.white_user_id
+      current_game.update_attributes(game_winner: current_game.black_user_id)
+    elsif current_user.id == current_game.black_user_id
+      current_game.update_attributes(game_winner: current_game.white_user_id)
+    end
+    redirect_to game_path(current_game)
+    begin
+      PrivatePub.publish_to("/games/#{current_game.id}", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      flash.now[:alert] = "Pushing to Faye Failed"
+    end
+  end
+
+  def request_draw
+    current_game.update_attributes(draw_request: current_user.id)
+    redirect_to game_path(current_game)
+    begin
+      PrivatePub.publish_to("/games/#{current_game.id}", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      flash.now[:alert] = "Pushing to Faye Failed"
+    end
+  end
+
+  def accept_draw
+    current_game.update_attributes(draw: true)
+    redirect_to game_path(current_game)
+    begin
+      PrivatePub.publish_to("/games/#{current_game.id}", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      flash.now[:alert] = "Pushing to Faye Failed"
+    end
+  end
+
+  def reject_draw
+    current_game.update_attributes(draw_request: nil)
+    redirect_to game_path(current_game)
+    begin
+      PrivatePub.publish_to("/games/#{current_game.id}", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      flash.now[:alert] = "Pushing to Faye Failed"
+    end
+  end
+
   private
 
   helper_method :current_game, :place_piece_td
