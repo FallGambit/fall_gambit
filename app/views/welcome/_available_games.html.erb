@@ -20,7 +20,7 @@
 <h3 class="text-center">Games in Progress:</h3>
 <% @games.each do |game| %>
   <div class="list-group">
-    <% if !game.player_missing? && game.game_winner.nil? %>
+    <% if !game.player_missing? && game.game_winner.nil? && game.draw == false%>
       <div class="list-group-item">
         <h4><%= game.game_name %></h4>
         <% if current_user && (current_user.id == game.white_user_id || current_user.id == game.black_user_id) %>
@@ -40,16 +40,18 @@
 <h3 class="text-center">Completed Games:</h3>
 <% @games.each do |game| %>
   <div class="list-group">
-    <% if !game.game_winner.nil? %>
+    <% if !game.game_winner.nil? || game.draw == true %>
       <div class="list-group-item">
         <h4><%= game.game_name %></h4>
-        <% if current_user && game.game_winner == current_user.id %>
+        <% if game.draw == true %>
+          <%= link_to 'Draw!', game_path(game, id: game.id), :class => 'btn btn-info btn-large join-game-link' %>
+        <% elsif current_user && game.game_winner == current_user.id %>
           <%= link_to 'You won!', game_path(game, id: game.id), :class => 'btn btn-info btn-large join-game-link' %>
         <% elsif current_user && (current_user.id == game.white_user.id || current_user.id == game.black_user_id) %>
           <%= link_to 'You lost!', game_path(game, id: game.id), :class => 'btn btn-danger btn-large join-game-link' %>
         <% elsif game.game_winner == game.white_user_id %>
           <%= link_to 'White wins!', game_path(game, id: game.id), :class => 'btn btn-info btn-large join-game-link' %>
-        <% else %>
+        <% else game.game_winner == game.black_user_id %>
           <%= link_to 'Black wins!', game_path(game, id: game.id), :class => 'btn btn-info btn-large join-game-link' %>
         <% end %>
       </div>

@@ -115,7 +115,7 @@ class Game < ActiveRecord::Base
         if destination_piece
           destination_piece.update_attributes(x_position: x_dest, y_position: y_dest, captured: false)
         end
-        return true 
+        return true
       end
     end
     moving_piece.update_attributes(x_position: piece_orig_x_pos, y_position: piece_orig_y_pos)
@@ -129,7 +129,7 @@ class Game < ActiveRecord::Base
     # just checks for stalemate, doesn't set game status
     friendly_pieces = pieces.where(color: king.color, captured: false)
     return false if determine_check(king) # king can't currently be in check
-    (0..7).to_a.each do |row| # loop through all board squares 
+    (0..7).to_a.each do |row| # loop through all board squares
       (0..7).to_a.each do |column| # see if and valid moves which don't put king in check
         friendly_pieces.each do |friendly_piece|
           if friendly_piece.valid_move?(row, column) && !puts_king_in_check?(friendly_piece, row, column)
@@ -151,7 +151,7 @@ class Game < ActiveRecord::Base
   def checkmate?(king)
     # going to assume for now that a valid king object is passed in...
     threatening_pieces = determine_check(king) # piece(s) putting king into check
-    return false unless threatening_pieces # king isn't in check! 
+    return false unless threatening_pieces # king isn't in check!
     # try moving king in every direction to escape check, if any valid move then checkmate is false
     result = puts_king_in_check?(king, king.x_position, king.y_position+1) # up
     if !result && !result.nil? # if false and not nil then it is a valid move out of check
