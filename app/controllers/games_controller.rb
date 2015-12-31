@@ -32,6 +32,7 @@ class GamesController < ApplicationController
     if @game.player_missing?
       update_player
       if @game.errors.empty?
+        flash[:notice] = "Joined the game!"
         redirect_to game_path(@game)
         begin
           PrivatePub.publish_to("/games/#{@game.id}", "window.location.reload();")
