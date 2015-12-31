@@ -58,7 +58,7 @@
   <div class="col-xs-12 col-sm-3 text-center blackside">
     <h4>Black Player</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
     <% if !current_game.black_user.nil? %>
-      <p><%= current_game.black_user.email %></p>
+      <%= link_to "#{current_game.black_user.email}", user_path(current_game.black_user.id) %>
     <% else %>
       <p>Waiting for player</p>
     <% end %>
@@ -91,7 +91,7 @@
   <div class="col-xs-12 col-sm-3 text-center whiteside">
     <h4>White Player</h4> <!-- start to the Right so they will be on the BOTTOM with White in mobile configuration. -->
     <% if !current_game.white_user.nil? %>
-      <p><%= current_game.white_user.email %></p>
+      <%= link_to "#{current_game.white_user.email}", user_path(current_game.white_user.id) %>
     <% else %>
       <p>Waiting for player</p>
     <% end %>
