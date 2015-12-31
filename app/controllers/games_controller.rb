@@ -134,15 +134,12 @@ class GamesController < ApplicationController
   end
 
   def update_player
-    if current_user && @game.white_user_id.nil?
+    if @game.white_user_id.nil?
       @game.update_attributes(white_user_id: current_user.id, user_turn: current_user.id)
       @game.set_pieces_white_user_id
-    elsif current_user && @game.black_user_id.nil?
+    else
       @game.update_attributes(black_user_id: current_user.id)
       @game.set_pieces_black_user_id
-    elsif !current_user
-      flash[:alert] = "Must log in or sign in to continue!"
-      redirect_to new_user_session_path
     end
   end
 
