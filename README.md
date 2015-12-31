@@ -40,3 +40,15 @@ Proper calling of Piece.rb Model helper method "range_occupied?(x1, x2, y1, y2)"
 
 20151206: New Piece.rb helper method "find_piece(x, y)" should be usable by child models, but must be explicitly added to child model test specs. See knight_spec.rb as example.
 
+***
+
+How to run Faye locally:
+------------------------
+
+You can find our Faye barebone app here: [faye-gambit](https://github.com/nicolaguidi/faye-gambit)
+Clone or download the app on your machine.
+To run the server just type this from the faye-gambit folder:
+`rackup private_pub.ru -s thin -E production`
+
+Both servers should be running at the same time.
+
