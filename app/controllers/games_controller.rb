@@ -47,11 +47,11 @@ class GamesController < ApplicationController
 
   def forfeit
     if current_user.id == current_game.white_user_id
-      current_game.update_attributes(game_winner: current_game.black_user_id)
+      current_game.update_attributes(game_winner: current_game.black_user_id, forfeit: true)
       black_user.update_attributes(user_wins: black_user.user_wins + 1)
       white_user.update_attributes(user_losses: white_user.user_losses + 1)
     elsif current_user.id == current_game.black_user_id
-      current_game.update_attributes(game_winner: current_game.white_user_id)
+      current_game.update_attributes(game_winner: current_game.white_user_id, forfeit: true)
       white_user.update_attributes(user_wins: white_user.user_wins + 1)
       black_user.update_attributes(user_losses: black_user.user_losses + 1)
     end
