@@ -81,7 +81,7 @@
     <table class="chessboard">
       <% if current_user && current_user.id == current_game.black_user_id %>
         <% (0..7).each do |row| %>
-            <tr class="y-position-<%= row %>" >
+            <tr data-y-position="<%= row %>" >
               <% (0..7).to_a.reverse.each do |column| %>
                 <%= show_piece_td(row, column).html_safe %>
               <% end %>
@@ -89,7 +89,7 @@
           <% end %>
       <% else %>
         <% (0..7).to_a.reverse.each do |row| %>
-            <tr class="y-position-<%= row %>" >
+            <tr data-y-position="<%= row %>" >
               <% (0..7).each do |column| %>
                 <%= show_piece_td(row, column).html_safe %>
               <% end %>
