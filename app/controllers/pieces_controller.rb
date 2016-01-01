@@ -49,6 +49,10 @@ class PiecesController < ApplicationController
       # end turn
       @piece.game.finish_turn(@piece.user) # otherwise turn goes to other player
     end
+    respond_to do |format|
+      format.json { render :json => @piece.to_json }
+      format.html { redirect_to game_path(@piece.game) }
+    end
     redirect_to game_path(@piece.game)
     begin
       PrivatePub.publish_to("/games/#{@piece.game.id}", "window.location.reload();")
