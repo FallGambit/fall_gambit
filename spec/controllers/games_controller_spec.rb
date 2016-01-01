@@ -193,6 +193,10 @@ RSpec.describe GamesController, type: :controller do
       current_game.reload
       expect(current_game.game_winner).to eq(current_game.black_user.id)
       expect(current_game.forfeit).to be true
+      black_user.reload
+      white_user.reload
+      expect(black_user.user_wins).to eq 1
+      expect(white_user.user_losses).to eq 1
     end
     it "will declare White player as the winner" do
       current_game = FactoryGirl.build(:game)
@@ -206,6 +210,10 @@ RSpec.describe GamesController, type: :controller do
       current_game.reload
       expect(current_game.game_winner).to eq(current_game.white_user.id)
       expect(current_game.forfeit).to be true
+      black_user.reload
+      white_user.reload
+      expect(white_user.user_wins).to eq 1
+      expect(black_user.user_losses).to eq 1
     end
   end
   describe 'Draw' do
@@ -225,10 +233,15 @@ RSpec.describe GamesController, type: :controller do
         current_game.assign_attributes(user_turn: current_game.black_user_id, draw_request: current_game.white_user)
         current_game.save!
         black_user = current_game.black_user
+        white_user = current_game.white_user
         sign_in black_user
         put :accept_draw, id: current_game
         current_game.reload
         expect(current_game.draw).to eq(true)
+        black_user.reload
+        white_user.reload
+        expect(black_user.user_draws).to eq 1
+        expect(white_user.user_draws).to eq 1
       end
       it "will be declined" do
         current_game = FactoryGirl.build(:game)
@@ -258,10 +271,15 @@ RSpec.describe GamesController, type: :controller do
         current_game.assign_attributes(user_turn: current_game.black_user_id, draw_request: current_game.black_user)
         current_game.save!
         white_user = current_game.white_user
+        black_user = current_game.black_user
         sign_in white_user
         put :accept_draw, id: current_game
         current_game.reload
         expect(current_game.draw).to eq(true)
+        black_user.reload
+        white_user.reload
+        expect(black_user.user_draws).to eq 1
+        expect(white_user.user_draws).to eq 1
       end
       it "will be declined" do
         current_game = FactoryGirl.build(:game)
