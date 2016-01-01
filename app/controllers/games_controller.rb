@@ -164,10 +164,10 @@ class GamesController < ApplicationController
   end
 
   def black_user
-    black_user ||= User.find(@piece.game.black_user.id)
+    black_user ||= User.find(current_game.black_user.id)
   end
 
   def white_user
-    white_user ||= User.find(@piece.game.white_user.id)
+    white_user ||= User.find(current_game.white_user.id)
   end
 end
