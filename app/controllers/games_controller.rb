@@ -9,6 +9,12 @@ class GamesController < ApplicationController
     @game = Game.create(game_create_params)
     if @game.valid?
       redirect_to game_path(@game)
+      begin
+        # update game listing in real time
+        PrivatePub.publish_to("/", "window.location.reload();")
+      rescue Errno::ECONNREFUSED
+        flash.now[:alert] = "Pushing to Faye Failed"
+      end
     else
       flash.now[:alert] = "Error creating game!"
       render :new, :status => :unprocessable_entity

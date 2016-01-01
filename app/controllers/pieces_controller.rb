@@ -35,11 +35,13 @@ class PiecesController < ApplicationController
       if @piece.game.checkmate?(opponent_king) # current player placed other player in checkmate - wins!
         @piece.game.update_attributes(game_winner: @piece.user_id) # set game winner
         flash[:notice] = "Checkmate! You win!" # will only get set and display on winner's turn
+        update_game_listing # refresh game listing in real-time
       else
         # check for stalemate of other player after move and set game model field
         if @piece.game.stalemate!(opponent_king)
           @piece.game.user_turn == @piece.game.white_user_id ? other_player = "Black" : other_player = "White"
           flash[:notice] = other_player + " is in stalemate! Game is a draw."
+          update_game_listing # refresh game listing in real-time
         else
           @piece.game.determine_check(opponent_king) # set check field in game model
         end
@@ -50,6 +52,7 @@ class PiecesController < ApplicationController
     redirect_to game_path(@piece.game)
     begin
       PrivatePub.publish_to("/games/#{@piece.game.id}", "window.location.reload();")
+      PrivatePub.publish_to("/", "window.location.reload();")
     rescue Errno::ECONNREFUSED
       # flash.now[:alert] = "Pushing to Faye Failed"
       return
@@ -200,6 +203,15 @@ class PiecesController < ApplicationController
     if @piece.user.nil? || current_user.id != @piece.user.id
       flash[:alert] = "Not your piece!"
       redirect_to game_path(current_game)
+    end
+  end
+
+  def update_game_listing
+    begin
+      # update game listing in real time
+      PrivatePub.publish_to("/", "window.location.reload();")
+    rescue Errno::ECONNREFUSED
+      #flash.now[:alert] = "Pushing to Faye Failed"
     end
   end
 
