@@ -53,7 +53,6 @@ class PiecesController < ApplicationController
       format.json { render :json => @piece.to_json }
       format.html { redirect_to game_path(@piece.game) }
     end
-    redirect_to game_path(@piece.game)
     begin
       PrivatePub.publish_to("/games/#{@piece.game.id}", "window.location.reload();")
       PrivatePub.publish_to("/", "window.location.reload();")
