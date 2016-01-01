@@ -18,6 +18,7 @@
       <% if !game.player_missing? && game.game_winner.nil? && game.draw == false %>
         <div class="list-group-item">
           <h4><%= game.game_name %></h4>
+          <p>Last Update: <%= game.updated_at.strftime("%B %d, %Y") %></p>
           <% if current_user && (current_user.id == game.white_user_id || current_user.id == game.black_user_id) %>
             <% if game.user_turn == current_user.id %>
               <%= link_to 'Your Turn!', game_path(game, id: game.id), :class => 'btn btn-warning btn-large join-game-link' %>
@@ -39,6 +40,7 @@
       <% if !game.game_winner.nil? || game.draw == true %>
         <div class="list-group-item">
           <h4><%= game.game_name %></h4>
+          <p>Last Update: <%= game.updated_at.strftime("%B %d, %Y") %></p>
             <% if game.draw == true %>
               <%= link_to 'Draw!', game_path(game, id: game.id), :class => 'btn btn-info btn-large join-game-link' %>
             <% elsif current_user && game.game_winner == current_user.id %>
