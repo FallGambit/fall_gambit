@@ -34,12 +34,23 @@ class PiecesController < ApplicationController
       opponent_king = @piece.game.kings.where.not(color: @piece.color).first
       if @piece.game.checkmate?(opponent_king) # current player placed other player in checkmate - wins!
         @piece.game.update_attributes(game_winner: @piece.user_id) # set game winner
+        # update user stats
+        if User.find(@piece.user_id) == black_user
+          black_user.update_attributes(user_wins: black_user.user_wins + 1)
+          white_user.update_attributes(user_losses: white_user.user_losses + 1)
+        else
+          white_user.update_attributes(user_wins: white_user.user_wins + 1)
+         black_user.update_attributes(user_losses: black_user.user_losses + 1)
+        end
         flash[:notice] = "Checkmate! You win!" # will only get set and display on winner's turn
         update_game_listing # refresh game listing in real-time
       else
         # check for stalemate of other player after move and set game model field
         if @piece.game.stalemate!(opponent_king)
           @piece.game.user_turn == @piece.game.white_user_id ? other_player = "Black" : other_player = "White"
+          # update user stats
+          white_user.update_attributes(user_draws: white_user.user_draws + 1)
+          black_user.update_attributes(user_draws: black_user.user_draws + 1)
           flash[:notice] = other_player + " is in stalemate! Game is a draw."
           update_game_listing # refresh game listing in real-time
         else
@@ -135,6 +146,14 @@ class PiecesController < ApplicationController
     if @piece.flash_message.present?
       flash[:alert] = @piece.flash_message
     end
+  end
+
+  def black_user
+    black_user ||= User.find(@piece.game.black_user.id)
+  end
+
+  def white_user
+    white_user ||= User.find(@piece.game.white_user.id)
   end
 
   def current_game
