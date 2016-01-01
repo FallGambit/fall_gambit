@@ -49,8 +49,8 @@ class GamesController < ApplicationController
     respond_to do |format|
       format.json { redirect_to piece_path(params[:piece_id]) }
       format.html { redirect_to game_path(current_game) }
+    end
   end
-end
 
   def forfeit
     if current_user.id == current_game.white_user_id

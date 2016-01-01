@@ -28,7 +28,10 @@ class PiecesController < ApplicationController
       $old_y = @piece.y_position
       $intended_x = new_x
       $intended_y = new_y
-      redirect_to promotion_choice_piece_path(@piece) and return
+      respond_to do |format|
+        format.json { redirect_to promotion_choice_piece_path(@piece) and return }
+        format.html { redirect_to promotion_choice_piece_path(@piece) and return }
+      end
     end
     if @piece.move_to!(new_x, new_y)
       opponent_king = @piece.game.kings.where.not(color: @piece.color).first
