@@ -8,9 +8,17 @@
       <br />
         <% if !current_game.game_winner.nil? %>
           <% if current_game.game_winner == current_game.white_user_id %>
-            <h4 class="turn-indicator">Checkmate! White player wins!</h4>
+            <% if current_game.forfeit? %>
+              <h4 class="turn-indicator">Black player forfeit. White player wins!</h4>
+            <% else %>
+              <h4 class="turn-indicator">Checkmate! White player wins!</h4>
+            <% end %>
           <% else %>
-            <h4 class="turn-indicator">Checkmate! Black player wins!</h4>
+            <% if current_game.forfeit? %>
+              <h4 class="turn-indicator">White player forfeit. Black player wins!</h4>
+            <% else %>
+              <h4 class="turn-indicator">Checkmate! Black player wins!</h4>
+              <% end %>
           <% end %>
         <% elsif current_game.draw? %>
           <% if current_game.user_turn == current_game.white_user_id %>

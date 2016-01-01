@@ -47,9 +47,9 @@ class GamesController < ApplicationController
 
   def forfeit
     if current_user.id == current_game.white_user_id
-      current_game.update_attributes(game_winner: current_game.black_user_id)
+      current_game.update_attributes(game_winner: current_game.black_user_id, forfeit: true)
     elsif current_user.id == current_game.black_user_id
-      current_game.update_attributes(game_winner: current_game.white_user_id)
+      current_game.update_attributes(game_winner: current_game.white_user_id, forfeit: true)
     end
     redirect_to game_path(current_game)
     begin

@@ -188,9 +188,11 @@ RSpec.describe GamesController, type: :controller do
       black_user = current_game.black_user
       white_user = current_game.white_user
       sign_in white_user
+      expect(current_game.forfeit).to be false
       put :forfeit, id: current_game
       current_game.reload
       expect(current_game.game_winner).to eq(current_game.black_user.id)
+      expect(current_game.forfeit).to be true
     end
     it "will declare White player as the winner" do
       current_game = FactoryGirl.build(:game)
@@ -199,9 +201,11 @@ RSpec.describe GamesController, type: :controller do
       black_user = current_game.black_user
       white_user = current_game.white_user
       sign_in black_user
+      expect(current_game.forfeit).to be false
       put :forfeit, id: current_game
       current_game.reload
       expect(current_game.game_winner).to eq(current_game.white_user.id)
+      expect(current_game.forfeit).to be true
     end
   end
   describe 'Draw' do
