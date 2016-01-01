@@ -22,9 +22,17 @@
           <% end %>
         <% elsif current_game.draw? %>
           <% if current_game.user_turn == current_game.white_user_id %>
-            <h4 class="turn-indicator">Game is a draw! White player in stalemate!</h4>
+            <% if !current_game.draw_request.nil? %>
+              <h4 class="turn-indicator">Game is a draw! Draw offer accepted. </h4>
+            <% else %>
+              <h4 class="turn-indicator">Game is a draw! White player in stalemate!</h4>
+            <% end %>
           <% else %>
-            <h4 class="turn-indicator">Game is a draw! Black player in stalemate!</h4>
+            <% if !current_game.draw_request.nil? %>
+              <h4 class="turn-indicator">Game is a draw! Draw offer accepted. </h4>
+            <% else %>
+              <h4 class="turn-indicator">Game is a draw! Black player in stalemate!</h4>
+            <% end %>
           <% end %>
         <% elsif current_game.player_missing? %>
           <% if current_game.white_user_id.nil? %>
