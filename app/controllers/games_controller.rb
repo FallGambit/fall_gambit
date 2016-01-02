@@ -11,7 +11,7 @@ class GamesController < ApplicationController
       redirect_to game_path(@game)
       begin
         # update game listing in real time
-        PrivatePub.publish_to("/", "window.location.reload();")
+        PrivatePub.publish_to( "#{root_path}", "window.location.reload();")
       rescue Errno::ECONNREFUSED
         flash.now[:alert] = "Pushing to Faye Failed"
       end
