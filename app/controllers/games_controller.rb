@@ -78,7 +78,11 @@ class GamesController < ApplicationController
     if current_game.player_missing?
       # if only player and click draw, then cancel/delete game and return to main page
       current_game.delete
-      PrivatePub.publish_to( "/game_list_updates", "window.location.reload();")
+      begin
+        PrivatePub.publish_to( "/game_list_updates", "window.location.reload();")
+      rescue Errno::ECONNREFUSED
+        flash.now[:alert] = "Pushing to Faye Failed"
+      end
       redirect_to root_path and return
     end
     redirect_to game_path(current_game)
