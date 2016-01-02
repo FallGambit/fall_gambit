@@ -2,6 +2,7 @@
 <script type="text/javascript">
 $(document).ready(function () {
   $("[data-piece-id]").children("[href]").children('img').draggable({
+    stack: "div",
     containment: ".chessboard",
     create: function(){$(this).data('position',$(this).position())},
     cursorAt:{left:15},
