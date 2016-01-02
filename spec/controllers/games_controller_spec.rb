@@ -331,6 +331,20 @@ RSpec.describe GamesController, type: :controller do
         expect(current_game.draw).to eq(false)
         expect(current_game.draw_request).to eq(nil)
       end
+      it "will delete game if only one player and chooses draw" do
+        current_game = FactoryGirl.build(:game, white_user_id: nil)
+        current_game.assign_attributes(user_turn: current_game.black_user_id)
+        current_game.save!
+        black_user = current_game.black_user
+        current_game.white_user = nil
+        sign_in black_user
+        expect(current_game.forfeit).to be false
+        expect { Game.find(current_game.id)}.not_to raise_error
+        put :request_draw, id: current_game
+        expect { Game.find(current_game.id)}.to raise_exception(ActiveRecord::RecordNotFound)
+        black_user.reload
+        expect(black_user.user_losses).to eq 0
+      end
     end
   end
 end
