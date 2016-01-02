@@ -155,7 +155,9 @@ $(document).ready(function () {
         <% else %>
           <%= button_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
         <% end %>
-        <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
+        <% if !current_game.player_missing? %>
+          <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
+        <% end %>
       <% end %>
     <% end %>
     <p>Captured Pieces:</p>
@@ -202,7 +204,9 @@ $(document).ready(function () {
         <% else %>
           <%= button_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
         <% end %>
-        <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
+        <% if !current_game.player_missing? %>
+          <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
+        <% end %>
       <% end %>
     <% end %>
     <p>Captured Pieces:</p>
