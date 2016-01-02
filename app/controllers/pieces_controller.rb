@@ -28,7 +28,11 @@ class PiecesController < ApplicationController
       $old_y = @piece.y_position
       $intended_x = new_x
       $intended_y = new_y
-      redirect_to promotion_choice_piece_path(@piece) and return
+      respond_to do |format|
+        format.json { redirect_to promotion_choice_piece_path(@piece) }
+        format.html { redirect_to promotion_choice_piece_path(@piece) }
+      end
+      return
     end
     if @piece.move_to!(new_x, new_y)
       opponent_king = @piece.game.kings.where.not(color: @piece.color).first
@@ -59,8 +63,17 @@ class PiecesController < ApplicationController
       end
       # end turn
       @piece.game.finish_turn(@piece.user) # otherwise turn goes to other player
+    else
+      respond_to do |format|
+        format.json { render json: { errors: @piece.errors.full_messages }, :status => 400 }
+        format.html { redirect_to game_path(@piece.game) }
+      end
+      return
     end
-    redirect_to game_path(@piece.game)
+    respond_to do |format|
+      format.json { render :json => @piece.to_json }
+      format.html { redirect_to game_path(@piece.game) }
+    end
     begin
       PrivatePub.publish_to("/games/#{@piece.game.id}", "window.location.reload();")
       PrivatePub.publish_to("/", "window.location.reload();")
@@ -73,6 +86,7 @@ class PiecesController < ApplicationController
   def promotion_choice
     # can/should eventually move this logic into a model
     # make sure choices don't place opponent into stalemate, pass choices to radio buttons in form
+    @piece = Piece.find(params[:id])
     dest_piece = @piece.game.pieces.where(x_position: $intended_x, y_position: $intended_y).first
     if !dest_piece.nil? 
       dest_piece.update_attributes(x_position: nil, y_position: nil, captured: true) # temp capture to check for stalemate
@@ -170,15 +184,16 @@ class PiecesController < ApplicationController
   def show_piece_td(row, column)
     @current_game = current_game
     find_piece = board_display_piece_query(row, column)
-    board_square = "<td class='x-position-'#{column}' "
-    board_square += "piece-id-data='#{piece_id(find_piece)}' "
-    board_square += "piece-type-data='#{piece_type(find_piece)}''>"
+    board_square = "<td data-x-position='#{column}'"
     url = piece_path(Piece.find(params[:id]))
     url += "?x=#{column}&y=#{row}"
     if find_piece.nil?
+      board_square += ">"
       board_square += ActionController::Base.helpers.link_to '',
                                                              url, method: :put
     else
+      board_square += " data-piece-id='#{piece_id(find_piece)}' "
+      board_square += "data-piece-type='#{piece_type(find_piece)}'>"
       image = ActionController::Base.helpers.image_tag find_piece
               .image_name, size: '40x45',
                            class: 'img-responsive center-block'
@@ -213,7 +228,10 @@ class PiecesController < ApplicationController
     # run before any pieces controller action
     if current_user.id != current_game.user_turn
       flash[:alert] = "Not your turn!"
-      redirect_to game_path(current_game)
+      respond_to do |format|
+        format.html { redirect_to game_path(current_game)}
+        format.json { render json: @piece.errors, status: "Not your turn!"}
+      end
     end
   end
 
@@ -221,7 +239,10 @@ class PiecesController < ApplicationController
     # run before any pieces controller action
     if @piece.user.nil? || current_user.id != @piece.user.id
       flash[:alert] = "Not your piece!"
-      redirect_to game_path(current_game)
+      respond_to do |format|
+        format.html { redirect_to game_path(current_game)}
+        format.json { render json: @piece.errors, status: "Not your piece!"}
+      end
     end
   end
 
@@ -237,5 +258,4 @@ class PiecesController < ApplicationController
   def pawn_update_params
     params.require(:pawn).permit(:piece_type)
   end
-
 end

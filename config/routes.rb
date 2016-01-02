@@ -1,6 +1,7 @@
 FallGambit::Application.routes.draw do
 
   devise_for :users
+  put "games/:id/move", to: "games#move"
   resources :games, :only => [:new, :create, :show, :update]
   resources :pieces, :only => [:show, :update]
   resources :users, :only => :show
@@ -18,6 +19,7 @@ FallGambit::Application.routes.draw do
   resources :pieces do
     member do
       get 'promotion_choice', :action => :promotion_choice
+      put 'promotion_choice', :action => :promotion_choice
       patch 'promote_pawn', :action => :promote_pawn
     end
   end
