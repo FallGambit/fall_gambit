@@ -1,5 +1,5 @@
 class GamesController < ApplicationController
-  before_action :authenticate_user!, only: [:new, :create, :update]
+  before_action :authenticate_user!, only: [:new, :create, :update, :move]
 
   def new
     @game = Game.new
@@ -28,21 +28,31 @@ class GamesController < ApplicationController
   end
 
   def update
-    @game = Game.find(params[:id])
-    if @game.player_missing?
-      update_player
-      if @game.errors.empty?
-        flash[:notice] = "Joined the game!"
-        redirect_to game_path(@game)
-        begin
-          PrivatePub.publish_to("/games/#{@game.id}", "window.location.reload();")
-        rescue Errno::ECONNREFUSED
-          flash.now[:alert] = "Pushing to Faye Failed"
+    respond_to do |format| 
+      format.html {
+        @game = Game.find(params[:id])
+        if @game.player_missing?
+          update_player
+          if @game.errors.empty?
+            flash[:notice] = "Joined the game!"
+            redirect_to game_path(@game)
+            begin
+              PrivatePub.publish_to("/games/#{@game.id}", "window.location.reload();")
+            rescue Errno::ECONNREFUSED
+              flash.now[:alert] = "Pushing to Faye Failed"
+            end
+            return
+          end
         end
-        return
-      end
+        handle_update_errors }
     end
-    handle_update_errors
+  end
+
+  def move
+    respond_to do |format|
+      format.json { redirect_to piece_path(params[:piece_id]) }
+      format.html { redirect_to piece_path(params[:piece_id]) }
+    end
   end
 
   def forfeit
@@ -110,10 +120,12 @@ class GamesController < ApplicationController
 
   def place_piece_td(row, column)
     find_piece = board_display_piece_query(row, column)
-    board_square = "<td class='x-position-'#{column}' "
-    board_square += "piece-id-data='#{piece_id(find_piece)}' "
-    board_square += "piece-type-data='#{piece_type(find_piece)}''>"
-    unless find_piece.nil?
+    board_square = "<td data-x-position='#{column}'"
+    if find_piece.nil?
+      board_square += ">"
+    else
+      board_square += " data-piece-id='#{piece_id(find_piece)}' "
+      board_square += "data-piece-type='#{piece_type(find_piece)}'>"
       image = ActionController::Base.helpers.image_tag find_piece
               .image_name, size: '40x45',
                            class: 'img-responsive center-block'

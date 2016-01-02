@@ -180,6 +180,45 @@ RSpec.describe GamesController, type: :controller do
     end
   end
 
+  describe 'PATCH #move' do
+    context 'with logged in user' do
+      login_user
+      let(:black_player) { create(:user) }
+      let(:game_to_update) do
+        Game.create(game_name: "Test",
+                    black_user_id: black_player.id)
+        context 'with an AJAX request' do
+          it 'redirects to pieces controller' do
+            xhr :put, :move, id: game_to_update.id, piece_id: 1, x: 3, y: 3
+            expect(response).to redirect_to(piece_path(piece_id))
+          end
+        end
+        context 'with an HTML request' do
+          it 'redirects to game page' do
+            put :move, id: game_to_update.id, piece_id: 1, x: 3, y: 3
+            expect(response).to redirect_to(game_to_update)
+          end
+        end
+      end
+    end
+    context 'without being logged in' do
+      context 'with an AJAX request' do
+        it 'redirects to sign-in page' do
+          game_to_update = create(:game)
+          xhr :put, :move, id: game_to_update.id, piece_id: 1, x: 3, y: 3
+          expect(response).to redirect_to(new_user_session_path)
+        end
+      end
+      context 'with an HTML request' do
+        it 'redirects to sign-in page' do
+          game_to_update = create(:game)
+          put :move, id: game_to_update.id, piece_id: 1, x: 3, y: 3
+          expect(response).to redirect_to(new_user_session_path)
+        end
+      end
+    end
+  end
+
   describe 'PUT #forfeit' do
     it "will declare Black player as the winner" do
       current_game = FactoryGirl.build(:game)

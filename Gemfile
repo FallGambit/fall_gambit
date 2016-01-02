@@ -39,6 +39,9 @@ gem 'devise'
 # Implement foreign keys
 gem 'foreigner'
 
+# JQuery UI for drag and drop features
+gem 'jquery-ui-rails'
+
 # Use thin as the app server
 gem 'thin'
 
