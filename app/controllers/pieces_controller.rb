@@ -29,9 +29,10 @@ class PiecesController < ApplicationController
       $intended_x = new_x
       $intended_y = new_y
       respond_to do |format|
-        format.json { redirect_to promotion_choice_piece_path(@piece) and return }
-        format.html { redirect_to promotion_choice_piece_path(@piece) and return }
+        format.json { redirect_to promotion_choice_piece_path(@piece) }
+        format.html { redirect_to promotion_choice_piece_path(@piece) }
       end
+      return
     end
     if @piece.move_to!(new_x, new_y)
       opponent_king = @piece.game.kings.where.not(color: @piece.color).first
@@ -51,6 +52,11 @@ class PiecesController < ApplicationController
       end
       # end turn
       @piece.game.finish_turn(@piece.user) # otherwise turn goes to other player
+    else
+      respond_to do |format|
+        format.json { render json: { errors: @piece.errors.full_messages }, :status => 400 }
+      end
+      return
     end
     respond_to do |format|
       format.json { render :json => @piece.to_json }
@@ -68,6 +74,7 @@ class PiecesController < ApplicationController
   def promotion_choice
     # can/should eventually move this logic into a model
     # make sure choices don't place opponent into stalemate, pass choices to radio buttons in form
+    @piece = Piece.find(params[:id])
     dest_piece = @piece.game.pieces.where(x_position: $intended_x, y_position: $intended_y).first
     if !dest_piece.nil? 
       dest_piece.update_attributes(x_position: nil, y_position: nil, captured: true) # temp capture to check for stalemate
@@ -96,6 +103,7 @@ class PiecesController < ApplicationController
       dest_piece.update_attributes(x_position: $intended_x, y_position: $intended_y, captured: false) # reset
     end
     @piece.update_attributes(x_position: $old_x, y_position: $old_y) # reset
+    #binding.pry
   end
 
   def promote_pawn
@@ -124,10 +132,7 @@ class PiecesController < ApplicationController
         flash[:alert] = "Could not promote pawn!"
       end
     end
-    respond_to do |format|
-      format.json { render :json => @piece.to_json }
-      format.html { redirect_to game_path(@piece.game) }
-    end
+    redirect_to game_path(@piece.game)
     begin
       PrivatePub.publish_to("/games/#{@piece.game.id}", "window.location.reload();")
     rescue Errno::ECONNREFUSED

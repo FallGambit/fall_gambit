@@ -20,21 +20,45 @@ $(document).ready(function () {
   $("td").droppable({
       drop: function(event, ui) {
         snapToMiddle(ui.draggable,$(this));
+        var old_x_pos = ui.draggable.parent().parent().data('x-position');
+        var old_y_pos = ui.draggable.parent().parent().parent().data('y-position');
         var x_pos = $(this).data('x-position');
         var y_pos = $(this).parent().data('y-position');
         var current_piece_id = ui.draggable.parent().parent().data('piece-id');
-        $.ajax({
-            url: "<%=current_game.id%>/move",
-            type: 'PUT',
-            dataType: 'json',
-            data: { piece_id: current_piece_id, x: x_pos, y: y_pos},
-              success: function () {
-                location.reload(true); //refreshes page from server after move
-              },
-              error: function () {
-                location.reload(true); //refreshes page from server after failed move
-              }
-        });
+        var image_name = ui.draggable.attr("alt");
+        var color = image_name.split(' ')[0];
+        var piece_type = image_name.split(' ')[1];
+        if (!((old_x_pos == x_pos)&&(old_y_pos == y_pos))) {  //prevent invalid move from popping up if you don't actually move
+          if ((piece_type === "pawn") && ((color === "Black" && y_pos === 0) || (color === "White" && y_pos === 7))) {
+            $.ajax({
+                url: "<%=current_game.id%>/move",
+                type: 'PUT',
+                dataType: 'html',
+                data: { piece_id: current_piece_id, x: x_pos, y: y_pos },
+                  success: function () {
+                    // goes to promotion url if pawn moving to last row
+                    window.location.replace("/pieces/" + current_piece_id + "/promotion_choice");
+                  },
+                  error: function () {
+                    location.reload(true); //refreshes page from server after failed move
+                  }
+            });
+          }
+          else {
+            $.ajax({
+                url: "<%=current_game.id%>/move",
+                type: 'PUT',
+                dataType: 'json',
+                data: { piece_id: current_piece_id, x: x_pos, y: y_pos},
+                  success: function () {
+                    location.reload(true); //refreshes page from server after move
+                  },
+                  error: function () {
+                    location.reload(true); //refreshes page from server after failed move
+                  }
+            });
+          }
+        }
       }
   });
 });

@@ -19,6 +19,7 @@ FallGambit::Application.routes.draw do
   resources :pieces do
     member do
       get 'promotion_choice', :action => :promotion_choice
+      put 'promotion_choice', :action => :promotion_choice
       patch 'promote_pawn', :action => :promote_pawn
     end
   end
