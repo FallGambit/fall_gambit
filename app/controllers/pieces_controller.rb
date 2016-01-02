@@ -55,6 +55,7 @@ class PiecesController < ApplicationController
     else
       respond_to do |format|
         format.json { render json: { errors: @piece.errors.full_messages }, :status => 400 }
+        format.html { redirect_to game_path(@piece.game) }
       end
       return
     end
@@ -103,7 +104,6 @@ class PiecesController < ApplicationController
       dest_piece.update_attributes(x_position: $intended_x, y_position: $intended_y, captured: false) # reset
     end
     @piece.update_attributes(x_position: $old_x, y_position: $old_y) # reset
-    #binding.pry
   end
 
   def promote_pawn
