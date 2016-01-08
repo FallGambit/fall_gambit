@@ -1,0 +1,23 @@
+<!-- _blackside.html.erb 20160108 ~AMP -->
+<div class="col-xs-12 col-sm-3 text-center blackside">
+  <h4>Black Piece Controls</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
+  <% if !current_game.black_user.nil? %>
+    <p><%= current_game.black_user.email %></p>
+  <% else %>
+    <p>Waiting for player</p>
+  <% end %>
+  <% if current_game.user_turn == current_game.black_user_id %>
+    <% if @piece.piece_type == "King" %>
+      <% if @piece.can_castle?(current_user.rooks.where(x_position: 0).take) %>
+        <b>Click on Queen's Rook to Castle Queenside</b>
+      <% end %>
+      <% if @piece.can_castle?(current_user.rooks.where(x_position: 7).take) %>
+        <b>Click on King's Rook to Castle Kingside</b>
+      <% end %>
+    <% end %>
+  <% end %>
+  <p>Captured Pieces:</p>
+  <% current_game.pieces.where(color: true, captured: true).order(:updated_at).each do |capped_piece| %>
+    <%= image_tag capped_piece.image_name, size: "25x25" %> 
+  <% end %>
+</div>
