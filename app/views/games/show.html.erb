@@ -138,35 +138,34 @@ $(document).ready(function () {
       <% end %>
     </div>
   </div>
+  <!-- Arrangement of partials and chessboards is optimized for mobile. -->
   <% if current_user && current_user.id == current_game.black_user_id %>
     <%= render partial: 'whiteside' %>
-  <% else %>
-    <%= render partial: 'blackside' %>
-  <% end %>
-  <div class="col-xs-12 col-sm-6">
-    <table class="chessboard">
-      <% if current_user && current_user.id == current_game.black_user_id %>
+    <div class="col-xs-12 col-sm-6">
+      <table class="chessboard">
         <% (0..7).each do |row| %>
             <tr data-y-position="<%= row %>" >
               <% (0..7).to_a.reverse.each do |column| %>
                 <%= place_piece_td(row, column).html_safe %>
               <% end %>
             </tr>
-          <% end %>
-      <% else %>
-        <% (0..7).to_a.reverse.each do |row| %>
-            <tr data-y-position="<%= row %>" >
-              <% (0..7).each do |column| %>
-                <%= place_piece_td(row, column).html_safe %>
-              <% end %>
-            </tr>
-          <% end %>
-      <% end %>
-    </table>
-  </div>
-  <% if current_user && current_user.id == current_game.black_user_id %>
+        <% end %>
+      </table>
+    </div>
     <%= render partial: 'blackside' %>
   <% else %>
+    <%= render partial: 'blackside' %>
+    <div class="col-xs-12 col-sm-6">
+      <table class="chessboard">
+        <% (0..7).to_a.reverse.each do |row| %>
+          <tr data-y-position="<%= row %>" >
+            <% (0..7).each do |column| %>
+              <%= place_piece_td(row, column).html_safe %>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+    </div>
     <%= render partial: 'whiteside' %>
   <% end %>
 <% end %>
