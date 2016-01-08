@@ -1,6 +1,6 @@
 <!-- _whiteside.html.erb 20160108 ~AMP -->
 <div class="col-xs-12 col-sm-3 text-center whiteside">
-  <h4>White Player</h4> <!-- start to the Right so they will be on the BOTTOM with White in mobile configuration. -->
+  <h4>White Player</h4>
   <% if !current_game.white_user.nil? %>
     <%= link_to "#{current_game.white_user.email}", user_path(current_game.white_user.id) %>
   <% else %>

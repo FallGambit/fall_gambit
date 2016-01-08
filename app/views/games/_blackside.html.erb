@@ -1,6 +1,6 @@
 <!-- _blackside.html.erb 20160108 ~AMP -->
 <div class="col-xs-12 col-sm-3 text-center blackside">
-  <h4>Black Player</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
+  <h4>Black Player</h4>
   <% if !current_game.black_user.nil? %>
     <%= link_to "#{current_game.black_user.email}", user_path(current_game.black_user.id) %>
   <% else %>
