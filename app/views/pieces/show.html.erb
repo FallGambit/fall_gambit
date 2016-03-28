@@ -71,69 +71,34 @@
       <% end %>
     </div>
   </div>
-  <div class="col-xs-12 col-sm-3 text-center blackside">
-    <h4>Black Piece Controls</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
-    <% if !current_game.black_user.nil? %>
-      <p><%= current_game.black_user.email %></p>
-    <% else %>
-      <p>Waiting for player</p>
-    <% end %>
-    <% if current_game.user_turn == current_game.black_user_id %>
-      <% if @piece.piece_type == "King" %>
-        <% if @piece.can_castle?(current_user.rooks.where(x_position: 0).take) %>
-          <b>Click on Queen's Rook to Castle Queenside</b>
-        <% end %>
-        <% if @piece.can_castle?(current_user.rooks.where(x_position: 7).take) %>
-          <b>Click on King's Rook to Castle Kingside</b>
-        <% end %>
-      <% end %>
-    <% end %>
-    <p>Captured Pieces:</p>
-    <% current_game.pieces.where(color: true, captured: true).order(:updated_at).each do |capped_piece| %>
-      <%= image_tag capped_piece.image_name, size: "25x25" %> 
-    <% end %>
-  </div>
-  <div class="col-xs-12 col-sm-6">
-    <table class="chessboard">
-      <% if current_user && current_user.id == current_game.black_user_id %>
+  <!-- Arrangement of partials and chessboards is optimized for mobile. -->
+  <% if current_user && current_user.id == current_game.black_user_id %>
+    <%= render partial: 'whiteside' %>
+    <div class="col-xs-12 col-sm-6">
+      <table class="chessboard">
         <% (0..7).each do |row| %>
             <tr data-y-position="<%= row %>" >
               <% (0..7).to_a.reverse.each do |column| %>
                 <%= show_piece_td(row, column).html_safe %>
               <% end %>
             </tr>
-          <% end %>
-      <% else %>
+        <% end %>
+      </table>
+    </div>
+    <%= render partial: 'blackside' %>
+  <% else %>
+    <%= render partial: 'blackside' %>
+    <div class="col-xs-12 col-sm-6">
+      <table class="chessboard">
         <% (0..7).to_a.reverse.each do |row| %>
-            <tr data-y-position="<%= row %>" >
-              <% (0..7).each do |column| %>
-                <%= show_piece_td(row, column).html_safe %>
-              <% end %>
-            </tr>
-          <% end %>
-      <% end %>
-    </table>
-  </div>
-  <div class="col-xs-12 col-sm-3 text-center whiteside">
-    <h4>White Piece Controls</h4> <!-- start to the Right so they will be on the BOTTOM with White in mobile configuration. -->
-    <% if !current_game.white_user.nil? %>
-      <p><%= current_game.white_user.email %></p>
-    <% else %>
-      <p>Waiting for player</p>
-    <% end %>
-    <% if current_game.user_turn == current_game.white_user_id %>
-      <% if @piece.piece_type == "King" %>
-        <% if @piece.can_castle?(current_user.rooks.where(x_position: 0).take) %>
-          <b>Click on Queen's Rook to Castle Queenside</b>
+          <tr data-y-position="<%= row %>" >
+            <% (0..7).each do |column| %>
+              <%= show_piece_td(row, column).html_safe %>
+            <% end %>
+          </tr>
         <% end %>
-        <% if @piece.can_castle?(current_user.rooks.where(x_position: 7).take) %>
-          <b>Click on King's Rook to Castle Kingside</b>
-        <% end %>
-      <% end %>
-    <% end %>
-    <p>Captured Pieces:</p>
-    <% current_game.pieces.where(color: false, captured: true).order(:updated_at).each do |capped_piece| %>
-      <%= image_tag capped_piece.image_name, size: "25x25" %>
-    <% end %>
-  </div>
+      </table>
+    </div>
+    <%= render partial: 'whiteside' %>
+  <% end %>
 <% end %>

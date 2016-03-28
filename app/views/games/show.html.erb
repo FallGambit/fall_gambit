@@ -138,90 +138,35 @@ $(document).ready(function () {
       <% end %>
     </div>
   </div>
-  <div class="col-xs-12 col-sm-3 text-center blackside">
-    <h4>Black Player</h4> <!-- start to the Left so they will be on TOP with Black in mobile configuration. -->
-    <% if !current_game.black_user.nil? %>
-      <%= link_to "#{current_game.black_user.email}", user_path(current_game.black_user.id) %>
-    <% else %>
-      <p>Waiting for player</p>
-    <% end %>
-    <% if user_signed_in? && current_user == current_game.black_user %>
-      <% if current_game.draw == false && current_game.game_winner.nil? %>
-        <% if current_game.draw_request.nil? %>
-          <% if current_game.player_missing? %>
-            <%= button_to 'Cancel game', request_draw_game_path(current_game), :class => 'btn btn-warning btn-sm controls', :confirm => 'Are you sure you want to cancel the game?', :method => :put %>
-          <% else %>
-            <%= button_to 'Offer draw', request_draw_game_path(current_game), :class => 'btn btn-warning btn-sm controls', :confirm => 'Are you sure you want to offer a draw?', :method => :put %>
-          <% end %>
-        <% elsif current_game.draw_request == current_game.white_user_id %>
-          <%= button_to 'Accept draw', accept_draw_game_path(current_game), :class => 'btn btn-success btn-sm controls', :confirm => 'Are you sure you accept a draw?', :method => :put %>
-          <%= button_to 'Reject draw', reject_draw_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to reject the draw?', :method => :put %>
-        <% else %>
-          <%= button_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
-        <% end %>
-        <% if !current_game.player_missing? %>
-          <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
-        <% end %>
-      <% end %>
-    <% end %>
-    <p>Captured Pieces:</p>
-    <% current_game.pieces.where(color: true, captured: true).order(:updated_at).each do |capped_piece| %>
-      <%= image_tag capped_piece.image_name, size: "25x25" %>
-    <% end %>
-    <br /><br />
-  </div>
-  <div class="col-xs-12 col-sm-6">
-    <table class="chessboard">
-      <% if current_user && current_user.id == current_game.black_user_id %>
+  <!-- Arrangement of partials and chessboards is optimized for mobile. -->
+  <% if current_user && current_user.id == current_game.black_user_id %>
+    <%= render partial: 'whiteside' %>
+    <div class="col-xs-12 col-sm-6">
+      <table class="chessboard">
         <% (0..7).each do |row| %>
             <tr data-y-position="<%= row %>" >
               <% (0..7).to_a.reverse.each do |column| %>
                 <%= place_piece_td(row, column).html_safe %>
               <% end %>
             </tr>
-          <% end %>
-      <% else %>
+        <% end %>
+      </table>
+    </div>
+    <%= render partial: 'blackside' %>
+  <% else %>
+    <%= render partial: 'blackside' %>
+    <div class="col-xs-12 col-sm-6">
+      <table class="chessboard">
         <% (0..7).to_a.reverse.each do |row| %>
-            <tr data-y-position="<%= row %>" >
-              <% (0..7).each do |column| %>
-                <%= place_piece_td(row, column).html_safe %>
-              <% end %>
-            </tr>
-          <% end %>
-      <% end %>
-    </table>
-  </div>
-  <div class="col-xs-12 col-sm-3 text-center whiteside">
-    <h4>White Player</h4> <!-- start to the Right so they will be on the BOTTOM with White in mobile configuration. -->
-    <% if !current_game.white_user.nil? %>
-      <%= link_to "#{current_game.white_user.email}", user_path(current_game.white_user.id) %>
-    <% else %>
-      <p>Waiting for player</p>
-    <% end %>
-    <% if user_signed_in? && current_user == current_game.white_user %>
-      <% if current_game.draw == false && current_game.game_winner.nil? %>
-        <% if current_game.draw_request.nil? %>
-          <% if current_game.player_missing? %>
-            <%= button_to 'Cancel game', request_draw_game_path(current_game), :class => 'btn btn-warning btn-sm controls', :confirm => 'Are you sure you want to cancel the game?', :method => :put %>
-          <% else %>
-            <%= button_to 'Offer draw', request_draw_game_path(current_game), :class => 'btn btn-warning btn-sm controls', :confirm => 'Are you sure you want to offer a draw?', :method => :put %>
-          <% end %>
-        <% elsif current_game.draw_request == current_game.black_user_id %>
-          <%= button_to 'Accept draw', accept_draw_game_path(current_game), :class => 'btn btn-success btn-sm controls', :confirm => 'Are you sure you want to accept a draw?', :method => :put %>
-          <%= button_to 'Reject draw', reject_draw_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to reject the draw?', :method => :put %>
-        <% else %>
-          <%= button_to 'Draw pending...', '#', :class => 'btn btn-default btn-sm controls' %>
+          <tr data-y-position="<%= row %>" >
+            <% (0..7).each do |column| %>
+              <%= place_piece_td(row, column).html_safe %>
+            <% end %>
+          </tr>
         <% end %>
-        <% if !current_game.player_missing? %>
-          <%= button_to 'Forfeit!', forfeit_game_path(current_game), :class => 'btn btn-danger btn-sm controls', :confirm => 'Are you sure you want to concede the game?', :method => :put %>
-        <% end %>
-      <% end %>
-    <% end %>
-    <p>Captured Pieces:</p>
-    <% current_game.pieces.where(color: false, captured: true).order(:updated_at).each do |capped_piece| %>
-      <%= image_tag capped_piece.image_name, size: "25x25" %>
-    <% end %>
-    <br /><br />
-  </div>
+      </table>
+    </div>
+    <%= render partial: 'whiteside' %>
+  <% end %>
 <% end %>
 <%= subscribe_to "/games/" + @game.id.to_s %>
